@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
+  <url>
+    <loc>https://kiwipredict.com/</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Predictions pages -->
+  <url>
+    <loc>https://kiwipredict.com/predictions</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- VIP Section -->
+  <url>
+    <loc>https://kiwipredict.com/vip</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Outcomes -->
+  <url>
+    <loc>https://kiwipredict.com/outcomes</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Profile -->
+  <url>
+    <loc>https://kiwipredict.com/profile</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Prediction Categories -->
+  <url>
+    <loc>https://kiwipredict.com/predictions/win</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://kiwipredict.com/predictions/over15</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://kiwipredict.com/predictions/over25</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://kiwipredict.com/predictions/over35</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://kiwipredict.com/predictions/corners</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://kiwipredict.com/predictions/ggng</loc>
+    <lastmod>2024-01-21</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
