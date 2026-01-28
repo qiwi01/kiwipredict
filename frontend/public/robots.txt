@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Block admin pages from search engines
+Disallow: /admin
+
+# Block login/register pages
+Disallow: /login
+Disallow: /register
+
+# Allow sitemap
+Sitemap: https://kiwipredict.com/sitemap.xml
