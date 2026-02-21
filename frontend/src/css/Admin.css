@@ -1,0 +1,2723 @@
+/* ===== ADMIN PANEL STYLES ===== */
+
+/* ===== MAIN CONTAINER ===== */
+.admin-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+/* ===== HEADER SECTION ===== */
+.admin-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.admin-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.admin-title {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-4);
+  background: linear-gradient(135deg, var(--danger-500), var(--warning-500), var(--accent-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .admin-title {
+  color: var(--gray-100);
+}
+
+.admin-subtitle {
+  color: var(--gray-600);
+  font-size: var(--font-size-lg);
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.dark .admin-subtitle {
+  color: var(--gray-300);
+}
+
+.admin-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-logout-btn:hover {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.admin-logout-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ===== NAVIGATION TABS ===== */
+.admin-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-8);
+}
+
+.admin-tabs-container {
+  background: var(--gray-100);
+  border-radius: var(--radius-xl);
+  padding: var(--space-1);
+  display: flex;
+  gap: var(--space-1);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .admin-tabs-container {
+  background: var(--gray-800);
+}
+
+.admin-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  transition: var(--transition-all);
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--gray-600);
+}
+
+.dark .admin-tab-btn {
+  color: var(--gray-400);
+}
+
+.admin-tab-btn:hover {
+  color: var(--gray-900);
+  background: var(--gray-200);
+  transform: translateY(-1px);
+}
+
+.dark .admin-tab-btn:hover {
+  color: var(--gray-100);
+  background: var(--gray-700);
+}
+
+.admin-tab-btn.active {
+  background: linear-gradient(135deg, var(--warning-500), var(--danger-500));
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-tab-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ===== DASHBOARD SECTION ===== */
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ===== STATISTICS CARDS ===== */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.admin-stat-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  text-align: center;
+  transition: var(--transition-all);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .admin-stat-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.admin-stat-card:nth-child(1) {
+  border-color: var(--primary-200);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(37, 99, 235, 0.02));
+}
+
+.dark .admin-stat-card:nth-child(1) {
+  border-color: var(--primary-800);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05));
+}
+
+.admin-stat-card:nth-child(2) {
+  border-color: var(--success-200);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02));
+}
+
+.dark .admin-stat-card:nth-child(2) {
+  border-color: var(--success-800);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+}
+
+.admin-stat-card:nth-child(3) {
+  border-color: var(--warning-200);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(245, 158, 11, 0.02));
+}
+
+.dark .admin-stat-card:nth-child(3) {
+  border-color: var(--warning-800);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+}
+
+.admin-stat-card:nth-child(4) {
+  border-color: var(--accent-200);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(124, 58, 237, 0.02));
+}
+
+.dark .admin-stat-card:nth-child(4) {
+  border-color: var(--accent-800);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(124, 58, 237, 0.05));
+}
+
+.admin-stat-icon {
+  width: 2rem;
+  height: 2rem;
+  margin: 0 auto var(--space-3);
+}
+
+.admin-stat-icon.users {
+  color: var(--primary-500);
+}
+
+.admin-stat-icon.active {
+  color: var(--success-500);
+}
+
+.admin-stat-icon.bets {
+  color: var(--warning-500);
+}
+
+.admin-stat-icon.profit {
+  color: var(--accent-500);
+}
+
+.admin-stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-1);
+  color: var(--gray-900);
+}
+
+.dark .admin-stat-value {
+  color: var(--gray-100);
+}
+
+.admin-stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+  font-weight: var(--font-weight-medium);
+}
+
+.dark .admin-stat-label {
+  color: var(--gray-400);
+}
+
+/* ===== DASHBOARD OVERVIEW ===== */
+.admin-overview-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .admin-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.admin-overview-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .admin-overview-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-overview-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-4);
+  color: var(--gray-900);
+}
+
+.dark .admin-overview-title {
+  color: var(--gray-100);
+}
+
+.admin-overview-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.admin-overview-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--gray-100);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-colors);
+}
+
+.dark .admin-overview-stat {
+  background: var(--gray-800);
+}
+
+.admin-overview-stat:hover {
+  background: var(--gray-200);
+}
+
+.dark .admin-overview-stat:hover {
+  background: var(--gray-700);
+}
+
+.admin-overview-label {
+  color: var(--gray-600);
+  font-weight: var(--font-weight-medium);
+}
+
+.dark .admin-overview-label {
+  color: var(--gray-400);
+}
+
+.admin-overview-value {
+  font-weight: var(--font-weight-semibold);
+  color: var(--gray-900);
+}
+
+.dark .admin-overview-value {
+  color: var(--gray-100);
+}
+
+.admin-overview-value.roi.positive {
+  color: var(--success-500);
+}
+
+.admin-overview-value.roi.negative {
+  color: var(--danger-500);
+}
+
+/* ===== QUICK ACTIONS ===== */
+.admin-quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.admin-action-btn {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-semibold);
+  transition: var(--transition-all);
+  border: none;
+  cursor: pointer;
+}
+
+.admin-action-btn.primary {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+}
+
+.admin-action-btn.primary:hover {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.admin-action-btn.success {
+  background: linear-gradient(135deg, var(--success-500), var(--success-600));
+  color: white;
+}
+
+.admin-action-btn.success:hover {
+  background: linear-gradient(135deg, var(--success-600), var(--success-700));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== DATA TABLES ===== */
+.admin-data-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.dark .admin-data-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-data-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-6);
+  color: var(--gray-900);
+}
+
+.dark .admin-data-title {
+  color: var(--gray-100);
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-table {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  border-collapse: collapse;
+}
+
+.admin-table thead {
+  background: var(--gray-100);
+}
+
+.dark .admin-table thead {
+  background: var(--gray-800);
+}
+
+.admin-table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-600);
+  border-bottom: 1px solid var(--gray-200);
+  white-space: nowrap;
+}
+
+.dark .admin-table th {
+  color: var(--gray-400);
+  border-bottom-color: var(--gray-700);
+}
+
+.admin-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--gray-900);
+}
+
+.dark .admin-table td {
+  border-bottom-color: var(--gray-800);
+  color: var(--gray-100);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--gray-50);
+}
+
+.dark .admin-table tbody tr:hover {
+  background: var(--gray-800);
+}
+
+/* Table cell content */
+.admin-user-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.admin-user-email {
+  color: var(--gray-600);
+}
+
+.dark .admin-user-email {
+  color: var(--gray-400);
+}
+
+.admin-user-role {
+  font-weight: var(--font-weight-medium);
+  color: var(--primary-600);
+}
+
+.admin-user-role.admin {
+  color: var(--warning-600);
+}
+
+/* Status badges */
+.admin-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.admin-status-badge.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success-500);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.admin-status-badge.inactive {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-500);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* User actions */
+.admin-user-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.admin-user-action-btn {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+  border: none;
+}
+
+.admin-user-action-btn.activate {
+  background: linear-gradient(135deg, var(--success-500), var(--success-600));
+  color: white;
+}
+
+.admin-user-action-btn.activate:hover {
+  background: linear-gradient(135deg, var(--success-600), var(--success-700));
+  transform: translateY(-1px);
+}
+
+.admin-user-action-btn.deactivate {
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  color: white;
+}
+
+.admin-user-action-btn.deactivate:hover {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  transform: translateY(-1px);
+}
+
+.admin-user-action-btn.delete {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  color: white;
+}
+
+.admin-user-action-btn.delete:hover {
+  background: linear-gradient(135deg, var(--danger-700), var(--danger-800));
+  transform: translateY(-1px);
+}
+
+/* Bet result badges */
+.admin-bet-result {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.admin-bet-result.win {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success-500);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.admin-bet-result.loss {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-500);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.admin-bet-result.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning-500);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Bet actions */
+.admin-bet-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.admin-bet-action-btn {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+  border: none;
+}
+
+.admin-bet-action-btn.win {
+  background: linear-gradient(135deg, var(--success-500), var(--success-600));
+  color: white;
+}
+
+.admin-bet-action-btn.win:hover {
+  background: linear-gradient(135deg, var(--success-600), var(--success-700));
+  transform: translateY(-1px);
+}
+
+.admin-bet-action-btn.loss {
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  color: white;
+}
+
+.admin-bet-action-btn.loss:hover {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  transform: translateY(-1px);
+}
+
+/* ===== SETTINGS SECTION ===== */
+.admin-settings-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .admin-settings-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-settings-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-6);
+  color: var(--gray-900);
+}
+
+.dark .admin-settings-title {
+  color: var(--gray-100);
+}
+
+.admin-settings-section {
+  margin-bottom: var(--space-8);
+}
+
+.admin-settings-section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-3);
+  color: var(--gray-900);
+}
+
+.dark .admin-settings-section-title {
+  color: var(--gray-100);
+}
+
+.admin-settings-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.admin-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.admin-settings-label {
+  font-size: var(--font-size-sm);
+  color: var(--gray-600);
+  font-weight: var(--font-weight-medium);
+}
+
+.dark .admin-settings-label {
+  color: var(--gray-400);
+}
+
+.admin-settings-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--gray-50);
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  color: var(--gray-900);
+  font-size: var(--font-size-base);
+  transition: var(--transition-colors);
+}
+
+.dark .admin-settings-input {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+  color: var(--gray-100);
+}
+
+.admin-settings-input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.dark .admin-settings-input:focus {
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px var(--primary-900);
+}
+
+.admin-settings-input::placeholder {
+  color: var(--gray-500);
+}
+
+.dark .admin-settings-input::placeholder {
+  color: var(--gray-400);
+}
+
+.admin-settings-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  background: linear-gradient(135deg, var(--warning-500), var(--danger-500));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+  box-shadow: var(--shadow);
+}
+
+.admin-settings-save-btn:hover {
+  background: linear-gradient(135deg, var(--warning-600), var(--danger-600));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ===== ACCESS DENIED ===== */
+.admin-access-denied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-20);
+}
+
+.admin-access-denied-content {
+  text-align: center;
+}
+
+.admin-access-denied-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto var(--space-4);
+  color: var(--danger-500);
+}
+
+.admin-access-denied-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--danger-500);
+  margin-bottom: var(--space-2);
+}
+
+.admin-access-denied-message {
+  color: var(--gray-500);
+  font-size: var(--font-size-lg);
+}
+
+.dark .admin-access-denied-message {
+  color: var(--gray-400);
+}
+
+/* ===== LOADING STATE ===== */
+.admin-loading,
+.predictions-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-20);
+}
+
+.admin-loading-spinner,
+.predictions-loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--gray-300);
+  border-top: 3px solid var(--primary-500);
+  border-radius: 50%;
+  animation: var(--animation-spin);
+}
+
+.dark .admin-loading-spinner,
+.dark .predictions-loading-spinner {
+  border-color: var(--gray-700);
+  border-top-color: var(--primary-400);
+}
+
+.admin-loading-text,
+.predictions-loading-text {
+  margin-left: var(--space-4);
+  color: var(--gray-600);
+  font-size: var(--font-size-lg);
+}
+
+.dark .admin-loading-text,
+.dark .predictions-loading-text {
+  color: var(--gray-400);
+}
+
+.predictions-loading-dots {
+  display: inline-flex;
+  gap: var(--space-1);
+  margin-right: var(--space-2);
+}
+
+.predictions-loading-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-500);
+  animation: predictions-dots-bounce 1.4s ease-in-out infinite both;
+}
+
+.dark .predictions-loading-dots span {
+  background: var(--primary-400);
+}
+
+.predictions-loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.predictions-loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes predictions-dots-bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: var(--space-4) var(--space-2);
+  }
+
+  .admin-title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .admin-subtitle {
+    font-size: var(--font-size-base);
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .admin-stat-card {
+    padding: var(--space-4);
+  }
+
+  .admin-stat-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .admin-stat-value {
+    font-size: var(--font-size-xl);
+  }
+
+  .admin-overview-grid {
+    gap: var(--space-6);
+  }
+
+  .admin-overview-card {
+    padding: var(--space-4);
+  }
+
+  .admin-data-card {
+    padding: var(--space-4);
+  }
+
+  .admin-table {
+    font-size: var(--font-size-xs);
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: var(--space-2);
+  }
+
+  .admin-user-actions {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .admin-user-action-btn {
+    font-size: 10px;
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .admin-settings-card {
+    padding: var(--space-4);
+  }
+
+  .admin-settings-fields {
+    gap: var(--space-3);
+  }
+}
+
+/* ===== MOBILE DASHBOARD ===== */
+@media (max-width: 768px) {
+  .admin-header {
+    margin-bottom: var(--space-4);
+  }
+
+  .admin-header-content {
+    flex-direction: column;
+    gap: var(--space-4);
+    text-align: center;
+  }
+
+  .admin-tabs {
+    margin-bottom: var(--space-6);
+  }
+
+  .admin-tabs-container {
+    padding: var(--space-1);
+    gap: var(--space-1);
+  }
+
+  .admin-tab-btn {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+
+  .admin-dashboard {
+    gap: var(--space-6);
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  .admin-stat-card {
+    padding: var(--space-3);
+    text-align: center;
+  }
+
+  .admin-stat-value {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-1);
+  }
+
+  .admin-stat-label {
+    font-size: var(--font-size-xs);
+  }
+
+  .admin-overview-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .admin-overview-card {
+    padding: var(--space-3);
+  }
+
+  .admin-overview-title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-3);
+  }
+
+  .admin-overview-stats {
+    gap: var(--space-3);
+  }
+
+  .admin-overview-stat {
+    padding: var(--space-2);
+  }
+
+  .admin-overview-label {
+    font-size: var(--font-size-sm);
+  }
+
+  .admin-overview-value {
+    font-size: var(--font-size-base);
+  }
+
+  .admin-quick-actions {
+    gap: var(--space-2);
+  }
+
+  .admin-action-btn {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ===== MOBILE OUTCOMES MANAGEMENT ===== */
+@media (max-width: 768px) {
+  .admin-outcomes-section {
+    gap: var(--space-6);
+  }
+
+  .admin-matches-outcomes {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .admin-match-outcome-card {
+    padding: var(--space-4);
+    margin: 0 var(--space-2); /* Add some margin to prevent edge touching */
+  }
+
+  .admin-match-outcome-header {
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+    margin-bottom: var(--space-4);
+  }
+
+  .admin-match-outcome-teams h4 {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-1);
+  }
+
+  .admin-match-outcome-predictions {
+    gap: var(--space-3);
+  }
+
+  .admin-prediction-outcome {
+    padding: var(--space-3);
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dark .admin-prediction-outcome {
+    background: var(--gray-800);
+    border-color: var(--gray-700);
+  }
+
+  .admin-prediction-outcome-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-bottom: var(--space-2);
+  }
+
+  .admin-prediction-outcome-type {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-600);
+  }
+
+  .dark .admin-prediction-outcome-type {
+    color: var(--gray-400);
+  }
+
+  .admin-prediction-outcome-value {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--success-500);
+  }
+
+  .admin-prediction-outcome-confidence {
+    font-size: var(--font-size-xs);
+    color: var(--gray-500);
+  }
+
+  .dark .admin-prediction-outcome-confidence {
+    color: var(--gray-400);
+  }
+
+  .admin-prediction-outcome-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    justify-items: center;
+    align-items: center;
+  }
+
+  .admin-outcome-btn {
+    width: 100%;
+    padding: var(--space-2) var(--space-1);
+    font-size: 11px;
+    min-width: 0;
+    white-space: nowrap;
+    text-align: center;
+    border-radius: var(--radius);
+    font-weight: var(--font-weight-semibold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    box-sizing: border-box;
+  }
+
+  .admin-outcome-btn.win {
+    background: linear-gradient(135deg, var(--success-500), var(--success-600));
+    color: white;
+  }
+
+  .admin-outcome-btn.win:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--success-600), var(--success-700));
+  }
+
+  .admin-outcome-btn.loss {
+    background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+    color: white;
+  }
+
+  .admin-outcome-btn.loss:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  }
+
+  .admin-outcome-btn.edit {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    color: white;
+  }
+
+  .admin-outcome-btn.edit:hover {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  }
+
+  .admin-outcome-btn.delete {
+    background: linear-gradient(135deg, var(--gray-500), var(--gray-600));
+    color: white;
+  }
+
+  .admin-outcome-btn.delete:hover {
+    background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
+  }
+
+  .admin-outcome-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Remove the selected text and just change appearance */
+  .admin-outcome-btn.selected {
+    border: 2px solid var(--primary-500);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  }
+
+  .admin-outcome-btn.win.selected {
+    border-color: var(--success-500);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+  }
+
+  .admin-outcome-btn.loss.selected {
+    border-color: var(--danger-500);
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+  }
+}
+
+/* ===== MOBILE LEAGUES MANAGEMENT ===== */
+@media (max-width: 768px) {
+  .admin-leagues-section {
+    gap: var(--space-6);
+  }
+
+  .admin-leagues-list {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-league-card {
+    padding: var(--space-4);
+  }
+
+  .admin-league-header {
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .admin-league-info {
+    width: 100%;
+  }
+
+  .admin-league-stats {
+    width: 100%;
+    text-align: left;
+  }
+
+  .admin-teams-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--space-1);
+  }
+
+  .admin-team-item {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* ===== MOBILE GAMES MANAGEMENT ===== */
+@media (max-width: 768px) {
+  .admin-games-section {
+    gap: var(--space-6);
+  }
+
+  .admin-games-list {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+/* Mobile: allow flexible card heights and avoid clipping content */
+  .admin-match-card {
+    padding: var(--space-2);
+    min-height: 100px;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    box-sizing: border-box;
+  }
+
+  .admin-match-header {
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+    margin-bottom: 2px;
+  }
+
+  .admin-match-meta {
+    flex-direction: row;
+    gap: var(--space-2);
+    align-items: center;
+    font-size: var(--font-size-xs);
+  }
+
+  .admin-match-teams {
+    margin-bottom: 2px;
+    font-size: var(--font-size-sm);
+  }
+
+  .admin-match-teams-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .admin-predictions-list {
+    gap: 2px;
+  }
+
+  .admin-prediction-item-display {
+    padding: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .admin-prediction-type {
+    min-width: 70px;
+    width: auto;
+  }
+
+  .admin-prediction-type-label {
+    font-size: 9px;
+    padding: 1px var(--space-1);
+  }
+
+  .admin-prediction-details {
+    flex: 1;
+    text-align: center;
+  }
+
+  .admin-prediction-value {
+    font-size: var(--font-size-base);
+  }
+
+  .admin-prediction-confidence {
+    display: none;
+  }
+
+  .admin-value-badge-small {
+    font-size: 8px;
+    padding: 1px var(--space-1);
+  }
+}
+
+/* ===== MOBILE VIP MANAGEMENT ===== */
+@media (max-width: 768px) {
+  .admin-vip-section {
+    gap: var(--space-6);
+  }
+
+  .admin-data-card {
+    padding: var(--space-3);
+  }
+
+  .admin-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table {
+    min-width: 600px; /* Ensure table doesn't get too squished */
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* ===== MOBILE FORM ELEMENTS ===== */
+@media (max-width: 768px) {
+  .admin-form {
+    gap: var(--space-4);
+  }
+
+  .admin-form-grid-2,
+  .admin-form-grid-3,
+  .admin-form-grid-4 {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .admin-form-group {
+    gap: var(--space-2);
+  }
+
+  .admin-form-input,
+  .admin-form-select {
+    padding: var(--space-3);
+    font-size: var(--font-size-base);
+  }
+
+  .admin-btn-success,
+  .admin-btn-warning {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-tabs-container {
+    flex-direction: column;
+    width: 100%;
+    max-width: 16rem;
+  }
+
+  .admin-tab-btn {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-xs);
+  }
+
+  .admin-table-wrapper {
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
+
+  .admin-bet-actions {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .admin-bet-action-btn {
+    font-size: 10px;
+    padding: 2px var(--space-1);
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  .admin-stat-card,
+  .admin-tab-btn,
+  .admin-action-btn,
+  .admin-user-action-btn,
+  .admin-bet-action-btn,
+  .admin-settings-save-btn,
+  .admin-table tbody tr {
+    transition: none !important;
+  }
+
+  .admin-loading-spinner {
+    animation: none;
+  }
+}
+
+/* ===== FOCUS STATES ===== */
+.admin-tab-btn:focus,
+.admin-action-btn:focus,
+.admin-user-action-btn:focus,
+.admin-bet-action-btn:focus,
+.admin-settings-input:focus,
+.admin-settings-save-btn:focus {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+.dark .admin-tab-btn:focus,
+.dark .admin-action-btn:focus,
+.dark .admin-user-action-btn:focus,
+.dark .admin-bet-action-btn:focus,
+.dark .admin-settings-input:focus,
+.dark .admin-settings-save-btn:focus {
+  outline-color: var(--primary-400);
+}
+
+/* ===== SELECT DROPDOWNS ===== */
+.admin-role-select {
+  background: var(--gray-700);
+  border: 1px solid var(--gray-600);
+  border-radius: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  color: var(--gray-100);
+  font-size: var(--font-size-sm);
+  transition: var(--transition-colors);
+}
+
+.admin-role-select:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 2px var(--primary-100);
+}
+
+.dark .admin-role-select:focus {
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 2px var(--primary-900);
+}
+
+.admin-role-select option {
+  background: var(--gray-800);
+  color: var(--gray-100);
+}
+
+/* ===== FORM ELEMENTS ===== */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.admin-form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.admin-form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.admin-form-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-700);
+}
+
+.dark .admin-form-label {
+  color: var(--gray-300);
+}
+
+.admin-form-input,
+.admin-form-select {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  color: var(--gray-900);
+  font-size: var(--font-size-base);
+  transition: var(--transition-all);
+}
+
+.dark .admin-form-input,
+.dark .admin-form-select {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+  color: var(--gray-100);
+}
+
+.admin-form-input:focus,
+.admin-form-select:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.dark .admin-form-input:focus,
+.dark .admin-form-select:focus {
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px var(--primary-900);
+}
+
+.admin-form-input::placeholder {
+  color: var(--gray-500);
+}
+
+.dark .admin-form-input::placeholder {
+  color: var(--gray-400);
+}
+
+/* ===== FORM SECTIONS ===== */
+.admin-form-section {
+  padding: var(--space-6);
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+}
+
+.dark .admin-form-section {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-form-section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-4);
+  color: var(--gray-900);
+}
+
+.dark .admin-form-section-title {
+  color: var(--gray-100);
+}
+
+/* ===== ODDS SECTION ===== */
+.admin-odds-section {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--gray-200);
+}
+
+.dark .admin-odds-section {
+  border-color: var(--gray-700);
+}
+
+.admin-odds-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-3);
+  color: var(--gray-700);
+}
+
+.dark .admin-odds-title {
+  color: var(--gray-300);
+}
+
+/* ===== EMPTY STATES ===== */
+.admin-empty-state {
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.admin-empty-text {
+  font-size: var(--font-size-lg);
+  color: var(--gray-500);
+  margin-bottom: var(--space-2);
+}
+
+.dark .admin-empty-text {
+  color: var(--gray-400);
+}
+
+.admin-empty-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--gray-400);
+}
+
+.dark .admin-empty-subtitle {
+  color: var(--gray-500);
+}
+
+/* ===== MATCH ACTIONS ===== */
+.admin-match-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.admin-match-action-btn {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.admin-match-action-btn.edit {
+  background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+  color: white;
+}
+
+.admin-match-action-btn.edit:hover {
+  background: linear-gradient(135deg, var(--warning-600), var(--warning-700));
+  transform: translateY(-1px);
+}
+
+.admin-match-action-btn.delete {
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  color: white;
+}
+
+.admin-match-action-btn.delete:hover {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  transform: translateY(-1px);
+}
+
+.admin-outcome-btn {
+  padding: var(--space-1) var(--space-3);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-all);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.admin-outcome-btn.win {
+  background: linear-gradient(135deg, var(--success-500), var(--success-600));
+  color: white;
+}
+
+.admin-outcome-btn.win:hover {
+  background: linear-gradient(135deg, var(--success-600), var(--success-700));
+  transform: translateY(-1px);
+}
+
+.admin-outcome-btn.loss {
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  color: white;
+}
+
+.admin-outcome-btn.loss:hover {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  transform: translateY(-1px);
+}
+
+.admin-outcome-btn.edit {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+}
+
+.admin-outcome-btn.edit:hover {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  transform: translateY(-1px);
+}
+
+.admin-outcome-btn.delete {
+  background: linear-gradient(135deg, var(--gray-500), var(--gray-600));
+  color: white;
+}
+
+.admin-outcome-btn.delete:hover {
+  background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
+  transform: translateY(-1px);
+}
+
+/* ===== LEAGUES MANAGEMENT ===== */
+.admin-leagues-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.admin-leagues-list {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .admin-leagues-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-leagues-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.admin-league-card {
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .admin-league-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-league-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  gap: var(--space-4);
+}
+
+.admin-league-info {
+  flex: 1;
+}
+
+.admin-league-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+}
+
+.dark .admin-league-name {
+  color: var(--gray-100);
+}
+
+.admin-league-country {
+  color: var(--gray-500);
+  font-size: var(--font-size-sm);
+}
+
+.admin-league-stats {
+  text-align: right;
+}
+
+.admin-league-team-count {
+  background: var(--primary-500);
+  color: white;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.admin-league-teams {
+  margin-top: var(--space-4);
+}
+
+.admin-teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-2);
+}
+
+.admin-team-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background: var(--gray-100);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+}
+
+.dark .admin-team-item {
+  background: var(--gray-800);
+}
+
+.admin-team-info {
+  flex: 1;
+}
+
+.admin-team-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-900);
+}
+
+.dark .admin-team-name {
+  color: var(--gray-100);
+}
+
+.admin-team-code {
+  color: var(--gray-500);
+  font-size: 10px;
+}
+
+.dark .admin-team-code {
+  color: var(--gray-400);
+}
+
+.admin-team-remove-btn {
+  background: var(--danger-500);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  transition: var(--transition-all);
+}
+
+.admin-team-remove-btn:hover {
+  background: var(--danger-600);
+  transform: scale(1.1);
+}
+
+.admin-no-teams {
+  text-align: center;
+  padding: var(--space-4);
+  color: var(--gray-500);
+  font-style: italic;
+  font-size: var(--font-size-sm);
+}
+
+.dark .admin-no-teams {
+  color: var(--gray-400);
+}
+
+/* ===== SEARCHABLE SELECTS ===== */
+.admin-searchable-select {
+  position: relative;
+}
+
+.admin-hidden-select {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ===== ENLARGE VIP CHECKBOX ===== */
+.admin-checkbox {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius);
+  background: var(--gray-50);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.dark .admin-checkbox {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+/* ===== OUTCOMES MANAGEMENT ===== */
+.admin-outcomes-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.admin-matches-outcomes {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .admin-matches-outcomes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-matches-outcomes {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+.admin-match-outcome-card {
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .admin-match-outcome-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-match-outcome-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  gap: var(--space-4);
+}
+
+.admin-match-outcome-teams {
+  flex: 1;
+}
+
+.admin-match-outcome-teams h4 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+}
+
+.dark .admin-match-outcome-teams h4 {
+  color: var(--gray-100);
+}
+
+.admin-match-outcome-league {
+  color: var(--gray-500);
+  font-size: var(--font-size-sm);
+}
+
+.admin-match-outcome-date {
+  color: var(--gray-600);
+  font-size: var(--font-size-sm);
+}
+
+.dark .admin-match-outcome-date {
+  color: var(--gray-400);
+}
+
+.admin-match-outcome-score {
+  background: var(--success-500);
+  color: white;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+}
+
+.admin-match-outcome-predictions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.admin-prediction-outcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background: var(--gray-100);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+}
+
+.dark .admin-prediction-outcome {
+  background: var(--gray-800);
+  border-color: var(--gray-700);
+}
+
+.admin-prediction-outcome-info {
+  flex: 1;
+}
+
+.admin-prediction-outcome-type {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--gray-600);
+  margin-bottom: var(--space-1);
+}
+
+.dark .admin-prediction-outcome-type {
+  color: var(--gray-400);
+}
+
+.admin-prediction-outcome-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--success-500);
+}
+
+.admin-prediction-outcome-confidence {
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+}
+
+.dark .admin-prediction-outcome-confidence {
+  color: var(--gray-400);
+}
+
+.admin-prediction-outcome-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.admin-outcome-btn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+  border: none;
+}
+
+.admin-outcome-btn.win {
+  background: linear-gradient(135deg, var(--success-500), var(--success-600));
+  color: white;
+}
+
+.admin-outcome-btn.win:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--success-600), var(--success-700));
+  transform: translateY(-1px);
+}
+
+.admin-outcome-btn.loss {
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  color: white;
+}
+
+.admin-outcome-btn.loss:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  transform: translateY(-1px);
+}
+
+.admin-outcome-btn.selected {
+  background: var(--primary-600);
+  color: white;
+  border-color: var(--primary-600);
+  font-weight: var(--font-weight-bold);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.admin-outcome-btn.win.selected {
+  background: var(--success-600);
+  border-color: var(--success-600);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.admin-outcome-btn.loss.selected {
+  background: var(--danger-600);
+  border-color: var(--danger-600);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.admin-outcome-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--gray-300);
+  color: var(--gray-500);
+}
+
+.admin-section-description {
+  color: var(--gray-600);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-4);
+}
+
+.dark .admin-section-description {
+  color: var(--gray-400);
+}
+
+/* ===== BUTTONS ===== */
+.admin-btn-success {
+  background: linear-gradient(135deg, var(--success-500), var(--success-600));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.admin-btn-success:hover {
+  background: linear-gradient(135deg, var(--success-600), var(--success-700));
+  transform: translateY(-1px);
+}
+
+.admin-btn-warning {
+  background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.admin-btn-warning:hover {
+  background: linear-gradient(135deg, var(--warning-600), var(--warning-700));
+  transform: translateY(-1px);
+}
+
+/* Add Prediction Button */
+.admin-btn-add-prediction {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-btn-add-prediction:hover {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.admin-btn-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ===== ICONS ===== */
+.admin-icon-inline {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: var(--space-2);
+}
+
+/* ===== USER DETAILS ===== */
+.admin-user-joined {
+  color: var(--gray-500);
+  font-size: var(--font-size-sm);
+}
+
+.dark .admin-user-joined {
+  color: var(--gray-400);
+}
+
+/* ===== GAMES SECTION ===== */
+.admin-games-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ===== GAMES LIST ===== */
+.admin-games-list {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .admin-games-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-games-list {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+/* ===== MATCH CARD ===== */
+.admin-match-card {
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3);
+  transition: var(--transition-all);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .admin-match-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-match-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-200);
+}
+
+.dark .admin-match-card:hover {
+  border-color: var(--primary-800);
+}
+
+/* Value Bet Highlight */
+.admin-match-value {
+  border-color: var(--warning-500);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.02) 100%);
+  box-shadow: 0 0 0 1px var(--warning-500), var(--shadow-md);
+}
+
+.admin-match-value:hover {
+  border-color: var(--warning-600);
+}
+
+/* ===== MATCH CARD LAYOUT ===== */
+.admin-match-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .admin-match-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.admin-match-info {
+  flex: 1;
+}
+
+/* Match Header */
+.admin-match-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.admin-match-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+  flex-wrap: wrap;
+}
+
+.admin-match-meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.admin-match-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--gray-400);
+}
+
+/* Value Badge */
+.admin-value-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-value-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Match Teams */
+.admin-match-teams {
+  text-align: center;
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--gray-900);
+}
+
+.dark .admin-match-teams {
+  color: var(--gray-100);
+}
+
+@media (min-width: 1024px) {
+  .admin-match-teams {
+    text-align: left;
+  }
+}
+
+.admin-match-teams-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+}
+
+.dark .admin-match-teams-title {
+  color: var(--gray-100);
+}
+
+.admin-match-league {
+  color: var(--gray-500);
+  font-size: var(--font-size-base);
+}
+
+/* ===== PREDICTION SECTION ===== */
+.admin-prediction-section {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .admin-prediction-section {
+    width: 20rem;
+  }
+}
+
+.admin-prediction-display {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.admin-prediction-label {
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+  margin-bottom: var(--space-1);
+}
+
+.admin-prediction-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--success-500);
+  margin-bottom: var(--space-1);
+  display: block;
+}
+
+.admin-prediction-confidence {
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+}
+
+/* Prediction Grid */
+.admin-prediction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.admin-prediction-btn {
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  border: 1px solid var(--gray-300);
+  background: var(--gray-50);
+  color: var(--gray-700);
+  transition: var(--transition-all);
+  font-size: var(--font-size-sm);
+}
+
+.dark .admin-prediction-btn {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+  color: var(--gray-300);
+}
+
+.admin-prediction-btn:hover {
+  border-color: var(--primary-300);
+  background: var(--primary-50);
+  color: var(--primary-700);
+}
+
+.dark .admin-prediction-btn:hover {
+  background: var(--primary-950);
+  color: var(--primary-300);
+}
+
+.admin-prediction-active {
+  background: linear-gradient(135deg, var(--success-500), var(--success-600));
+  color: white;
+  border-color: var(--success-500);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-prediction-btn-label {
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-1);
+  display: block;
+}
+
+.admin-prediction-btn-confidence {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ===== ODDS INFO ===== */
+.admin-odds-info {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-4);
+  color: var(--gray-500);
+}
+
+.admin-odds-text {
+  color: var(--gray-600);
+  font-weight: var(--font-weight-medium);
+}
+
+.dark .admin-odds-text {
+  color: var(--gray-400);
+}
+
+/* ===== PREDICTIONS LIST ===== */
+.admin-predictions-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.admin-prediction-item-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background: var(--gray-100);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  transition: var(--transition-all);
+}
+
+.dark .admin-prediction-item-display {
+  background: var(--gray-800);
+  border-color: var(--gray-700);
+}
+
+.admin-prediction-item-display:hover {
+  background: var(--gray-200);
+  border-color: var(--gray-300);
+}
+
+.dark .admin-prediction-item-display:hover {
+  background: var(--gray-700);
+  border-color: var(--gray-600);
+}
+
+/* Selected Prediction Highlight */
+.selected-prediction {
+  border-color: var(--success-500);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+.selected-prediction .admin-prediction-type-label {
+  background: var(--success-500);
+  color: white;
+}
+
+.selected-prediction .admin-prediction-value {
+  color: var(--success-600);
+  font-weight: var(--font-weight-bold);
+}
+
+.admin-prediction-type {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 120px;
+}
+
+.admin-prediction-type-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--gray-600);
+  background: var(--gray-200);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dark .admin-prediction-type-label {
+  color: var(--gray-400);
+  background: var(--gray-700);
+}
+
+.admin-value-badge-small {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+  color: white;
+  border-radius: var(--radius);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.admin-value-icon-small {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.admin-prediction-details {
+  flex: 1;
+  text-align: center;
+}
+
+.admin-prediction-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--success-600);
+  margin-bottom: var(--space-1);
+  display: block;
+}
+
+.dark .admin-prediction-value {
+  color: var(--success-500);
+}
+
+.admin-prediction-confidence {
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+}
+
+.dark .admin-prediction-confidence {
+  color: var(--gray-400);
+}
+
+.admin-prediction-odds-display {
+  font-size: var(--font-size-sm);
+  color: var(--gray-600);
+  font-weight: var(--font-weight-medium);
+}
+
+.dark .admin-prediction-odds-display {
+  color: var(--gray-400);
+}
+
+.admin-no-predictions {
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+.dark .admin-no-predictions {
+  color: var(--gray-400);
+}
+
+/* ===== PREDICTION FORM ELEMENTS ===== */
+.admin-predictions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* ===== MATCH ACTIONS ===== */
+.admin-match-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.admin-match-action-btn {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.admin-match-action-btn.edit {
+  background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+  color: white;
+}
+
+.admin-match-action-btn.edit:hover {
+  background: linear-gradient(135deg, var(--warning-600), var(--warning-700));
+  transform: translateY(-1px);
+}
+
+.admin-match-action-btn.delete {
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  color: white;
+}
+
+.admin-match-action-btn.delete:hover {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  transform: translateY(-1px);
+}
+
+.admin-prediction-item {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.dark .admin-prediction-item {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-prediction-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.admin-prediction-item-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--gray-900);
+}
+
+.dark .admin-prediction-item-title {
+  color: var(--gray-100);
+}
+
+.admin-btn-remove {
+  padding: var(--space-2) var(--space-3);
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.admin-btn-remove:hover {
+  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  transform: translateY(-1px);
+}
+
+.admin-form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .admin-form-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-prediction-odds {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--gray-200);
+}
+
+.dark .admin-prediction-odds {
+  border-color: var(--gray-700);
+}
+
+.admin-prediction-odds-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-700);
+  margin-bottom: var(--space-3);
+}
+
+.dark .admin-prediction-odds-title {
+  color: var(--gray-300);
+}
+
+.admin-empty-predictions {
+  text-align: center;
+  padding: var(--space-6);
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--gray-300);
+}
+
+.dark .admin-empty-predictions {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-empty-text {
+  font-size: var(--font-size-base);
+  color: var(--gray-500);
+  margin-bottom: var(--space-2);
+}
+
+.dark .admin-empty-text {
+  color: var(--gray-400);
+}
+
+.admin-empty-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--gray-400);
+}
+
+.dark .admin-empty-subtitle {
+  color: var(--gray-500);
+}
