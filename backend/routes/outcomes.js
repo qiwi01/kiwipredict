@@ -334,7 +334,10 @@ router.delete('/:matchId/prediction/:predictionIndex', authenticateToken, requir
 router.put('/:matchId/prediction/:predictionIndex', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { matchId, predictionIndex } = req.params;
-    const { type, prediction, confidence, valueBet, odds } = req.body;
+    const { type, prediction, confidence, valueBet, odds, visibility } = req.body;
+
+    console.log(`[Outcomes] Updating prediction ${predictionIndex} for match ${matchId}`);
+    console.log('[Outcomes] Update data:', { type, prediction, confidence, valueBet, odds, visibility });
 
     const match = await Match.findById(matchId);
 
@@ -347,14 +350,18 @@ router.put('/:matchId/prediction/:predictionIndex', authenticateToken, requireAd
       return res.status(400).json({ error: 'Invalid prediction index' });
     }
 
-    // Update the prediction
+    // Update the prediction - preserve existing values if not provided
     if (type !== undefined) match.predictions[predIndex].type = type;
     if (prediction !== undefined) match.predictions[predIndex].prediction = prediction;
     if (confidence !== undefined) match.predictions[predIndex].confidence = confidence;
     if (valueBet !== undefined) match.predictions[predIndex].valueBet = valueBet;
     if (odds !== undefined) match.predictions[predIndex].odds = odds;
+    // Always preserve or update visibility - default to 'all' if not set
+    match.predictions[predIndex].visibility = visibility || match.predictions[predIndex].visibility || 'all';
 
     await match.save();
+
+    console.log('[Outcomes] Prediction updated successfully:', match.predictions[predIndex]);
 
     res.json({
       success: true,

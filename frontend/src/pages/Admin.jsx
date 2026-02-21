@@ -1424,7 +1424,8 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                                   formData: {
                                     type: pred.type,
                                     prediction: pred.prediction,
-                                    confidence: pred.confidence
+                                    confidence: pred.confidence,
+                                    visibility: pred.visibility || 'all'
                                   },
                                   formFields: [
                                     {
@@ -1452,6 +1453,17 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                                       label: 'Confidence (%)',
                                       type: 'number',
                                       placeholder: '0-100'
+                                    },
+                                    {
+                                      name: 'visibility',
+                                      label: 'Visibility',
+                                      type: 'select',
+                                      options: [
+                                        { value: 'all', label: 'All Users' },
+                                        { value: 'vip', label: 'VIP Users Only' },
+                                        { value: 'vvip', label: 'VVIP Users Only' },
+                                        { value: 'both', label: 'VIP & VVIP Users' }
+                                      ]
                                     }
                                   ],
                                   onConfirm: async (formData) => {
@@ -1459,7 +1471,8 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                                       const response = await api.put(`/api/outcomes/${game.id}/prediction/${predIndex}`, {
                                         type: formData.type,
                                         prediction: formData.prediction,
-                                        confidence: parseInt(formData.confidence) || pred.confidence
+                                        confidence: parseInt(formData.confidence) || pred.confidence,
+                                        visibility: formData.visibility
                                       });
 
                                       if (response.data.success) {
