@@ -12,6 +12,39 @@ const Home = () => {
   const [todaysMatches, setTodaysMatches] = useState([]);
   const [outcomes, setOutcomes] = useState([]);
 
+  // World Cup 2026 countdown
+  const wcDate = new Date('2026-06-11T00:00:00');
+  const [wcCountdown, setWcCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = wcDate - now;
+      if (diff > 0) {
+        setWcCountdown({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((diff / (1000 * 60)) % 60),
+          seconds: Math.floor((diff / 1000) % 60)
+        });
+      }
+    };
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Helper to check if a match is a World Cup match
+  const isWorldCupMatch = (match) => {
+    const leagueName = match.competition?.name || match.league || '';
+    return leagueName.toLowerCase().includes('world cup') || leagueName.toLowerCase().includes('fifa') || leagueName.toLowerCase().includes('wc');
+  };
+
   // Mini converter states
   const [converterForm, setConverterForm] = useState({
     fromBookmaker: 'bet9ja',
@@ -107,6 +140,16 @@ const Home = () => {
       <section className="home-hero">
         <div className="home-hero-background">
           <div className="hero-gradient-overlay"></div>
+          <div className="wc-sparkle-container">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="wc-sparkle"></div>
+            ))}
+          </div>
+          <div className="wc-confetti-container">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="wc-confetti"></div>
+            ))}
+          </div>
           <div className="hero-particles">
             {[...Array(20)].map((_, i) => (
               <div key={i} className="hero-particle"></div>
@@ -115,6 +158,40 @@ const Home = () => {
         </div>
 
         <div className="home-hero-content">
+          {/* World Cup 2026 Badge */}
+          <div className="wc-badge">
+            <svg className="wc-badge-star" width="20" height="20" viewBox="0 0 24 24" fill="#d4af37" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+            <span className="wc-badge-text">World Cup 2026 Season</span>
+            <svg className="wc-badge-star" width="20" height="20" viewBox="0 0 24 24" fill="#d4af37" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+          </div>
+
+          {/* World Cup Countdown */}
+          <div className="wc-countdown">
+            <div className="wc-countdown-item">
+              <span className="wc-countdown-number">{String(wcCountdown.days).padStart(2, '0')}</span>
+              <span className="wc-countdown-label">Days</span>
+            </div>
+            <span className="wc-countdown-separator">:</span>
+            <div className="wc-countdown-item">
+              <span className="wc-countdown-number">{String(wcCountdown.hours).padStart(2, '0')}</span>
+              <span className="wc-countdown-label">Hours</span>
+            </div>
+            <span className="wc-countdown-separator">:</span>
+            <div className="wc-countdown-item">
+              <span className="wc-countdown-number">{String(wcCountdown.minutes).padStart(2, '0')}</span>
+              <span className="wc-countdown-label">Min</span>
+            </div>
+            <span className="wc-countdown-separator">:</span>
+            <div className="wc-countdown-item">
+              <span className="wc-countdown-number">{String(wcCountdown.seconds).padStart(2, '0')}</span>
+              <span className="wc-countdown-label">Sec</span>
+            </div>
+          </div>
+
             <div className="hero-logo-section">
               <div className="hero-logo-container">
                 <img 
@@ -368,8 +445,14 @@ const Home = () => {
             {todaysMatches.slice(0, 3).map((match, index) => (
               <div
                 key={index}
-                className={`admin-match-card ${match.valueBet ? 'admin-match-value' : ''}`}
+                className={`admin-match-card ${match.valueBet ? 'admin-match-value' : ''} ${isWorldCupMatch(match) ? 'wc-match-card' : ''} ${isWorldCupMatch(match) ? 'wc-match' : ''}`}
               >
+                {isWorldCupMatch(match) && (
+                  <div className="admin-value-badge-small" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
+                    <span className="wc-card-badge-icon">🏆</span>
+                    <span>WC</span>
+                  </div>
+                )}
                 <div className="admin-match-header">
                   <div className="admin-match-meta">
                     <div className="admin-match-meta-item">
@@ -531,8 +614,14 @@ const Home = () => {
           {Array.isArray(featuredMatches) && featuredMatches.map((match, index) => (
             <div
               key={index}
-              className={`admin-match-card ${match.valueBet ? 'admin-match-value' : ''}`}
+              className={`admin-match-card ${match.valueBet ? 'admin-match-value' : ''} ${isWorldCupMatch(match) ? 'wc-match-card' : ''}`}
             >
+              {isWorldCupMatch(match) && (
+                <div className="admin-value-badge-small" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
+                  <span className="wc-card-badge-icon">🏆</span>
+                  <span>WC</span>
+                </div>
+              )}
               <div className="admin-match-header">
                 <div className="admin-match-meta">
                   <div className="admin-match-meta-item">
