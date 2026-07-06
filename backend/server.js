@@ -15,6 +15,7 @@ const adminRoutes = require('./routes/admin');
 const outcomeRoutes = require('./routes/outcomes');
 const vipRoutes = require('./routes/vip');
 const leagueRoutes = require('./routes/leagues');
+const fixtureRoutes = require('./routes/fixtures');
 
 // Import monitoring middleware
 const {
@@ -132,6 +133,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/outcomes', outcomeRoutes);
 app.use('/api/vip', vipRoutes);
 app.use('/api/leagues', leagueRoutes);
+app.use('/api/fixtures', fixtureRoutes);
 
 // Legacy routes for backward compatibility
 app.use('/api', authRoutes);
@@ -139,6 +141,7 @@ app.use('/api', matchRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', outcomeRoutes);
 app.use('/api', vipRoutes);
+app.use('/api', fixtureRoutes);
 
 // Error monitoring middleware
 app.use(errorMonitoring);

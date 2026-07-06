@@ -29,6 +29,15 @@ const Admin = () => {
   const [selectedOutcomes, setSelectedOutcomes] = useState({});
   const [vipPayments, setVipPayments] = useState([]);
 
+  // Fixture/API state
+  const [fixtureDate, setFixtureDate] = useState(new Date().toISOString().split('T')[0]);
+  const [fixtures, setFixtures] = useState([]);
+  const [loadingFixtures, setLoadingFixtures] = useState(false);
+  const [fixturesError, setFixturesError] = useState('');
+  const [apiConfigured, setApiConfigured] = useState(false);
+  const [importingFixtures, setImportingFixtures] = useState(new Set());
+  const [importingAll, setImportingAll] = useState(false);
+
   // Modal state
   const [modal, setModal] = useState({
     isOpen: false,
@@ -170,6 +179,92 @@ const Admin = () => {
       fetchData(); // Refresh the data
     } catch (error) {
       toast.error('Failed to mark outcome');
+    }
+  };
+
+  // Fetch fixtures from API
+  const fetchFixtures = async (date) => {
+    const targetDate = date || fixtureDate;
+    setLoadingFixtures(true);
+    setFixturesError('');
+
+    try {
+      const response = await api.get(`/api/fixtures/today?date=${targetDate}`);
+      setFixtures(response.data.fixtures || []);
+      setApiConfigured(response.data.apiConfigured || false);
+      console.log(`[Admin] Loaded ${response.data.count} fixtures from API`);
+    } catch (err) {
+      console.error('[Admin] Failed to fetch fixtures:', err);
+      setFixturesError(err.response?.data?.error || 'Failed to fetch fixtures from API');
+      setFixtures([]);
+    } finally {
+      setLoadingFixtures(false);
+    }
+  };
+
+  // Import a single fixture as a match
+  const importSingleFixture = async (fixture) => {
+    setImportingFixtures(prev => new Set([...prev, fixture.id]));
+
+    try {
+      const response = await api.post('/api/fixtures/import', { fixture });
+      toast.success(response.data.message || `Imported "${fixture.homeTeam} vs ${fixture.awayTeam}"`);
+
+      // Mark as imported in local state
+      setFixtures(prev => prev.map(f =>
+        f.id === fixture.id ? { ...f, imported: true } : f
+      ));
+
+      // Refresh games list
+      fetchData();
+    } catch (err) {
+      if (err.response?.status === 409) {
+        toast.error('This fixture already exists in the database');
+        // Mark as imported even if conflict
+        setFixtures(prev => prev.map(f =>
+          f.id === fixture.id ? { ...f, imported: true } : f
+        ));
+      } else {
+        toast.error(err.response?.data?.error || 'Failed to import fixture');
+      }
+    } finally {
+      setImportingFixtures(prev => {
+        const next = new Set(prev);
+        next.delete(fixture.id);
+        return next;
+      });
+    }
+  };
+
+  // Import all non-imported fixtures
+  const importAllFixtures = async () => {
+    const toImport = fixtures.filter(f => !f.imported);
+
+    if (toImport.length === 0) {
+      toast.success('All fixtures already imported');
+      return;
+    }
+
+    setImportingAll(true);
+    const toastId = toast.loading(`Importing ${toImport.length} fixtures...`);
+
+    try {
+      const response = await api.post('/api/fixtures/import-batch', { fixtures: toImport });
+      toast.dismiss(toastId);
+
+      const message = response.data.message || 'Import completed';
+      toast.success(message);
+
+      // Mark all as imported in local state
+      setFixtures(prev => prev.map(f => ({ ...f, imported: true })));
+
+      // Refresh games list
+      fetchData();
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error(err.response?.data?.error || 'Failed to import fixtures');
+    } finally {
+      setImportingAll(false);
     }
   };
 
@@ -680,6 +775,149 @@ Arsenal FC
       {/* Games Management */}
       {activeTab === 'games' && (
         <div className="admin-games-section">
+          {/* Fetch Matches from API */}
+          <div className="admin-data-card">
+            <h3 className="admin-data-title">
+              <Calendar className="admin-icon-inline" />
+              Fetch Matches from API
+            </h3>
+            <form className="admin-form">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Select Date</label>
+                <div className="admin-form-inline">
+                  <input
+                    type="date"
+                    value={fixtureDate}
+                    onChange={(e) => setFixtureDate(e.target.value)}
+                    className="admin-form-input"
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fetchFixtures(fixtureDate)}
+                    disabled={loadingFixtures}
+                    className="admin-btn-primary"
+                    style={{ marginLeft: '10px' }}
+                  >
+                    {loadingFixtures ? 'Loading...' : 'Fetch Matches'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const today = new Date().toISOString().split('T')[0];
+                      setFixtureDate(today);
+                      fetchFixtures(today);
+                    }}
+                    disabled={loadingFixtures}
+                    className="admin-btn-secondary"
+                    style={{ marginLeft: '10px' }}
+                  >
+                    Today
+                  </button>
+                </div>
+                <p className="admin-form-help">
+                  {apiConfigured 
+                    ? 'Connected to Football-data.org API' 
+                    : 'No API key configured. Showing mock data for development.'}
+                </p>
+              </div>
+
+              {fixturesError && (
+                <div className="admin-error-message">
+                  {fixturesError}
+                </div>
+              )}
+
+              {fixtures.length > 0 && (
+                <div className="admin-fixtures-list">
+                  <div className="admin-fixtures-header">
+                    <h4>Available Matches ({fixtures.length})</h4>
+                    <div className="admin-fixtures-actions">
+                      <button
+                        type="button"
+                        onClick={importAllFixtures}
+                        disabled={importingAll}
+                        className="admin-btn-success"
+                      >
+                        {importingAll ? 'Importing...' : 'Import All'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="admin-fixtures-grid">
+                    {fixtures.map((fixture) => (
+                      <div key={fixture.id} className={`admin-fixture-card ${fixture.imported ? 'imported' : ''}`}>
+                        <div className="admin-fixture-teams">
+                          <div className="admin-fixture-team">
+                            {fixture.homeCrest && (
+                              <img src={fixture.homeCrest} alt="" className="admin-fixture-crest" />
+                            )}
+                            <span>{fixture.homeTeam}</span>
+                          </div>
+                          <div className="admin-fixture-vs">vs</div>
+                          <div className="admin-fixture-team">
+                            {fixture.awayCrest && (
+                              <img src={fixture.awayCrest} alt="" className="admin-fixture-crest" />
+                            )}
+                            <span>{fixture.awayTeam}</span>
+                          </div>
+                        </div>
+                        <div className="admin-fixture-info">
+                          <span className="admin-fixture-competition">{fixture.competition}</span>
+                          <span className="admin-fixture-time">
+                            {new Date(fixture.utcDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <div className="admin-fixture-actions">
+                          {fixture.imported ? (
+                            <span className="admin-fixture-imported-badge">✓ Imported</span>
+                          ) : (
+                            <div className="admin-fixture-action-btns">
+                              <button
+                                type="button"
+                                onClick={() => importSingleFixture(fixture)}
+                                disabled={importingFixtures.has(fixture.id)}
+                                className="admin-btn-primary small"
+                              >
+                                {importingFixtures.has(fixture.id) ? '...' : 'Import'}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  // Pre-fill the add game form with this fixture's data
+                                  const matchDate = new Date(fixture.utcDate);
+                                  setNewGame({
+                                    homeTeam: fixture.homeTeam,
+                                    awayTeam: fixture.awayTeam,
+                                    league: fixture.competition,
+                                    date: matchDate.toISOString().split('T')[0],
+                                    time: matchDate.toTimeString().slice(0, 5),
+                                    predictions: []
+                                  });
+                                  // Scroll to the add game form
+                                  document.querySelector('.admin-data-card:nth-child(3)')?.scrollIntoView({ behavior: 'smooth' });
+                                }}
+                                className="admin-btn-secondary small"
+                              >
+                                Add Predictions
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!loadingFixtures && fixtures.length === 0 && !fixturesError && (
+                <div className="admin-empty-state">
+                  <div className="admin-empty-text">No fixtures found for this date</div>
+                  <div className="admin-empty-subtitle">Try selecting a different date or check back later</div>
+                </div>
+              )}
+            </form>
+          </div>
+
           {/* Bulk Import Matches */}
           <div className="admin-data-card">
             <h3 className="admin-data-title">
