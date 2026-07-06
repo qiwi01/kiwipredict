@@ -17,33 +17,41 @@ router.get('/today', async (req, res) => {
 
     const fixtures = await fetchMatchesByDate(date);
 
-    // Check which fixtures already exist in our database (by team names + date)
-    const dateStart = new Date(date);
-    dateStart.setHours(0, 0, 0, 0);
-    const dateEnd = new Date(date);
-    dateEnd.setHours(23, 59, 59, 999);
+    // Try to check which fixtures already exist in the database
+    // If MongoDB is not available, just return fixtures without import status
+    let fixturesWithStatus = fixtures;
+    try {
+      const dateStart = new Date(date);
+      dateStart.setHours(0, 0, 0, 0);
+      const dateEnd = new Date(date);
+      dateEnd.setHours(23, 59, 59, 999);
 
-    const existingMatches = await Match.find({
-      date: { $gte: dateStart, $lte: dateEnd }
-    }).select('homeTeam awayTeam date');
+      const existingMatches = await Match.find({
+        date: { $gte: dateStart, $lte: dateEnd }
+      }).select('homeTeam awayTeam date');
 
-    // Mark fixtures that are already imported
-    const fixturesWithStatus = fixtures.map(fixture => {
-      const isImported = existingMatches.some(match => {
-        const matchDate = new Date(match.date);
-        const fixtureDate = new Date(fixture.utcDate);
-        const sameDay = matchDate.toISOString().split('T')[0] === fixtureDate.toISOString().split('T')[0];
-        return sameDay &&
-               match.homeTeam.toLowerCase() === fixture.homeTeam.toLowerCase() &&
-               match.awayTeam.toLowerCase() === fixture.awayTeam.toLowerCase();
+      // Mark fixtures that are already imported
+      fixturesWithStatus = fixtures.map(fixture => {
+        const isImported = existingMatches.some(match => {
+          const matchDate = new Date(match.date);
+          const fixtureDate = new Date(fixture.utcDate);
+          const sameDay = matchDate.toISOString().split('T')[0] === fixtureDate.toISOString().split('T')[0];
+          return sameDay &&
+                 match.homeTeam.toLowerCase() === fixture.homeTeam.toLowerCase() &&
+                 match.awayTeam.toLowerCase() === fixture.awayTeam.toLowerCase();
+        });
+
+        return {
+          ...fixture,
+          imported: isImported,
+          alreadyExists: isImported
+        };
       });
-
-      return {
-        ...fixture,
-        imported: isImported,
-        alreadyExists: isImported
-      };
-    });
+    } catch (dbError) {
+      // MongoDB not available - just return fixtures without import status
+      console.log('[Fixtures] DB not available, skipping import status check:', dbError.message);
+      fixturesWithStatus = fixtures.map(f => ({ ...f, imported: false, alreadyExists: false }));
+    }
 
     res.json({
       count: fixturesWithStatus.length,
