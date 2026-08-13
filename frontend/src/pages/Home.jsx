@@ -5,7 +5,7 @@ import { TrendingUp, Target, Zap, Star, Calendar, ArrowRight, Shuffle, Crown, Al
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import '../css/Home.css';
-import footballImage from '../assets/ball-logo.jpeg';
+import footballImage from '../assets/hero-image.png';
 
 const Home = () => {
   const [featuredMatches, setFeaturedMatches] = useState([]);
@@ -238,10 +238,9 @@ const Home = () => {
           {/* Main hero center */}
           <div className="hero-main">
             <div className="hero-logo-mark">
-              <div className="hero-ball-orbit"></div>
               <div className="hero-ball-glow"></div>
               <div className="hero-ball-shadow"></div>
-              <div className="hero-logo-ring">
+              <div className="hero-ball-frame">
                 <div className="hero-ball-shell">
                   <img 
                     src={footballImage} 
