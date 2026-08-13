@@ -238,15 +238,21 @@ const Home = () => {
           {/* Main hero center */}
           <div className="hero-main">
             <div className="hero-logo-mark">
+              <div className="hero-ball-orbit"></div>
+              <div className="hero-ball-glow"></div>
+              <div className="hero-ball-shadow"></div>
               <div className="hero-logo-ring">
-                <img 
-                  src={footballImage} 
-                  alt="Kiwi Predict" 
-                  className="hero-logo-img"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
+                <div className="hero-ball-shell">
+                  <img 
+                    src={footballImage} 
+                    alt="Kiwi Predict football" 
+                    className="hero-logo-img"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <span className="hero-ball-shine"></span>
+                </div>
               </div>
             </div>
 
