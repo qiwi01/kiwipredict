@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base URL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_API_URL || '',
   withCredentials: true,
   timeout: 30000, // 30 second timeout for cold starts
 });
@@ -67,7 +67,7 @@ api.interceptors.response.use(
     );
 
     // If server is sleeping and we haven't retried yet
-    if (isNetworkError && !originalRequest._retry) {
+    if (isNetworkError && !originalRequest?._retry && !originalRequest?._skipRetry) {
       originalRequest._retry = true;
       console.log('[API] Request failed, server might be sleeping. Retrying after wake-up...');
 

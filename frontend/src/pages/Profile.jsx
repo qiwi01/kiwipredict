@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
-import { User, Heart, Plus, Trash2 } from 'lucide-react';
+import { User, Heart, Plus, Trash2, Crown, CalendarDays, ShieldCheck, ArrowRight, LayoutDashboard } from 'lucide-react';
 import api from '../utils/api';
 import '../css/Profile.css';
 
@@ -42,8 +43,47 @@ const Profile = () => {
 
   if (!user) return null;
 
+  const vipLabel = user.vipTier === 'vvip' ? 'VVIP Member' : user.vipTier === 'vip' ? 'VIP Member' : 'Standard Member';
+
   return (
     <div className="profile-container">
+      <section className="profile-dashboard-hero">
+        <div className="profile-dashboard-copy">
+          <span className="profile-dashboard-badge">
+            <LayoutDashboard size={16} />
+            Member Dashboard
+          </span>
+          <h1 className="profile-dashboard-title">Welcome back, {user.username}</h1>
+          <p className="profile-dashboard-subtitle">
+            Manage your account, track your membership status, and keep your favorite teams ready for quicker prediction discovery.
+          </p>
+          <div className="profile-dashboard-actions">
+            <Link to="/predictions/today/win" className="profile-dashboard-primary-btn">
+              View Today&apos;s Predictions
+              <ArrowRight className="profile-btn-icon" />
+            </Link>
+            <Link to={(user.vipTier === 'vip' || user.vipTier === 'vvip') ? '/predictions/vip' : '/vip'} className="profile-dashboard-secondary-btn">
+              {user.vipTier === 'none' ? 'Upgrade Membership' : 'Open VIP Area'}
+            </Link>
+          </div>
+        </div>
+
+        <div className="profile-dashboard-summary-card">
+          <div className="profile-summary-row">
+            <span className="profile-summary-label"><Crown size={16} /> Membership</span>
+            <strong className="profile-summary-value">{vipLabel}</strong>
+          </div>
+          <div className="profile-summary-row">
+            <span className="profile-summary-label"><CalendarDays size={16} /> Joined</span>
+            <strong className="profile-summary-value">{new Date(user.createdAt).toLocaleDateString()}</strong>
+          </div>
+          <div className="profile-summary-row">
+            <span className="profile-summary-label"><ShieldCheck size={16} /> Access</span>
+            <strong className="profile-summary-value">{user.role === 'admin' ? 'Administrator' : 'Member'}</strong>
+          </div>
+        </div>
+      </section>
+
       <div className="profile-header">
         <div className="profile-avatar">
           <User className="profile-avatar-icon" />
@@ -56,6 +96,32 @@ const Profile = () => {
       </div>
 
       <div className="profile-content">
+        <div className="profile-section profile-overview-panel">
+          <div className="profile-section-header">
+            <ShieldCheck className="profile-section-icon" />
+            <h2 className="profile-section-title">Account Overview</h2>
+          </div>
+
+          <div className="profile-overview-grid">
+            <div className="profile-overview-item">
+              <span className="profile-overview-kicker">Status</span>
+              <strong className="profile-overview-value">{user.isActive ? 'Active' : 'Inactive'}</strong>
+            </div>
+            <div className="profile-overview-item">
+              <span className="profile-overview-kicker">Role</span>
+              <strong className="profile-overview-value profile-overview-capitalize">{user.role}</strong>
+            </div>
+            <div className="profile-overview-item">
+              <span className="profile-overview-kicker">Favorites</span>
+              <strong className="profile-overview-value">{favorites.length}</strong>
+            </div>
+            <div className="profile-overview-item">
+              <span className="profile-overview-kicker">Plan</span>
+              <strong className="profile-overview-value">{user.vipTier?.toUpperCase?.() || 'NONE'}</strong>
+            </div>
+          </div>
+        </div>
+
         {/* Favorite Teams */}
         <div className="profile-section">
           <div className="profile-section-header">

@@ -5,7 +5,9 @@ import './index.css'
 import { preWarmServer } from './utils/api'
 
 // Pre-warm the backend server on app load (helps with Render cold starts)
-preWarmServer();
+if (import.meta.env.PROD) {
+  preWarmServer();
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

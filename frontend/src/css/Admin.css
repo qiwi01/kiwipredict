@@ -24,7 +24,7 @@
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-4);
-  background: linear-gradient(135deg, var(--danger-500), var(--warning-500), var(--accent-500));
+  background: var(--kiwi-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -50,7 +50,7 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
-  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  background: linear-gradient(135deg, var(--accent-600), var(--danger-500));
   color: white;
   border: none;
   border-radius: var(--radius-lg);
@@ -61,7 +61,7 @@
 }
 
 .admin-logout-btn:hover {
-  background: linear-gradient(135deg, var(--danger-600), var(--danger-700));
+  background: linear-gradient(135deg, var(--accent-700), var(--danger-600));
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -122,7 +122,7 @@
 }
 
 .admin-tab-btn.active {
-  background: linear-gradient(135deg, var(--warning-500), var(--danger-500));
+  background: var(--kiwi-gradient);
   color: white;
   box-shadow: var(--shadow-sm);
 }
@@ -736,6 +736,42 @@
   background: linear-gradient(135deg, var(--warning-600), var(--danger-600));
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+.admin-settings-announcement-item {
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--gray-200);
+  background: var(--gray-100);
+}
+
+.dark .admin-settings-announcement-item {
+  background: var(--gray-800);
+  border-color: var(--gray-700);
+}
+
+.admin-settings-textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.admin-settings-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: var(--space-3);
+}
+
+.admin-settings-checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--gray-700);
+}
+
+.dark .admin-settings-checkbox-row {
+  color: var(--gray-300);
 }
 
 /* ===== ACCESS DENIED ===== */

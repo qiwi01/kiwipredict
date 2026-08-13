@@ -43,6 +43,7 @@ function AppContent() {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const previewMode = import.meta.env.DEV && new URLSearchParams(window.location.search).get('preview') === '1';
 
   // Check if current path is admin-related
   const isAdminPath = location.pathname.startsWith('/admin');
@@ -54,9 +55,32 @@ function AppContent() {
       return;
     }
 
+    if (previewMode) {
+      setUser({
+        id: 'preview-user',
+        username: 'Preview User',
+        email: 'preview@localhost.test',
+        favoriteTeams: ['Arsenal', 'Barcelona'],
+        role: 'admin',
+        vipTier: 'vvip',
+        createdAt: new Date().toISOString(),
+        isActive: true
+      });
+      setLoading(false);
+      return;
+    }
+
     // Check if user is logged in by making a request to profile endpoint
     // The backend will use httpOnly cookies to authenticate
-    api.get('/api/auth/profile')
+    const authTimeout = setTimeout(() => {
+      setUser(null);
+      setLoading(false);
+    }, 5000);
+
+    api.get('/api/auth/profile', {
+      timeout: 5000,
+      _skipRetry: true
+    })
       .then(res => {
         setUser(res.data);
       })
@@ -64,8 +88,13 @@ function AppContent() {
         // User is not authenticated
         setUser(null);
       })
-      .finally(() => setLoading(false));
-  }, []);
+      .finally(() => {
+        clearTimeout(authTimeout);
+        setLoading(false);
+      });
+
+    return () => clearTimeout(authTimeout);
+  }, [previewMode]);
 
   const login = (userData) => {
     setUser(userData);

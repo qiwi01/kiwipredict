@@ -28,6 +28,16 @@ const Admin = () => {
   });
   const [selectedOutcomes, setSelectedOutcomes] = useState({});
   const [vipPayments, setVipPayments] = useState([]);
+  const [siteSettings, setSiteSettings] = useState({
+    announcements: {
+      enabled: true,
+      title: 'Latest Update',
+      rotationSpeed: 3500,
+      items: [
+        { text: 'New Premier League season is here.', isActive: true }
+      ]
+    }
+  });
 
   // Fixture/API state
   const [fixtureDate, setFixtureDate] = useState(new Date().toISOString().split('T')[0]);
@@ -103,6 +113,9 @@ const Admin = () => {
       } else if (activeTab === 'vip') {
         const vipPaymentsRes = await api.get('/api/vip/pending-payments');
         setVipPayments(vipPaymentsRes.data);
+      } else if (activeTab === 'settings') {
+        const settingsRes = await api.get('/api/site-settings');
+        setSiteSettings(settingsRes.data);
       }
     } catch (err) {
       console.log(err);
@@ -303,6 +316,48 @@ const Admin = () => {
     { id: 'vip', label: 'VIP Management', icon: Star },
     { id: 'settings', label: 'Settings', icon: Settings }
   ];
+
+  const updateAnnouncementItem = (index, field, value) => {
+    setSiteSettings(prev => ({
+      ...prev,
+      announcements: {
+        ...prev.announcements,
+        items: prev.announcements.items.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, [field]: value } : item
+        )
+      }
+    }));
+  };
+
+  const addAnnouncementItem = () => {
+    setSiteSettings(prev => ({
+      ...prev,
+      announcements: {
+        ...prev.announcements,
+        items: [...(prev.announcements.items || []), { text: '', isActive: true }]
+      }
+    }));
+  };
+
+  const removeAnnouncementItem = (index) => {
+    setSiteSettings(prev => ({
+      ...prev,
+      announcements: {
+        ...prev.announcements,
+        items: prev.announcements.items.filter((_, itemIndex) => itemIndex !== index)
+      }
+    }));
+  };
+
+  const saveAnnouncementSettings = async () => {
+    try {
+      const response = await api.put('/api/site-settings/announcements', siteSettings.announcements);
+      setSiteSettings(response.data);
+      toast.success('Announcement banner settings updated');
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to update banner settings');
+    }
+  };
 
   return (
     <div className="admin-container">
@@ -2125,6 +2180,87 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
       {activeTab === 'settings' && (
         <div className="admin-settings-card">
           <h3 className="admin-settings-title">System Settings</h3>
+
+          <div className="admin-settings-section">
+            <h4 className="admin-settings-section-title">Homepage Announcement Banner</h4>
+            <div className="admin-settings-fields">
+              <div className="admin-settings-field">
+                <label className="admin-settings-label">Banner Title</label>
+                <input
+                  type="text"
+                  className="admin-settings-input"
+                  value={siteSettings.announcements?.title || ''}
+                  onChange={(e) => setSiteSettings(prev => ({
+                    ...prev,
+                    announcements: { ...prev.announcements, title: e.target.value }
+                  }))}
+                  placeholder="Latest Update"
+                />
+              </div>
+              <div className="admin-settings-field">
+                <label className="admin-settings-label">Rotation Speed (ms)</label>
+                <input
+                  type="number"
+                  className="admin-settings-input"
+                  value={siteSettings.announcements?.rotationSpeed || 3500}
+                  onChange={(e) => setSiteSettings(prev => ({
+                    ...prev,
+                    announcements: { ...prev.announcements, rotationSpeed: Number(e.target.value) || 3500 }
+                  }))}
+                />
+              </div>
+              <div className="admin-settings-field">
+                <label className="admin-settings-label">Banner Enabled</label>
+                <select
+                  className="admin-settings-input"
+                  value={siteSettings.announcements?.enabled ? 'enabled' : 'disabled'}
+                  onChange={(e) => setSiteSettings(prev => ({
+                    ...prev,
+                    announcements: { ...prev.announcements, enabled: e.target.value === 'enabled' }
+                  }))}
+                >
+                  <option value="enabled">Enabled</option>
+                  <option value="disabled">Disabled</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="admin-settings-fields">
+              {(siteSettings.announcements?.items || []).map((item, index) => (
+                <div key={index} className="admin-settings-field admin-settings-announcement-item">
+                  <label className="admin-settings-label">Message {index + 1}</label>
+                  <textarea
+                    className="admin-settings-input admin-settings-textarea"
+                    value={item.text}
+                    onChange={(e) => updateAnnouncementItem(index, 'text', e.target.value)}
+                    placeholder="e.g. New Premier League season is here"
+                  />
+                  <div className="admin-settings-inline-actions">
+                    <label className="admin-settings-checkbox-row">
+                      <input
+                        type="checkbox"
+                        checked={item.isActive !== false}
+                        onChange={(e) => updateAnnouncementItem(index, 'isActive', e.target.checked)}
+                      />
+                      <span>Active</span>
+                    </label>
+                    <button type="button" className="admin-action-btn danger" onClick={() => removeAnnouncementItem(index)}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="admin-settings-inline-actions">
+              <button type="button" className="admin-action-btn success" onClick={addAnnouncementItem}>
+                Add Message
+              </button>
+              <button type="button" className="admin-settings-save-btn" onClick={saveAnnouncementSettings}>
+                Save Banner Settings
+              </button>
+            </div>
+          </div>
 
           <div className="admin-settings-section">
             <h4 className="admin-settings-section-title">API Configuration</h4>

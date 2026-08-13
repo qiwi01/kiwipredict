@@ -82,6 +82,11 @@ const Login = () => {
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
+          {import.meta.env.DEV && (
+            <div className="login-demo-note" style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '12px', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', color: 'var(--gray-700)' }}>
+              Local preview mode: <a href="/?preview=1" style={{ fontWeight: 700 }}>open the app without login</a>
+            </div>
+          )}
           <div className="login-form-group">
             <label htmlFor="email" className="login-form-label">
               Email address

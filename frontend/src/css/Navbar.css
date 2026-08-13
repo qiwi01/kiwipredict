@@ -5,17 +5,17 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.82));
   backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   transition: var(--transition-all);
 }
 
 .dark .navbar {
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.85));
-  border-bottom-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.82));
+  border-bottom-color: var(--border-subtle);
+  box-shadow: 0 12px 36px rgba(2, 6, 23, 0.46);
 }
 
 .navbar-content {
@@ -68,7 +68,7 @@
 .navbar-logo-text {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(135deg, var(--primary-600), var(--secondary-600), var(--accent-600));
+  background: var(--kiwi-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -265,21 +265,21 @@
 
 /* ===== JOIN FREE BUTTON ===== */
 .navbar-join-btn {
-  background: white !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   color: var(--primary-600) !important;
   border: 2px solid var(--primary-500) !important;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 0 8px 20px rgba(37, 84, 219, 0.16) !important;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease !important;
 }
 
 .navbar-join-btn:hover {
-  background: var(--primary-50) !important;
+  background: linear-gradient(135deg, var(--primary-50), rgba(255,255,255,0.98)) !important;
   color: var(--primary-700) !important;
   border-color: var(--primary-600) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 0 12px 26px rgba(37, 84, 219, 0.22) !important;
 }
 
 .navbar-join-btn::before {

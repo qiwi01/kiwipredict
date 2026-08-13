@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../App';
-import { TrendingUp, Target, Zap, Star, Calendar, ArrowRight, Shuffle, Crown, AlertCircle } from 'lucide-react';
+import { TrendingUp, Target, Zap, Star, Calendar, ArrowRight, Shuffle, Crown, AlertCircle, ChevronDown, ShieldCheck, Sparkles, LayoutDashboard, MessageSquareMore } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import '../css/Home.css';
@@ -11,6 +11,8 @@ const Home = () => {
   const [featuredMatches, setFeaturedMatches] = useState([]);
   const [todaysMatches, setTodaysMatches] = useState([]);
   const [outcomes, setOutcomes] = useState([]);
+  const [siteSettings, setSiteSettings] = useState(null);
+  const [activeAnnouncementIndex, setActiveAnnouncementIndex] = useState(0);
 
   // World Cup 2026 countdown
   const wcDate = new Date('2026-06-11T00:00:00');
@@ -87,7 +89,25 @@ const Home = () => {
         }
       });
 
+    api.get('/api/site-settings')
+      .then(res => setSiteSettings(res.data))
+      .catch(() => setSiteSettings(null));
+
   }, []);
+
+  const activeAnnouncements = useMemo(() => (
+    siteSettings?.announcements?.items?.filter(item => item.isActive) || []
+  ), [siteSettings]);
+
+  useEffect(() => {
+    if (!siteSettings?.announcements?.enabled || activeAnnouncements.length <= 1) return undefined;
+
+    const interval = setInterval(() => {
+      setActiveAnnouncementIndex(prev => (prev + 1) % activeAnnouncements.length);
+    }, siteSettings.announcements.rotationSpeed || 3500);
+
+    return () => clearInterval(interval);
+  }, [siteSettings, activeAnnouncements]);
 
   // Mini converter functions
   const handleConverterInputChange = (field, value) => {
@@ -136,169 +156,201 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      {/* Hero Section */}
+      {siteSettings?.announcements?.enabled && activeAnnouncements.length > 0 && (
+        <section className="home-announcement-bar" aria-label="Site announcements">
+          <div className="home-announcement-shell">
+            <div className="home-announcement-label-wrap">
+              <span className="home-announcement-pulse"></span>
+              <span className="home-announcement-label">
+                <MessageSquareMore size={16} />
+                {siteSettings.announcements.title || 'Latest Update'}
+              </span>
+            </div>
+
+            <div className="home-announcement-track">
+              <div key={activeAnnouncementIndex} className="home-announcement-message">
+                {activeAnnouncements[activeAnnouncementIndex]?.text}
+              </div>
+            </div>
+
+            {activeAnnouncements.length > 1 && (
+              <div className="home-announcement-dots">
+                {activeAnnouncements.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={`home-announcement-dot ${index === activeAnnouncementIndex ? 'active' : ''}`}
+                    onClick={() => setActiveAnnouncementIndex(index)}
+                    aria-label={`Show announcement ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Hero Section - Redesigned */}
       <section className="home-hero">
-        <div className="home-hero-background">
-          <div className="hero-gradient-overlay"></div>
-          <div className="wc-sparkle-container">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="wc-sparkle"></div>
-            ))}
-          </div>
-          <div className="wc-confetti-container">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="wc-confetti"></div>
-            ))}
-          </div>
-          <div className="hero-particles">
-            {[...Array(20)].map((_, i) => (
-              <div key={i} className="hero-particle"></div>
-            ))}
-          </div>
+        <div className="hero-bg-layer">
+          <div className="hero-bg-gradient"></div>
+          <div className="hero-bg-pattern"></div>
+          <div className="hero-bg-accent"></div>
+          <div className="hero-bg-accent-two"></div>
         </div>
 
-        <div className="home-hero-content">
-          {/* World Cup 2026 Badge */}
-          <div className="wc-badge">
-            <svg className="wc-badge-star" width="20" height="20" viewBox="0 0 24 24" fill="#d4af37" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-            </svg>
-            <span className="wc-badge-text">World Cup 2026 Season</span>
-            <svg className="wc-badge-star" width="20" height="20" viewBox="0 0 24 24" fill="#d4af37" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-            </svg>
+        <div className="hero-content">
+          {/* Top bar with countdown */}
+          <div className="hero-top-bar">
+            <div className="hero-wc-countdown">
+              <div className="wc-chip">
+                <span className="wc-chip-icon">🏆</span>
+                <span className="wc-chip-text">World Cup 2026</span>
+              </div>
+              <div className="countdown-display">
+                <div className="countdown-block">
+                  <span className="countdown-number">{String(wcCountdown.days).padStart(2, '0')}</span>
+                  <span className="countdown-label">Days</span>
+                </div>
+                <span className="countdown-dot">:</span>
+                <div className="countdown-block">
+                  <span className="countdown-number">{String(wcCountdown.hours).padStart(2, '0')}</span>
+                  <span className="countdown-label">Hrs</span>
+                </div>
+                <span className="countdown-dot">:</span>
+                <div className="countdown-block">
+                  <span className="countdown-number">{String(wcCountdown.minutes).padStart(2, '0')}</span>
+                  <span className="countdown-label">Min</span>
+                </div>
+                <span className="countdown-dot">:</span>
+                <div className="countdown-block">
+                  <span className="countdown-number">{String(wcCountdown.seconds).padStart(2, '0')}</span>
+                  <span className="countdown-label">Sec</span>
+                </div>
+              </div>
+            </div>
+            <div className="hero-trust-badge">
+              <ShieldCheck size={16} />
+              <span>Trusted by 50K+ users</span>
+            </div>
           </div>
 
-          {/* World Cup Countdown */}
-          <div className="wc-countdown">
-            <div className="wc-countdown-item">
-              <span className="wc-countdown-number">{String(wcCountdown.days).padStart(2, '0')}</span>
-              <span className="wc-countdown-label">Days</span>
-            </div>
-            <span className="wc-countdown-separator">:</span>
-            <div className="wc-countdown-item">
-              <span className="wc-countdown-number">{String(wcCountdown.hours).padStart(2, '0')}</span>
-              <span className="wc-countdown-label">Hours</span>
-            </div>
-            <span className="wc-countdown-separator">:</span>
-            <div className="wc-countdown-item">
-              <span className="wc-countdown-number">{String(wcCountdown.minutes).padStart(2, '0')}</span>
-              <span className="wc-countdown-label">Min</span>
-            </div>
-            <span className="wc-countdown-separator">:</span>
-            <div className="wc-countdown-item">
-              <span className="wc-countdown-number">{String(wcCountdown.seconds).padStart(2, '0')}</span>
-              <span className="wc-countdown-label">Sec</span>
-            </div>
-          </div>
-
-            <div className="hero-logo-section">
-              <div className="hero-logo-container">
+          {/* Main hero center */}
+          <div className="hero-main">
+            <div className="hero-logo-mark">
+              <div className="hero-logo-ring">
                 <img 
                   src={footballImage} 
-                  alt="Football" 
-                  className="hero-football"
+                  alt="Kiwi Predict" 
+                  className="hero-logo-img"
                   onError={(e) => {
                     e.target.style.display = 'none';
-                    // Fallback to inline SVG if image fails to load
-                    const fallback = document.createElement('div');
-                    fallback.className = 'hero-football';
-                    fallback.innerHTML = `
-                      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="50" r="45" fill="url(#football-gradient)" stroke="#fff" stroke-width="2"/>
-                        <path d="M50 5L50 95M5 50L95 50" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                    `;
-                    e.target.parentNode.appendChild(fallback);
                   }}
                 />
               </div>
-              <div className="hero-title-section">
-                <h1 className="hero-title">
-                  <span className="title-highlight">Kiwi</span> Predict
-                </h1>
-                <div className="hero-subtitle">
-                  <span className="subtitle-text">Professional Football Prediction Platform</span>
+            </div>
+
+            <div className="hero-text-block">
+              <h1 className="hero-headline">
+                <span className="hero-headline-accent">Smart</span> Predictions,
+                <br />
+                <span className="hero-headline-accent">Bigger</span> Wins
+              </h1>
+              <p className="hero-subheadline">
+                AI-powered football predictions using Poisson distribution and real-time bookmaker odds.
+                Make data-driven betting decisions with 95% accuracy.
+              </p>
+
+              <div className="hero-highlight-grid">
+                <div className="hero-highlight-card">
+                  <Sparkles className="hero-highlight-icon" />
+                  <div>
+                    <strong>Cleaner visitor journey</strong>
+                    <span>Guide users from discovery to predictions and VIP offers.</span>
+                  </div>
+                </div>
+                <div className="hero-highlight-card">
+                  <LayoutDashboard className="hero-highlight-icon" />
+                  <div>
+                    <strong>Better member experience</strong>
+                    <span>More structure for members across devices and screen sizes.</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-          <div className="hero-description">
-            <p className="description-text">
-              Powered by advanced AI algorithms using Poisson distribution, statistical modeling,
-              and real-time bookmaker odds to deliver the most accurate predictions in football betting.
-            </p>
-          </div>
-
-          <div className="hero-cta-section">
-            <div className="hero-cta-buttons">
-              <Link to="/predictions" className="hero-cta-primary">
-                <span className="cta-icon-wrapper">
-                  <TrendingUp className="cta-icon" />
-                </span>
-                <span className="cta-text">View All Matches & Predictions</span>
+            <div className="hero-actions">
+              <Link to="/predictions" className="hero-btn-primary">
+                <TrendingUp size={20} />
+                <span>View Predictions</span>
               </Link>
               {!user && (
-                <Link to="/register" className="hero-cta-secondary">
-                  Join Free
+                <Link to="/register" className="hero-btn-secondary">
+                  Get Started Free
+                </Link>
+              )}
+              {user && (
+                <Link to="/vip" className="hero-btn-secondary">
+                  <Crown size={18} />
+                  <span>Go VIP</span>
                 </Link>
               )}
             </div>
+          </div>
 
-            <div className="hero-stats-grid">
-              <div className="stat-card">
-                <div className="stat-value">95%</div>
-                <div className="stat-label">Prediction Accuracy</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value">24/7</div>
-                <div className="stat-label">Live Updates</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value">50K+</div>
-                <div className="stat-label">Active Users</div>
-              </div>
+          {/* Stats bar */}
+          <div className="hero-stats-bar">
+            <div className="hero-stat-item">
+              <span className="hero-stat-value">95%</span>
+              <span className="hero-stat-label">Accuracy Rate</span>
+            </div>
+            <div className="hero-stat-divider"></div>
+            <div className="hero-stat-item">
+              <span className="hero-stat-value">24/7</span>
+              <span className="hero-stat-label">Live Updates</span>
+            </div>
+            <div className="hero-stat-divider"></div>
+            <div className="hero-stat-item">
+              <span className="hero-stat-value">50K+</span>
+              <span className="hero-stat-label">Active Users</span>
+            </div>
+            <div className="hero-stat-divider"></div>
+            <div className="hero-stat-item">
+              <span className="hero-stat-value">AI</span>
+              <span className="hero-stat-label">Powered</span>
             </div>
           </div>
 
-          <div className="hero-features">
-            <div className="feature-item">
-              <div className="feature-icon">
-                <Target className="feature-svg" />
-              </div>
-              <div className="feature-content">
-                <span className="feature-label">AI-Powered</span>
-                <span className="feature-desc">Advanced algorithms</span>
-              </div>
-            </div>
-            <div className="feature-item">
-              <div className="feature-icon">
-                <Zap className="feature-svg" />
-              </div>
-              <div className="feature-content">
-                <span className="feature-label">Real-Time</span>
-                <span className="feature-desc">Live updates</span>
-              </div>
-            </div>
-            <div className="feature-item">
-              <div className="feature-icon">
-                <Star className="feature-svg" />
-              </div>
-              <div className="feature-content">
-                <span className="feature-label">Premium</span>
-                <span className="feature-desc">VIP features</span>
-              </div>
-            </div>
+          {/* Scroll indicator */}
+          <div className="hero-scroll-hint">
+            <span className="scroll-hint-text">Explore matches</span>
+            <ChevronDown size={16} className="scroll-hint-icon" />
           </div>
         </div>
+      </section>
 
-        <div className="hero-scroll-indicator">
-          <div className="scroll-arrow">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+      <section className="home-overview-strip">
+        <div className="home-overview-card">
+          <span className="home-overview-eyebrow">Platform overview</span>
+          <h2 className="home-overview-heading">Designed to feel like a stronger standard sports homepage</h2>
+          <p className="home-overview-copy">
+            The homepage now gives you room for campaigns, announcements, key metrics, featured predictions,
+            and easier movement into daily picks, VIP products, and user actions.
+          </p>
+        </div>
+        <div className="home-overview-metrics">
+          <div className="home-metric-card">
+            <span className="home-metric-value">{todaysMatches.length}</span>
+            <span className="home-metric-label">Today&apos;s matches</span>
           </div>
-          <span className="scroll-text">Scroll to explore</span>
+          <div className="home-metric-card">
+            <span className="home-metric-value">{featuredMatches.length}</span>
+            <span className="home-metric-label">Featured games</span>
+          </div>
+          <div className="home-metric-card">
+            <span className="home-metric-value">{outcomes?.all?.length || 0}</span>
+            <span className="home-metric-label">Recent outcomes</span>
+          </div>
         </div>
       </section>
 
