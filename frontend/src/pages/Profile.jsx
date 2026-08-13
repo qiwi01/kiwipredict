@@ -182,6 +182,20 @@ const Profile = () => {
             <div className="profile-stat-value">{favorites.length}</div>
             <div className="profile-stat-label">Favorite Teams</div>
           </div>
+          <div className="profile-stat-item">
+            <div className="profile-stat-value">{user.vipTier === 'vvip' ? 'VVIP' : user.vipTier === 'vip' ? 'VIP' : 'Free'}</div>
+            <div className="profile-stat-label">Plan</div>
+          </div>
+          <div className="profile-stat-item">
+            <div className="profile-stat-value">
+              {Math.max(1, Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365)))}
+            </div>
+            <div className="profile-stat-label">Years Active</div>
+          </div>
+          <div className="profile-stat-item">
+            <div className="profile-stat-value">{user.isActive ? 'Active' : 'Inactive'}</div>
+            <div className="profile-stat-label">Status</div>
+          </div>
         </div>
       </div>
     </div>
