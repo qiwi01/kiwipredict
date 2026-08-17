@@ -7,6 +7,12 @@ const api = axios.create({
   timeout: 30000, // 30 second timeout for cold starts
 });
 
+const rawApi = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '',
+  withCredentials: true,
+  timeout: 30000,
+});
+
 // Track if we're currently waking up the server
 let isWakingUp = false;
 let wakeUpPromise = null;
@@ -20,20 +26,19 @@ const wakeUpServer = async () => {
   isWakingUp = true;
   console.log('[API] Server might be sleeping, attempting to wake up...');
 
-  wakeUpPromise = new Promise(async (resolve) => {
-    try {
-      // Try to hit the wakeup endpoint
-      await api.get('/wakeup', { timeout: 60000 });
+  wakeUpPromise = rawApi.get('/wakeup', { timeout: 60000, _skipRetry: true })
+    .then(() => {
       console.log('[API] Server is now awake');
-      resolve(true);
-    } catch (error) {
+      return true;
+    })
+    .catch((error) => {
       console.log('[API] Wake up attempt failed:', error.message);
-      resolve(false);
-    } finally {
+      return false;
+    })
+    .finally(() => {
       isWakingUp = false;
       wakeUpPromise = null;
-    }
-  });
+    });
 
   return wakeUpPromise;
 };
@@ -66,8 +71,11 @@ api.interceptors.response.use(
       error.message?.includes('timeout')
     );
 
-    // If server is sleeping and we haven't retried yet
-    if (isNetworkError && !originalRequest?._retry && !originalRequest?._skipRetry) {
+    const isWakeupRequest = originalRequest?.url?.includes('/wakeup');
+
+    // If server is sleeping and we haven't retried yet. Never retry the wakeup
+    // request through this interceptor, otherwise /wakeup recursively retries itself.
+    if (isNetworkError && !isWakeupRequest && !originalRequest?._retry && !originalRequest?._skipRetry) {
       originalRequest._retry = true;
       console.log('[API] Request failed, server might be sleeping. Retrying after wake-up...');
 
@@ -152,7 +160,7 @@ export const apiWithRetry = async (method, url, data = null, options = {}) => {
 export const preWarmServer = async () => {
   try {
     console.log('[API] Pre-warming server...');
-    await api.get('/wakeup', { timeout: 60000 });
+    await rawApi.get('/wakeup', { timeout: 60000, _skipRetry: true });
     console.log('[API] Server is ready');
     return true;
   } catch (error) {

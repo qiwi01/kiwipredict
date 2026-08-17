@@ -231,7 +231,7 @@ const Home = () => {
             </div>
             <div className="hero-trust-badge">
               <ShieldCheck size={16} />
-              <span>Trusted by 50K+ users</span>
+              <span>Daily football prediction platform</span>
             </div>
           </div>
 
@@ -257,28 +257,28 @@ const Home = () => {
 
             <div className="hero-text-block">
               <h1 className="hero-headline">
-                <span className="hero-headline-accent">Smart</span> Predictions,
+                <span className="hero-headline-accent">Smarter</span> Football Insights,
                 <br />
-                <span className="hero-headline-accent">Bigger</span> Wins
+                Built for Better Decisions
               </h1>
               <p className="hero-subheadline">
-                AI-powered football predictions using Poisson distribution and real-time bookmaker odds.
-                Make data-driven betting decisions with 95% accuracy.
+                Follow daily football predictions, value picks, VIP markets, and result tracking from one clean,
+                data-led platform built for serious fans.
               </p>
 
               <div className="hero-highlight-grid">
                 <div className="hero-highlight-card">
                   <Sparkles className="hero-highlight-icon" />
                   <div>
-                    <strong>Cleaner visitor journey</strong>
-                    <span>Guide users from discovery to predictions and VIP offers.</span>
+                    <strong>Daily prediction hub</strong>
+                    <span>Move quickly between today&apos;s picks, top markets, and VIP selections.</span>
                   </div>
                 </div>
                 <div className="hero-highlight-card">
                   <LayoutDashboard className="hero-highlight-icon" />
                   <div>
-                    <strong>Better member experience</strong>
-                    <span>More structure for members across devices and screen sizes.</span>
+                    <strong>Member-first dashboard</strong>
+                    <span>Keep announcements, actions, and account status easy to find.</span>
                   </div>
                 </div>
               </div>
@@ -306,8 +306,8 @@ const Home = () => {
           {/* Stats bar */}
           <div className="hero-stats-bar">
             <div className="hero-stat-item">
-              <span className="hero-stat-value">95%</span>
-              <span className="hero-stat-label">Accuracy Rate</span>
+              <span className="hero-stat-value">Daily</span>
+              <span className="hero-stat-label">Predictions</span>
             </div>
             <div className="hero-stat-divider"></div>
             <div className="hero-stat-item">
@@ -316,13 +316,13 @@ const Home = () => {
             </div>
             <div className="hero-stat-divider"></div>
             <div className="hero-stat-item">
-              <span className="hero-stat-value">50K+</span>
-              <span className="hero-stat-label">Active Users</span>
+              <span className="hero-stat-value">VIP</span>
+              <span className="hero-stat-label">Markets</span>
             </div>
             <div className="hero-stat-divider"></div>
             <div className="hero-stat-item">
-              <span className="hero-stat-value">AI</span>
-              <span className="hero-stat-label">Powered</span>
+              <span className="hero-stat-value">Data</span>
+              <span className="hero-stat-label">Led</span>
             </div>
           </div>
 
@@ -337,10 +337,10 @@ const Home = () => {
       <section className="home-overview-strip">
         <div className="home-overview-card">
           <span className="home-overview-eyebrow">Platform overview</span>
-          <h2 className="home-overview-heading">Designed to feel like a stronger standard sports homepage</h2>
+          <h2 className="home-overview-heading">A cleaner sports homepage for daily football decisions</h2>
           <p className="home-overview-copy">
-            The homepage now gives you room for campaigns, announcements, key metrics, featured predictions,
-            and easier movement into daily picks, VIP products, and user actions.
+            Start with platform updates, move into the most important match cards, then continue to predictions,
+            outcomes, VIP tools, and your personal dashboard without unnecessary clutter.
           </p>
         </div>
         <div className="home-overview-metrics">
