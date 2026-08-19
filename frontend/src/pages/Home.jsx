@@ -235,36 +235,20 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Main hero center */}
+          {/* Main hero content */}
           <div className="hero-main">
-            <div className="hero-logo-mark">
-              <div className="hero-ball-glow"></div>
-              <div className="hero-ball-shadow"></div>
-              <div className="hero-ball-frame">
-                <div className="hero-ball-shell">
-                  <img 
-                    src={footballImage} 
-                    alt="Kiwi Predict football" 
-                    className="hero-logo-img"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                  <span className="hero-ball-shine"></span>
-                </div>
+            <div className="hero-copy-panel">
+              <div className="hero-text-block">
+                <h1 className="hero-headline">
+                  <span className="hero-headline-accent">Smarter</span> Football Insights,
+                  <br />
+                  Built for Better Decisions
+                </h1>
+                <p className="hero-subheadline">
+                  Follow daily football predictions, value picks, VIP markets, and result tracking from one clean,
+                  data-led platform built for serious fans.
+                </p>
               </div>
-            </div>
-
-            <div className="hero-text-block">
-              <h1 className="hero-headline">
-                <span className="hero-headline-accent">Smarter</span> Football Insights,
-                <br />
-                Built for Better Decisions
-              </h1>
-              <p className="hero-subheadline">
-                Follow daily football predictions, value picks, VIP markets, and result tracking from one clean,
-                data-led platform built for serious fans.
-              </p>
 
               <div className="hero-highlight-grid">
                 <div className="hero-highlight-card">
@@ -282,25 +266,75 @@ const Home = () => {
                   </div>
                 </div>
               </div>
+
+              <div className="hero-actions">
+                <Link to="/predictions" className="hero-btn-primary">
+                  <TrendingUp size={20} />
+                  <span>View Predictions</span>
+                </Link>
+                {!user && (
+                  <Link to="/register" className="hero-btn-secondary">
+                    Get Started Free
+                  </Link>
+                )}
+                {user && (
+                  <Link to="/vip" className="hero-btn-secondary">
+                    <Crown size={18} />
+                    <span>Go VIP</span>
+                  </Link>
+                )}
+              </div>
             </div>
 
-            <div className="hero-actions">
-              <Link to="/predictions" className="hero-btn-primary">
-                <TrendingUp size={20} />
-                <span>View Predictions</span>
-              </Link>
-              {!user && (
-                <Link to="/register" className="hero-btn-secondary">
-                  Get Started Free
-                </Link>
-              )}
-              {user && (
-                <Link to="/vip" className="hero-btn-secondary">
-                  <Crown size={18} />
-                  <span>Go VIP</span>
-                </Link>
-              )}
-            </div>
+            <aside className="hero-preview-card" aria-label="Platform preview">
+              <div className="hero-preview-top">
+                <div className="hero-preview-brand">
+                  <img
+                    src={footballImage}
+                    alt="Kiwi Predict"
+                    className="hero-preview-logo"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <div>
+                    <span className="hero-preview-kicker">Today&apos;s workspace</span>
+                    <strong>Prediction Dashboard</strong>
+                  </div>
+                </div>
+                <span className="hero-live-pill">Live</span>
+              </div>
+
+              <div className="hero-preview-match">
+                <span className="hero-preview-league">Featured match</span>
+                <strong>{featuredMatches[0] ? `${featuredMatches[0].homeTeam?.name} vs ${featuredMatches[0].awayTeam?.name}` : 'Daily match insights'}</strong>
+                <div className="hero-preview-pick-row">
+                  <span>Top signal</span>
+                  <strong>{featuredMatches[0]?.predictions?.[0]?.prediction || 'Available from live API data'}</strong>
+                </div>
+              </div>
+
+              <div className="hero-preview-grid">
+                <div className="hero-preview-mini-card">
+                  <span>{todaysMatches.length}</span>
+                  <small>Today</small>
+                </div>
+                <div className="hero-preview-mini-card">
+                  <span>{featuredMatches.length}</span>
+                  <small>Featured</small>
+                </div>
+                <div className="hero-preview-mini-card accent">
+                  <span>VIP</span>
+                  <small>Markets</small>
+                </div>
+              </div>
+
+              <div className="hero-preview-list">
+                <div><Target size={16} /><span>Organized markets and confidence signals</span></div>
+                <div><ShieldCheck size={16} /><span>No fake match fallbacks; API-only fixtures</span></div>
+                <div><LayoutDashboard size={16} /><span>Clean member dashboard and quick actions</span></div>
+              </div>
+            </aside>
           </div>
 
           {/* Stats bar */}
@@ -502,46 +536,46 @@ const Home = () => {
             {todaysMatches.slice(0, 3).map((match, index) => (
               <div
                 key={index}
-                className={`admin-match-card ${match.valueBet ? 'admin-match-value' : ''} ${isWorldCupMatch(match) ? 'wc-match-card' : ''} ${isWorldCupMatch(match) ? 'wc-match' : ''}`}
+                className={`home-match-card ${match.valueBet ? 'home-match-value' : ''} ${isWorldCupMatch(match) ? 'wc-match-card' : ''} ${isWorldCupMatch(match) ? 'wc-match' : ''}`}
               >
                 {isWorldCupMatch(match) && (
-                  <div className="admin-value-badge-small" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
+                  <div className="home-value-badge" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
                     <span className="wc-card-badge-icon">🏆</span>
                     <span>WC</span>
                   </div>
                 )}
-                <div className="admin-match-header">
-                  <div className="admin-match-meta">
-                    <div className="admin-match-meta-item">
-                      <Calendar className="admin-match-icon" />
+                <div className="home-match-header">
+                  <div className="home-match-meta">
+                    <div className="home-match-meta-item">
+                      <Calendar className="home-match-icon" />
                       <span>{new Date(match.utcDate).toLocaleDateString()}</span>
                     </div>
-                    <div className="admin-match-meta-item">
+                    <div className="home-match-meta-item">
                       <span>{match.predictions?.length || 0} prediction{match.predictions?.length !== 1 ? "s" : ""}</span>
                     </div>
                   </div>
 
                   {match.valueBet && (
-                    <div className="admin-value-badge-small">
-                      <Star className="admin-value-icon-small" />
+                    <div className="home-value-badge">
+                      <Star className="home-value-icon" />
                       <span>VALUE</span>
                     </div>
                   )}
                 </div>
 
-                <div className="admin-match-info">
-                  <h3 className="admin-match-teams">
+                <div className="home-match-info">
+                  <h3 className="home-match-teams">
                     {match.homeTeam.name} vs {match.awayTeam.name}
                   </h3>
-                  <p className="admin-match-league">{match.competition?.name || 'Premier League'}</p>
+                  <p className="home-match-league">{match.competition?.name || 'Premier League'}</p>
                 </div>
 
-                <div className="admin-predictions-list">
+                <div className="home-predictions-list">
                   {match.predictions && match.predictions.length > 0 ? (
                     match.predictions.map((pred, predIndex) => (
-                      <div key={predIndex} className={`admin-prediction-item-display ${pred.valueBet ? 'admin-match-value' : ''}`}>
-                        <div className="admin-prediction-type">
-                        <span className="admin-prediction-type-label">
+                      <div key={predIndex} className={`home-prediction-item-display ${pred.valueBet ? 'home-match-value' : ''}`}>
+                        <div className="home-prediction-type">
+                        <span className="home-prediction-type-label">
                           {pred.type === 'win' ? 'WIN/DRAW' :
                            pred.type === 'over15' ? 'OVER/UNDER 1.5' :
                            pred.type === 'over25' ? 'OVER/UNDER 2.5' :
@@ -551,21 +585,21 @@ const Home = () => {
                            pred.type === 'player' ? 'PLAYER' : 'PREDICTION'}
                         </span>
                           {(pred.visibility === 'vip' || pred.visibility === 'vvip' || pred.visibility === 'both') && (
-                            <div className={`admin-vip-badge-small ${pred.visibility === 'vvip' ? 'vvip' : 'vip'}`}>
-                              <Crown className="admin-vip-icon-small" />
+                            <div className={`home-vip-badge-small ${pred.visibility === 'vvip' ? 'vvip' : 'vip'}`}>
+                              <Crown className="home-vip-icon-small" />
                               <span>{pred.visibility === 'vvip' ? 'VVIP' : 'VIP'}</span>
                             </div>
                           )}
                         </div>
 
-                        <div className="admin-prediction-details">
-                          <div className="admin-prediction-value">{pred.prediction}</div>
-                          <div className="admin-prediction-confidence">{pred.confidence}% confidence</div>
+                        <div className="home-prediction-details">
+                          <div className="home-prediction-value">{pred.prediction}</div>
+                          <div className="home-prediction-confidence">{pred.confidence}% confidence</div>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="admin-no-predictions">
+                    <div className="home-no-predictions">
                       <span>No predictions available</span>
                     </div>
                   )}
@@ -671,46 +705,46 @@ const Home = () => {
           {Array.isArray(featuredMatches) && featuredMatches.map((match, index) => (
             <div
               key={index}
-              className={`admin-match-card ${match.valueBet ? 'admin-match-value' : ''} ${isWorldCupMatch(match) ? 'wc-match-card' : ''}`}
+              className={`home-match-card ${match.valueBet ? 'home-match-value' : ''} ${isWorldCupMatch(match) ? 'wc-match-card' : ''}`}
             >
               {isWorldCupMatch(match) && (
-                <div className="admin-value-badge-small" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
+                <div className="home-value-badge" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
                   <span className="wc-card-badge-icon">🏆</span>
                   <span>WC</span>
                 </div>
               )}
-              <div className="admin-match-header">
-                <div className="admin-match-meta">
-                  <div className="admin-match-meta-item">
-                    <Calendar className="admin-match-icon" />
+              <div className="home-match-header">
+                <div className="home-match-meta">
+                  <div className="home-match-meta-item">
+                    <Calendar className="home-match-icon" />
                     <span>{new Date(match.utcDate).toLocaleDateString()}</span>
                   </div>
-                  <div className="admin-match-meta-item">
+                  <div className="home-match-meta-item">
                     <span>{match.predictions?.length || 0} prediction{match.predictions?.length !== 1 ? "s" : ""}</span>
                   </div>
                 </div>
 
                 {match.valueBet && (
-                  <div className="admin-value-badge-small">
-                    <Star className="admin-value-icon-small" />
+                  <div className="home-value-badge">
+                    <Star className="home-value-icon" />
                     <span>VALUE</span>
                   </div>
                 )}
               </div>
 
-              <div className="admin-match-info">
-                <h3 className="admin-match-teams">
+              <div className="home-match-info">
+                <h3 className="home-match-teams">
                   {match.homeTeam.name} vs {match.awayTeam.name}
                 </h3>
-                <p className="admin-match-league">{match.competition?.name || 'Premier League'}</p>
+                <p className="home-match-league">{match.competition?.name || 'Premier League'}</p>
               </div>
 
-              <div className="admin-predictions-list">
+              <div className="home-predictions-list">
                 {match.predictions && match.predictions.length > 0 ? (
                   match.predictions.map((pred, predIndex) => (
-                    <div key={predIndex} className={`admin-prediction-item-display ${pred.valueBet ? 'admin-match-value' : ''}`}>
-                      <div className="admin-prediction-type">
-                        <span className="admin-prediction-type-label">
+                    <div key={predIndex} className={`home-prediction-item-display ${pred.valueBet ? 'home-match-value' : ''}`}>
+                      <div className="home-prediction-type">
+                        <span className="home-prediction-type-label">
                           {pred.type === 'win' ? 'WIN/DRAW' :
                            pred.type === 'over15' ? 'OVER/UNDER 1.5' :
                            pred.type === 'over25' ? 'OVER/UNDER 2.5' :
@@ -720,21 +754,21 @@ const Home = () => {
                            pred.type === 'player' ? 'PLAYER' : 'PREDICTION'}
                         </span>
                         {(pred.visibility === 'vip' || pred.visibility === 'vvip' || pred.visibility === 'both') && (
-                          <div className={`admin-vip-badge-small ${pred.visibility === 'vvip' ? 'vvip' : 'vip'}`}>
-                            <Crown className="admin-vip-icon-small" />
+                          <div className={`home-vip-badge-small ${pred.visibility === 'vvip' ? 'vvip' : 'vip'}`}>
+                            <Crown className="home-vip-icon-small" />
                             <span>{pred.visibility === 'vvip' ? 'VVIP' : 'VIP'}</span>
                           </div>
                         )}
                       </div>
 
-                      <div className="admin-prediction-details">
-                        <div className="admin-prediction-value">{pred.prediction}</div>
-                        <div className="admin-prediction-confidence">{pred.confidence}% confidence</div>
+                      <div className="home-prediction-details">
+                        <div className="home-prediction-value">{pred.prediction}</div>
+                        <div className="home-prediction-confidence">{pred.confidence}% confidence</div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="admin-no-predictions">
+                  <div className="home-no-predictions">
                     <span>No predictions available</span>
                   </div>
                 )}

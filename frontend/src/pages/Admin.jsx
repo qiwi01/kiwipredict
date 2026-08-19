@@ -204,7 +204,7 @@ const Admin = () => {
     try {
       const response = await api.get(`/api/fixtures/today?date=${targetDate}`);
       setFixtures(response.data.fixtures || []);
-      setApiConfigured(response.data.apiConfigured || false);
+      setApiConfigured(Boolean(response.data.apiConfigured));
       console.log(`[Admin] Loaded ${response.data.count} fixtures from API`);
     } catch (err) {
       console.error('[Admin] Failed to fetch fixtures:', err);
@@ -873,7 +873,7 @@ Arsenal FC
                 <p className="admin-form-help">
                   {apiConfigured 
                     ? 'Connected to Football-data.org API' 
-                    : 'No API key configured. Showing mock data for development.'}
+                    : 'Football-data.org API key is not configured. No fallback matches are shown.'}
                 </p>
               </div>
 
@@ -966,8 +966,14 @@ Arsenal FC
 
               {!loadingFixtures && fixtures.length === 0 && !fixturesError && (
                 <div className="admin-empty-state">
-                  <div className="admin-empty-text">No fixtures found for this date</div>
-                  <div className="admin-empty-subtitle">Try selecting a different date or check back later</div>
+                  <div className="admin-empty-text">
+                    {apiConfigured ? 'No fixtures found for this date' : 'Football API key is not configured'}
+                  </div>
+                  <div className="admin-empty-subtitle">
+                    {apiConfigured
+                      ? 'Try selecting a different date or check back later.'
+                      : 'Add FOOTBALL_API_KEY on the backend host to load real football-data.org fixtures.'}
+                  </div>
                 </div>
               )}
             </form>

@@ -58,7 +58,10 @@ router.get('/today', async (req, res) => {
       date,
       fixtures: fixturesWithStatus,
       apiConfigured: isApiConfigured(),
-      usingMockData: !isApiConfigured()
+      usingMockData: false,
+      message: isApiConfigured()
+        ? undefined
+        : 'Football-data.org API key is not configured. No fallback fixtures are shown.'
     });
   } catch (error) {
     console.error('[Fixtures] Error fetching fixtures:', error);
@@ -92,7 +95,10 @@ router.get('/range', async (req, res) => {
       to: toDate,
       fixtures,
       apiConfigured: isApiConfigured(),
-      usingMockData: !isApiConfigured()
+      usingMockData: false,
+      message: isApiConfigured()
+        ? undefined
+        : 'Football-data.org API key is not configured. No fallback fixtures are shown.'
     });
   } catch (error) {
     console.error('[Fixtures] Error fetching fixtures by range:', error);
@@ -271,7 +277,11 @@ router.post('/refresh-cache', authenticateToken, requireAdmin, async (req, res) 
 router.get('/status', (req, res) => {
   res.json({
     apiConfigured: isApiConfigured(),
-    usingMockData: !isApiConfigured()
+    usingMockData: false,
+    provider: 'football-data.org',
+    message: isApiConfigured()
+      ? 'Football-data.org API key is configured.'
+      : 'Football-data.org API key is not configured. No fallback fixtures are shown.'
   });
 });
 

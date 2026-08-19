@@ -145,7 +145,7 @@ function clearFixturesCache() {
  * Check if API key is configured
  */
 function isApiConfigured() {
-  return API_KEY && API_KEY.length > 0;
+  return Boolean(API_KEY && API_KEY.length > 0);
 }
 
 module.exports = {

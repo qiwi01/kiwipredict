@@ -1238,3 +1238,294 @@
 .dark .profile-view-all-link:focus {
   outline-color: var(--primary-400);
 }
+
+/* ===== FINAL DASHBOARD REDESIGN OVERRIDES ===== */
+.profile-container {
+  max-width: 1280px;
+  padding: clamp(1.25rem, 3vw, 2.5rem) 1.25rem 4rem;
+}
+
+.profile-dashboard-hero,
+.profile-stats,
+.profile-section {
+  border: 1px solid var(--gray-200);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+}
+
+.dark .profile-dashboard-hero,
+.dark .profile-stats,
+.dark .profile-section {
+  border-color: rgba(148, 163, 184, 0.12);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.34);
+}
+
+.profile-dashboard-hero {
+  grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.72fr);
+  align-items: stretch;
+  border-radius: 32px;
+}
+
+.profile-dashboard-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-dashboard-title {
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.profile-dashboard-primary-btn,
+.profile-dashboard-secondary-btn,
+.profile-action-card,
+.profile-add-btn,
+.profile-remove-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.profile-dashboard-primary-btn:hover,
+.profile-dashboard-secondary-btn:hover,
+.profile-action-card:hover,
+.profile-add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+}
+
+.profile-dashboard-summary-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 24px;
+}
+
+.profile-avatar-icon {
+  width: 3.75rem;
+  height: 3.75rem;
+  flex-shrink: 0;
+}
+
+.profile-avatar-user-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.profile-stats {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dark .profile-stats {
+  background: rgba(15, 23, 42, 0.88);
+}
+
+.profile-stats-header,
+.profile-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.profile-section-eyebrow {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--primary-600);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.profile-status-pill.active {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--success-700);
+}
+
+.profile-status-pill.inactive {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger-700);
+}
+
+.profile-stats-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.profile-stat-item {
+  padding: 1.25rem;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.94), rgba(241, 245, 249, 0.88));
+  border: 1px solid var(--gray-200);
+}
+
+.dark .profile-stat-item {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.86));
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.profile-stat-icon {
+  width: 1.55rem;
+  height: 1.55rem;
+  color: var(--primary-500);
+  margin-bottom: 0.8rem;
+}
+
+.profile-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.65fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.profile-section {
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.dark .profile-section {
+  background: rgba(15, 23, 42, 0.88);
+}
+
+.profile-action-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.profile-action-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  color: inherit;
+  text-decoration: none;
+}
+
+.dark .profile-action-card {
+  background: rgba(30, 41, 59, 0.68);
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.profile-action-card strong,
+.profile-favorite-name {
+  color: var(--gray-900);
+}
+
+.dark .profile-action-card strong,
+.dark .profile-favorite-name {
+  color: var(--gray-100);
+}
+
+.profile-action-card span {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--gray-500);
+  font-size: 0.9rem;
+}
+
+.profile-action-card.premium {
+  border-color: rgba(245, 158, 11, 0.28);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(255, 255, 255, 0.86));
+}
+
+.dark .profile-action-card.premium {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(30, 41, 59, 0.72));
+}
+
+.profile-action-icon,
+.profile-section-icon {
+  color: var(--primary-500);
+}
+
+.profile-add-favorite {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.profile-input {
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid var(--gray-300);
+  background: var(--gray-50);
+}
+
+.dark .profile-input {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.72);
+  color: var(--gray-100);
+}
+
+.profile-favorites-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.profile-favorite-item,
+.profile-empty-panel {
+  border-radius: 18px;
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+.dark .profile-favorite-item,
+.dark .profile-empty-panel {
+  border-color: rgba(148, 163, 184, 0.12);
+  background: rgba(30, 41, 59, 0.68);
+}
+
+@media (max-width: 980px) {
+  .profile-dashboard-hero,
+  .profile-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .profile-container {
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .profile-announcement-card,
+  .profile-stats-header,
+  .profile-section-header,
+  .profile-summary-row {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-stats-grid,
+  .profile-add-favorite {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-dashboard-actions,
+  .profile-dashboard-primary-btn,
+  .profile-dashboard-secondary-btn,
+  .profile-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
