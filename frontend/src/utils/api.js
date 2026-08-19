@@ -100,6 +100,10 @@ api.interceptors.response.use(
 
       // Handle 401 Unauthorized - redirect to login if needed
       if (status === 401) {
+        if (originalRequest?._skipAuthRedirect) {
+          return Promise.reject(error);
+        }
+
         // Don't redirect for login/register requests
         if (!originalRequest.url?.includes('/auth/login') && 
             !originalRequest.url?.includes('/auth/register')) {

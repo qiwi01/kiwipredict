@@ -62,7 +62,7 @@ const Home = () => {
   useEffect(() => {
     // Load data for all users (authenticated and non-authenticated)
     // Get real matches from TheSportsDB
-    api.get('/api/matches')
+    api.get('/api/matches', { _skipAuthRedirect: true })
       .then(res => {
         setFeaturedMatches(res.data.slice(0, 6));
         // Filter for today's matches
@@ -80,7 +80,7 @@ const Home = () => {
       });
 
     // Get outcomes (past predictions)
-    api.get('/api/outcomes?days=7')
+    api.get('/api/outcomes?days=7', { _skipAuthRedirect: true })
       .then(res => setOutcomes(res.data))
       .catch(err => {
         // Handle 401 (unauthorized) gracefully - don't show error
@@ -89,7 +89,7 @@ const Home = () => {
         }
       });
 
-    api.get('/api/site-settings')
+    api.get('/api/site-settings', { _skipAuthRedirect: true })
       .then(res => setSiteSettings(res.data))
       .catch(() => setSiteSettings(null));
 
@@ -236,55 +236,49 @@ const Home = () => {
           </div>
 
           {/* Main hero content */}
-          <div className="hero-main">
-            <div className="hero-copy-panel">
-              <div className="hero-text-block">
-                <h1 className="hero-headline">
-                  <span className="hero-headline-accent">Smarter</span> Football Insights,
-                  <br />
-                  Built for Better Decisions
-                </h1>
-                <p className="hero-subheadline">
-                  Follow daily football predictions, value picks, VIP markets, and result tracking from one clean,
-                  data-led platform built for serious fans.
-                </p>
-              </div>
+          <div className={`hero-main ${user ? 'hero-main-authenticated' : ''}`}>
+            {!user && (
+              <div className="hero-copy-panel">
+                <div className="hero-text-block">
+                  <h1 className="hero-headline">
+                    <span className="hero-headline-accent">Smarter</span> Football Insights,
+                    <br />
+                    Built for Better Decisions
+                  </h1>
+                  <p className="hero-subheadline">
+                    Follow daily football predictions, value picks, VIP markets, and result tracking from one clean,
+                    data-led platform built for serious fans.
+                  </p>
+                </div>
 
-              <div className="hero-highlight-grid">
-                <div className="hero-highlight-card">
-                  <Sparkles className="hero-highlight-icon" />
-                  <div>
-                    <strong>Daily prediction hub</strong>
-                    <span>Move quickly between today&apos;s picks, top markets, and VIP selections.</span>
+                <div className="hero-highlight-grid">
+                  <div className="hero-highlight-card">
+                    <Sparkles className="hero-highlight-icon" />
+                    <div>
+                      <strong>Daily prediction hub</strong>
+                      <span>Move quickly between today&apos;s picks, top markets, and VIP selections.</span>
+                    </div>
+                  </div>
+                  <div className="hero-highlight-card">
+                    <LayoutDashboard className="hero-highlight-icon" />
+                    <div>
+                      <strong>Member-first dashboard</strong>
+                      <span>Keep announcements, actions, and account status easy to find.</span>
+                    </div>
                   </div>
                 </div>
-                <div className="hero-highlight-card">
-                  <LayoutDashboard className="hero-highlight-icon" />
-                  <div>
-                    <strong>Member-first dashboard</strong>
-                    <span>Keep announcements, actions, and account status easy to find.</span>
-                  </div>
-                </div>
-              </div>
 
-              <div className="hero-actions">
-                <Link to="/predictions" className="hero-btn-primary">
-                  <TrendingUp size={20} />
-                  <span>View Predictions</span>
-                </Link>
-                {!user && (
+                <div className="hero-actions">
+                  <Link to="/predictions" className="hero-btn-primary">
+                    <TrendingUp size={20} />
+                    <span>View Predictions</span>
+                  </Link>
                   <Link to="/register" className="hero-btn-secondary">
                     Get Started Free
                   </Link>
-                )}
-                {user && (
-                  <Link to="/vip" className="hero-btn-secondary">
-                    <Crown size={18} />
-                    <span>Go VIP</span>
-                  </Link>
-                )}
+                </div>
               </div>
-            </div>
+            )}
 
             <aside className="hero-preview-card" aria-label="Platform preview">
               <div className="hero-preview-top">
@@ -334,6 +328,19 @@ const Home = () => {
                 <div><ShieldCheck size={16} /><span>No fake match fallbacks; API-only fixtures</span></div>
                 <div><LayoutDashboard size={16} /><span>Clean member dashboard and quick actions</span></div>
               </div>
+
+              {user && (
+                <div className="hero-actions hero-actions-authenticated">
+                  <Link to="/predictions" className="hero-btn-primary">
+                    <TrendingUp size={20} />
+                    <span>View Predictions</span>
+                  </Link>
+                  <Link to="/vip" className="hero-btn-secondary">
+                    <Crown size={18} />
+                    <span>Go VIP</span>
+                  </Link>
+                </div>
+              )}
             </aside>
           </div>
 
@@ -368,30 +375,32 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="home-overview-strip">
-        <div className="home-overview-card">
-          <span className="home-overview-eyebrow">Platform overview</span>
-          <h2 className="home-overview-heading">A cleaner sports homepage for daily football decisions</h2>
-          <p className="home-overview-copy">
-            Start with platform updates, move into the most important match cards, then continue to predictions,
-            outcomes, VIP tools, and your personal dashboard without unnecessary clutter.
-          </p>
-        </div>
-        <div className="home-overview-metrics">
-          <div className="home-metric-card">
-            <span className="home-metric-value">{todaysMatches.length}</span>
-            <span className="home-metric-label">Today&apos;s matches</span>
+      {!user && (
+        <section className="home-overview-strip">
+          <div className="home-overview-card">
+            <span className="home-overview-eyebrow">Platform overview</span>
+            <h2 className="home-overview-heading">A cleaner sports homepage for daily football decisions</h2>
+            <p className="home-overview-copy">
+              Start with platform updates, move into the most important match cards, then continue to predictions,
+              outcomes, VIP tools, and your personal dashboard without unnecessary clutter.
+            </p>
           </div>
-          <div className="home-metric-card">
-            <span className="home-metric-value">{featuredMatches.length}</span>
-            <span className="home-metric-label">Featured games</span>
+          <div className="home-overview-metrics">
+            <div className="home-metric-card">
+              <span className="home-metric-value">{todaysMatches.length}</span>
+              <span className="home-metric-label">Today&apos;s matches</span>
+            </div>
+            <div className="home-metric-card">
+              <span className="home-metric-value">{featuredMatches.length}</span>
+              <span className="home-metric-label">Featured games</span>
+            </div>
+            <div className="home-metric-card">
+              <span className="home-metric-value">{outcomes?.all?.length || 0}</span>
+              <span className="home-metric-label">Recent outcomes</span>
+            </div>
           </div>
-          <div className="home-metric-card">
-            <span className="home-metric-value">{outcomes?.all?.length || 0}</span>
-            <span className="home-metric-label">Recent outcomes</span>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Mini Bet Converter - Show for logged-in users */}
       {user && (
