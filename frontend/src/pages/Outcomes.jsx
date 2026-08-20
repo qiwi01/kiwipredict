@@ -320,6 +320,9 @@ const Outcomes = () => {
                       <Calendar className="predictions-match-icon" />
                       <span>{new Date(match.date).toLocaleDateString()}</span>
                     </div>
+                    <div className="predictions-match-meta-item">
+                      <span>{match.league}</span>
+                    </div>
                   </div>
 
                   {match.gameTier === 'vip' && (
@@ -340,7 +343,6 @@ const Outcomes = () => {
                   <h3 className="predictions-match-teams-title">
                     {match.homeTeam} vs {match.awayTeam}
                   </h3>
-                  <p className="predictions-match-league">{match.league}</p>
 
                   {match.homeGoals !== null && match.awayGoals !== null && (
                     <div className="predictions-match-score">

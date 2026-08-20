@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../App';
-import { TrendingUp, Target, Zap, Star, Calendar, ArrowRight, Shuffle, Crown, AlertCircle, ChevronDown, ShieldCheck, Sparkles, LayoutDashboard, MessageSquareMore } from 'lucide-react';
+import { TrendingUp, Target, Zap, Star, Calendar, ArrowRight, Shuffle, Crown, AlertCircle, ShieldCheck, Sparkles, LayoutDashboard, MessageSquareMore } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import '../css/Home.css';
@@ -13,33 +13,6 @@ const Home = () => {
   const [outcomes, setOutcomes] = useState([]);
   const [siteSettings, setSiteSettings] = useState(null);
   const [activeAnnouncementIndex, setActiveAnnouncementIndex] = useState(0);
-
-  // World Cup 2026 countdown
-  const wcDate = new Date('2026-06-11T00:00:00');
-  const [wcCountdown, setWcCountdown] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  });
-
-  useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date();
-      const diff = wcDate - now;
-      if (diff > 0) {
-        setWcCountdown({
-          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((diff / (1000 * 60)) % 60),
-          seconds: Math.floor((diff / 1000) % 60)
-        });
-      }
-    };
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Helper to check if a match is a World Cup match
   const isWorldCupMatch = (match) => {
@@ -200,41 +173,6 @@ const Home = () => {
         </div>
 
         <div className="hero-content">
-          {/* Top bar with countdown */}
-          <div className="hero-top-bar">
-            <div className="hero-wc-countdown">
-              <div className="wc-chip">
-                <span className="wc-chip-icon">🏆</span>
-                <span className="wc-chip-text">World Cup 2026</span>
-              </div>
-              <div className="countdown-display">
-                <div className="countdown-block">
-                  <span className="countdown-number">{String(wcCountdown.days).padStart(2, '0')}</span>
-                  <span className="countdown-label">Days</span>
-                </div>
-                <span className="countdown-dot">:</span>
-                <div className="countdown-block">
-                  <span className="countdown-number">{String(wcCountdown.hours).padStart(2, '0')}</span>
-                  <span className="countdown-label">Hrs</span>
-                </div>
-                <span className="countdown-dot">:</span>
-                <div className="countdown-block">
-                  <span className="countdown-number">{String(wcCountdown.minutes).padStart(2, '0')}</span>
-                  <span className="countdown-label">Min</span>
-                </div>
-                <span className="countdown-dot">:</span>
-                <div className="countdown-block">
-                  <span className="countdown-number">{String(wcCountdown.seconds).padStart(2, '0')}</span>
-                  <span className="countdown-label">Sec</span>
-                </div>
-              </div>
-            </div>
-            <div className="hero-trust-badge">
-              <ShieldCheck size={16} />
-              <span>Daily football prediction platform</span>
-            </div>
-          </div>
-
           {/* Main hero content */}
           <div className={`hero-main ${user ? 'hero-main-authenticated' : ''}`}>
             {!user && (
@@ -367,11 +305,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Scroll indicator */}
-          <div className="hero-scroll-hint">
-            <span className="scroll-hint-text">Explore matches</span>
-            <ChevronDown size={16} className="scroll-hint-icon" />
-          </div>
         </div>
       </section>
 
@@ -560,7 +493,7 @@ const Home = () => {
                       <span>{new Date(match.utcDate).toLocaleDateString()}</span>
                     </div>
                     <div className="home-match-meta-item">
-                      <span>{match.predictions?.length || 0} prediction{match.predictions?.length !== 1 ? "s" : ""}</span>
+                      <span>{match.competition?.name || 'Premier League'}</span>
                     </div>
                   </div>
 
@@ -576,7 +509,6 @@ const Home = () => {
                   <h3 className="home-match-teams">
                     {match.homeTeam.name} vs {match.awayTeam.name}
                   </h3>
-                  <p className="home-match-league">{match.competition?.name || 'Premier League'}</p>
                 </div>
 
                 <div className="home-predictions-list">
@@ -649,6 +581,9 @@ const Home = () => {
                       <Calendar className="home-match-icon" />
                       <span>{new Date(match.date).toLocaleDateString()}</span>
                     </div>
+                    <div className="home-match-meta-item">
+                      <span>{match.league}</span>
+                    </div>
                   </div>
 
                 </div>
@@ -657,7 +592,6 @@ const Home = () => {
                   <h3 className="home-match-teams">
                     {match.homeTeam} vs {match.awayTeam}
                   </h3>
-                  <p className="home-match-league">{match.league}</p>
                 </div>
 
                 <div className="home-prediction-section">
@@ -729,7 +663,7 @@ const Home = () => {
                     <span>{new Date(match.utcDate).toLocaleDateString()}</span>
                   </div>
                   <div className="home-match-meta-item">
-                    <span>{match.predictions?.length || 0} prediction{match.predictions?.length !== 1 ? "s" : ""}</span>
+                    <span>{match.competition?.name || 'Premier League'}</span>
                   </div>
                 </div>
 
@@ -745,7 +679,6 @@ const Home = () => {
                 <h3 className="home-match-teams">
                   {match.homeTeam.name} vs {match.awayTeam.name}
                 </h3>
-                <p className="home-match-league">{match.competition?.name || 'Premier League'}</p>
               </div>
 
               <div className="home-predictions-list">

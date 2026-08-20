@@ -93,12 +93,58 @@
   .navbar-links {
     display: flex;
   }
+
+/* ===== NAVBAR DARK MODE CONTRAST OVERHAUL ===== */
+.navbar-link,
+.navbar-dropdown-trigger,
+.navbar-dropdown-item,
+.navbar-mobile-link,
+.navbar-mobile-submenu-header,
+.navbar-mobile-submenu-item {
+  font-weight: 700;
+}
+
+.dark .navbar {
+  background: rgba(2, 6, 23, 0.94);
+  border-bottom-color: rgba(148, 163, 184, 0.18);
+}
+
+.dark .navbar-link,
+.dark .navbar-dropdown-trigger,
+.dark .navbar-mobile-link {
+  color: var(--gray-100);
+}
+
+.dark .navbar-link:hover,
+.dark .navbar-dropdown-trigger:hover,
+.dark .navbar-mobile-link:hover {
+  background: rgba(51, 65, 85, 0.78);
+  color: #ffffff;
+}
+
+.dark .navbar-dropdown,
+.dark .navbar-mobile-menu {
+  background: rgba(15, 23, 42, 0.98);
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+.dark .navbar-dropdown-item,
+.dark .navbar-mobile-submenu-item,
+.dark .navbar-mobile-submenu-header {
+  color: var(--gray-200);
+}
+
+.dark .navbar-dropdown-item:hover,
+.dark .navbar-mobile-submenu-item:hover {
+  background: rgba(51, 65, 85, 0.78);
+  color: #ffffff;
+}
 }
 
 .navbar-link {
   position: relative;
   color: var(--gray-700);
-  font-weight: var(--font-weight-medium);
+  font-weight: 700;
   text-decoration: none;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-lg);
@@ -378,6 +424,7 @@
   text-decoration: none;
   border-radius: var(--radius-lg);
   transition: var(--transition-all);
+  font-weight: 700;
 }
 
 .dark .navbar-mobile-link {
@@ -650,11 +697,15 @@
 
 /* ===== OUTCOME LINK ===== */
 .navbar-link-outcome {
-  background: linear-gradient(135deg, var(--success-500), var(--danger-500));
-  color: white !important;
-  box-shadow: var(--shadow-sm);
+  background: transparent !important;
+  color: var(--gray-700) !important;
+  box-shadow: none;
   position: relative;
   overflow: hidden;
+}
+
+.dark .navbar-link-outcome {
+  color: var(--gray-200) !important;
 }
 
 .navbar-link-outcome::before {
@@ -673,9 +724,15 @@
 }
 
 .navbar-link-outcome:hover {
-  background: linear-gradient(135deg, var(--success-600), var(--danger-600));
+  background: var(--primary-50) !important;
+  color: var(--primary-700) !important;
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
+}
+
+.dark .navbar-link-outcome:hover {
+  background: rgba(51, 65, 85, 0.76) !important;
+  color: var(--primary-700) !important;
 }
 
 /* ===== TOP PICKS LINK ===== */

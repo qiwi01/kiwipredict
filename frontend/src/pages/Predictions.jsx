@@ -431,7 +431,7 @@ const Predictions = () => {
                     <span>{new Date(match.utcDate).toLocaleDateString()}</span>
                   </div>
                   <div className="admin-match-meta-item">
-                    <span>{match.predictions?.length || 0} prediction{match.predictions?.length !== 1 ? 's' : ''}</span>
+                    <span>{match.competition?.name || 'Premier League'}</span>
                   </div>
                 </div>
 
@@ -447,7 +447,6 @@ const Predictions = () => {
                 <h3 className="admin-match-teams">
                   {match.homeTeam.name} vs {match.awayTeam.name}
                 </h3>
-                <p className="admin-match-league">{match.competition?.name || 'Premier League'}</p>
               </div>
 
               <div className="admin-predictions-list">

@@ -1816,3 +1816,243 @@
     justify-content: center;
   }
 }
+
+/* ===== COMPACT CARDS, GOLD ANNOUNCEMENTS, CONVERTER REDESIGN, DARK MODE OVERHAUL ===== */
+.home-announcement-bar {
+  background: linear-gradient(135deg, #d4af37 0%, #f6d365 48%, #b8860b 100%);
+  border-bottom-color: rgba(120, 72, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(180, 120, 0, 0.18);
+}
+
+.home-announcement-label,
+.home-announcement-message {
+  color: #1f2937;
+  font-weight: 800;
+}
+
+.home-announcement-pulse {
+  background: #14532d;
+}
+
+.home-announcement-dot {
+  background: rgba(31, 41, 55, 0.32);
+}
+
+.home-announcement-dot.active {
+  background: #111827;
+}
+
+.home-hero {
+  padding-top: clamp(2.75rem, 6vw, 5rem);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+.hero-content {
+  gap: 1.35rem;
+}
+
+.home-matches-section {
+  padding: clamp(2rem, 4vw, 3.25rem) 1rem;
+}
+
+.home-matches-header {
+  margin-bottom: 1rem;
+}
+
+.home-matches-grid {
+  gap: 0.85rem;
+}
+
+.home-match-card {
+  padding: 0.95rem !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.07) !important;
+}
+
+.home-match-header {
+  margin-bottom: 0.55rem !important;
+}
+
+.home-match-meta {
+  gap: 0.5rem !important;
+  font-size: 0.76rem !important;
+  line-height: 1.25;
+}
+
+.home-match-meta-item {
+  padding: 0.22rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.58);
+  color: var(--gray-700);
+  font-weight: 700;
+}
+
+.dark .home-match-meta-item {
+  background: rgba(51, 65, 85, 0.78);
+  color: var(--gray-200);
+}
+
+.home-match-info {
+  margin-bottom: 0.75rem !important;
+}
+
+.home-match-teams {
+  margin-bottom: 0 !important;
+  font-size: clamp(0.98rem, 1.8vw, 1.12rem) !important;
+  line-height: 1.28;
+}
+
+.home-predictions-list {
+  gap: 0.5rem !important;
+}
+
+.home-prediction-item-display {
+  padding: 0.65rem !important;
+  border-radius: 12px !important;
+}
+
+.home-prediction-details {
+  margin-top: 0.35rem !important;
+}
+
+.home-prediction-item-display .home-prediction-value {
+  font-size: 0.94rem !important;
+  line-height: 1.35;
+}
+
+.home-prediction-confidence,
+.home-prediction-type-label {
+  font-size: 0.72rem !important;
+}
+
+.home-converter-section {
+  padding: clamp(2rem, 5vw, 4rem) 1rem;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(37, 99, 235, 0.11), transparent 28%),
+    linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
+}
+
+.dark .home-converter-section {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(96, 165, 250, 0.18), transparent 28%),
+    linear-gradient(180deg, #020617 0%, #0f172a 100%);
+}
+
+.home-converter-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.1);
+}
+
+.dark .home-converter-container {
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(148, 163, 184, 0.16);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.45);
+}
+
+.home-converter-header {
+  text-align: left;
+  margin-bottom: 1.25rem;
+}
+
+.home-converter-title {
+  color: var(--gray-950) !important;
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  line-height: 1.1;
+  margin-bottom: 0.45rem;
+}
+
+.dark .home-converter-title {
+  color: var(--gray-50) !important;
+}
+
+.home-converter-subtitle {
+  color: var(--gray-600) !important;
+  font-size: 1rem;
+}
+
+.dark .home-converter-subtitle {
+  color: var(--gray-300) !important;
+}
+
+.home-mini-converter {
+  padding: 1rem;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(20, 184, 166, 0.08));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.dark .home-mini-converter {
+  background: rgba(30, 41, 59, 0.78);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+.mini-converter-inputs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr 1.1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.mini-converter-select,
+.mini-converter-code {
+  min-height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--gray-300);
+  background: #ffffff;
+  color: var(--gray-950);
+  font-weight: 700;
+}
+
+.dark .mini-converter-select,
+.dark .mini-converter-code {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.2);
+  color: var(--gray-50);
+}
+
+.mini-converter-btn {
+  min-height: 48px;
+  border-radius: 14px;
+}
+
+@media (max-width: 820px) {
+  .mini-converter-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .mini-converter-arrow {
+    transform: rotate(90deg);
+    justify-self: center;
+  }
+}
+
+.dark .home-container,
+.dark .home-matches-section,
+.dark .home-overview-strip {
+  color: var(--gray-100);
+}
+
+.dark .home-match-card,
+.dark .home-prediction-item-display,
+.dark .home-empty-state,
+.dark .home-no-predictions {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+.dark .home-match-teams,
+.dark .home-prediction-value,
+.dark .home-empty-title {
+  color: var(--gray-50) !important;
+}
+
+.dark .home-prediction-confidence,
+.dark .home-empty-description,
+.dark .home-matches-subtitle {
+  color: var(--gray-300) !important;
+}

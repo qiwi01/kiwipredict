@@ -151,6 +151,154 @@
   border-color: var(--primary-300);
 }
 
+/* ===== COMPACT MATCH CARDS AND DARK MODE CONTRAST OVERHAUL ===== */
+.predictions-container {
+  padding-top: 1.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.predictions-header {
+  margin-bottom: 1.5rem;
+}
+
+.predictions-grid {
+  gap: 0.85rem !important;
+}
+
+.predictions-match-card,
+.admin-match-card {
+  padding: 0.95rem !important;
+  min-height: 0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.07) !important;
+}
+
+.predictions-match-header,
+.admin-match-header {
+  margin-bottom: 0.55rem !important;
+  gap: 0.45rem !important;
+}
+
+.predictions-match-meta,
+.admin-match-meta {
+  gap: 0.5rem !important;
+  font-size: 0.76rem !important;
+  line-height: 1.25;
+}
+
+.predictions-match-meta-item,
+.admin-match-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.22rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.58);
+  color: var(--gray-700);
+  font-weight: 700;
+}
+
+.dark .predictions-match-meta-item,
+.dark .admin-match-meta-item {
+  background: rgba(51, 65, 85, 0.78);
+  color: var(--gray-200);
+}
+
+.predictions-match-info,
+.admin-match-info,
+.predictions-match-teams {
+  margin-bottom: 0.75rem !important;
+}
+
+.predictions-match-teams-title,
+.admin-match-teams {
+  margin-bottom: 0 !important;
+  font-size: clamp(0.98rem, 1.8vw, 1.12rem) !important;
+  line-height: 1.28;
+}
+
+.admin-predictions-list,
+.predictions-outcomes-list {
+  gap: 0.5rem !important;
+}
+
+.admin-prediction-item-display,
+.predictions-outcome-item {
+  padding: 0.65rem !important;
+  border-radius: 12px !important;
+}
+
+.admin-prediction-details,
+.predictions-outcome-details {
+  margin-top: 0.35rem !important;
+}
+
+.admin-prediction-value,
+.predictions-prediction-value {
+  font-size: 0.94rem !important;
+  line-height: 1.35;
+}
+
+.admin-prediction-confidence,
+.admin-prediction-type-label,
+.predictions-outcome-label,
+.predictions-outcome-type {
+  font-size: 0.72rem !important;
+}
+
+.dark .predictions-container,
+.dark .outcomes-container {
+  color: var(--gray-100);
+}
+
+.dark .predictions-match-card,
+.dark .admin-match-card,
+.dark .predictions-outcome-item,
+.dark .admin-prediction-item-display,
+.dark .converter-form {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+.dark .predictions-match-teams-title,
+.dark .admin-match-teams,
+.dark .admin-prediction-value,
+.dark .predictions-prediction-value,
+.dark .predictions-title,
+.dark .predictions-modal-title {
+  color: var(--gray-50) !important;
+}
+
+.dark .predictions-subtitle,
+.dark .predictions-match-league,
+.dark .admin-match-league,
+.dark .admin-prediction-confidence,
+.dark .predictions-outcome-label,
+.dark .predictions-no-matches-subtitle {
+  color: var(--gray-300) !important;
+}
+
+.dark .predictions-filter-btn,
+.dark .predictions-league-select,
+.dark .predictions-date-select,
+.dark .converter-select,
+.dark .converter-input {
+  background: #0f172a !important;
+  color: var(--gray-50) !important;
+  border-color: rgba(148, 163, 184, 0.22) !important;
+}
+
+.dark .predictions-filter-btn.active {
+  background: linear-gradient(135deg, #60a5fa, #2dd4bf) !important;
+  color: #020617 !important;
+}
+
+.dark .converter-label,
+.dark .converter-help,
+.dark .vip-notice-text {
+  color: var(--gray-300) !important;
+}
+
 .predictions-filter-btn:not(.active) {
   background: var(--gray-100);
   color: var(--gray-900);

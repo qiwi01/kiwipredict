@@ -166,6 +166,9 @@ const VIP = () => {
                       <Calendar className="predictions-match-icon" />
                       <span>{new Date(match.utcDate).toLocaleDateString()}</span>
                     </div>
+                    <div className="predictions-match-meta-item">
+                      <span>{match.competition?.name || 'Premier League'}</span>
+                    </div>
                   </div>
 
                   <div className={`predictions-value-badge ${match.predictions.some(pred => pred.visibility === 'vvip') ? 'vvip' : 'vip'}`}>
@@ -178,7 +181,6 @@ const VIP = () => {
                   <h3 className="predictions-match-teams-title">
                     {match.homeTeam.name} vs {match.awayTeam.name}
                   </h3>
-                  <p className="predictions-match-league">{match.competition?.name || 'Premier League'}</p>
                 </div>
 
                 <div className="predictions-outcomes-list">
