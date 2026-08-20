@@ -87,16 +87,19 @@ const Profile = () => {
   const daysActive = Math.max(1, Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)));
   const yearsActive = Math.max(1, Math.floor(daysActive / 365));
   const vipLink = (user.vipTier === 'vip' || user.vipTier === 'vvip') ? '/predictions/vip' : '/vip';
+  const announcementTitle = siteSettings?.announcements?.title?.trim() || '';
 
   return (
     <div className="profile-container">
       {siteSettings?.announcements?.enabled && activeAnnouncements.length > 0 && (
         <section className="profile-announcement-card" aria-label="Site announcements">
-          <div className="profile-announcement-label">
-            <span className="profile-announcement-pulse"></span>
-            <MessageSquareMore size={16} />
-            <strong>{siteSettings.announcements.title || 'Latest Update'}</strong>
-          </div>
+          {announcementTitle && (
+            <div className="profile-announcement-label">
+              <span className="profile-announcement-pulse"></span>
+              <MessageSquareMore size={16} />
+              <strong>{announcementTitle}</strong>
+            </div>
+          )}
 
           <p key={activeAnnouncementIndex} className="profile-announcement-message">
             {activeAnnouncements[activeAnnouncementIndex]?.text}

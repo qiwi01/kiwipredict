@@ -31,7 +31,7 @@ const Admin = () => {
   const [siteSettings, setSiteSettings] = useState({
     announcements: {
       enabled: true,
-      title: 'Latest Update',
+      title: '',
       rotationSpeed: 3500,
       items: [
         { text: 'New Premier League season is here.', isActive: true }
@@ -2200,7 +2200,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                     ...prev,
                     announcements: { ...prev.announcements, title: e.target.value }
                   }))}
-                  placeholder="Latest Update"
+                  placeholder="Optional banner title"
                 />
               </div>
               <div className="admin-settings-field">

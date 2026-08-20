@@ -5,13 +5,22 @@ import { Calendar, Crown } from 'lucide-react';
 import api from '../utils/api';
 import '../css/Predictions.css';
 
+const formatLocalDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getMatchLocalDate = (utcDate) => formatLocalDate(new Date(utcDate));
+
 const Predictions = () => {
   const [matches, setMatches] = useState([]);
   const [filteredMatches, setFilteredMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedLeague, setSelectedLeague] = useState('all');
   // Set default date to today
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(formatLocalDate(new Date()));
   const location = useLocation();
 
   // Determine prediction type from URL
@@ -85,15 +94,7 @@ const Predictions = () => {
 
     // Filter by date
     if (selectedDate) {
-      const filterDate = new Date(selectedDate);
-      filterDate.setHours(0, 0, 0, 0);
-      const nextDay = new Date(filterDate);
-      nextDay.setDate(nextDay.getDate() + 1);
-
-      filtered = filtered.filter(match => {
-        const matchDate = new Date(match.utcDate);
-        return matchDate >= filterDate && matchDate < nextDay;
-      });
+      filtered = filtered.filter(match => getMatchLocalDate(match.utcDate) === selectedDate);
     }
 
     setFilteredMatches(filtered);
@@ -115,23 +116,18 @@ const Predictions = () => {
   const fetchPredictions = async () => {
     try {
       // Get all matches with predictions
-      const res = await api.get('/api/matches');
+      const todayDate = new Date();
+      const rangeEnd = new Date(todayDate);
+      rangeEnd.setDate(todayDate.getDate() + 14);
+      const res = await api.get(`/api/matches?from=${formatLocalDate(todayDate)}&to=${formatLocalDate(rangeEnd)}`);
       let matchesData = res.data;
 
       console.log(`[Predictions] Fetched ${matchesData.length} matches`);
 
       // Filter matches based on prediction type for specific pages
       if (predictionType.includes('today-')) {
-        // For today's predictions, filter by current date
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        matchesData = matchesData.filter(match => {
-          const matchDate = new Date(match.utcDate);
-          return matchDate >= today && matchDate < tomorrow;
-        });
+        const today = formatLocalDate(new Date());
+        matchesData = matchesData.filter(match => getMatchLocalDate(match.utcDate) === today);
       }
 
       // For specific prediction types, still filter matches, but show ALL predictions for those matches

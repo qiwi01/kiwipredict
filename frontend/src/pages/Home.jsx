@@ -7,6 +7,15 @@ import api from '../utils/api';
 import '../css/Home.css';
 import footballImage from '../assets/hero-image.png';
 
+const formatLocalDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getMatchLocalDate = (utcDate) => formatLocalDate(new Date(utcDate));
+
 const Home = () => {
   const [featuredMatches, setFeaturedMatches] = useState([]);
   const [todaysMatches, setTodaysMatches] = useState([]);
@@ -35,14 +44,15 @@ const Home = () => {
   useEffect(() => {
     // Load data for all users (authenticated and non-authenticated)
     // Get real matches from TheSportsDB
-    api.get('/api/matches', { _skipAuthRedirect: true })
+    const todayDate = new Date();
+    const sevenDaysFromToday = new Date(todayDate);
+    sevenDaysFromToday.setDate(todayDate.getDate() + 7);
+    const today = formatLocalDate(todayDate);
+
+    api.get(`/api/matches?from=${today}&to=${formatLocalDate(sevenDaysFromToday)}`, { _skipAuthRedirect: true })
       .then(res => {
         setFeaturedMatches(res.data.slice(0, 6));
-        // Filter for today's matches
-        const today = new Date().toDateString();
-        const todayMatches = res.data.filter(match =>
-          new Date(match.utcDate).toDateString() === today
-        );
+        const todayMatches = res.data.filter(match => getMatchLocalDate(match.utcDate) === today);
         setTodaysMatches(todayMatches);
       })
       .catch(err => {
@@ -71,6 +81,7 @@ const Home = () => {
   const activeAnnouncements = useMemo(() => (
     siteSettings?.announcements?.items?.filter(item => item.isActive) || []
   ), [siteSettings]);
+  const announcementTitle = siteSettings?.announcements?.title?.trim() || '';
 
   useEffect(() => {
     if (!siteSettings?.announcements?.enabled || activeAnnouncements.length <= 1) return undefined;
@@ -131,14 +142,16 @@ const Home = () => {
     <div className="home-container">
       {siteSettings?.announcements?.enabled && activeAnnouncements.length > 0 && (
         <section className="home-announcement-bar" aria-label="Site announcements">
-          <div className="home-announcement-shell">
-            <div className="home-announcement-label-wrap">
-              <span className="home-announcement-pulse"></span>
-              <span className="home-announcement-label">
-                <MessageSquareMore size={16} />
-                {siteSettings.announcements.title || 'Latest Update'}
-              </span>
-            </div>
+          <div className={`home-announcement-shell ${!announcementTitle ? 'home-announcement-shell-no-title' : ''}`}>
+            {announcementTitle && (
+              <div className="home-announcement-label-wrap">
+                <span className="home-announcement-pulse"></span>
+                <span className="home-announcement-label">
+                  <MessageSquareMore size={16} />
+                  {announcementTitle}
+                </span>
+              </div>
+            )}
 
             <div className="home-announcement-track">
               <div key={activeAnnouncementIndex} className="home-announcement-message">

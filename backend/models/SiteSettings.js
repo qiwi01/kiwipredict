@@ -27,7 +27,8 @@ const SiteSettingsSchema = new mongoose.Schema({
     },
     title: {
       type: String,
-      default: 'Latest Update'
+      default: '',
+      trim: true
     },
     rotationSpeed: {
       type: Number,

@@ -42,7 +42,7 @@ router.put('/announcements', authenticateToken, requireAdmin, async (req, res) =
     const settings = await getOrCreateSettings();
     settings.announcements = {
       enabled: enabled !== false,
-      title: String(title || 'Latest Update').trim() || 'Latest Update',
+      title: String(title || '').trim(),
       rotationSpeed: Math.min(Math.max(Number(rotationSpeed) || 3500, 1500), 15000),
       items: sanitizedItems.length ? sanitizedItems : settings.announcements.items
     };

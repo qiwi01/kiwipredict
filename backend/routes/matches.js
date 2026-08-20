@@ -1,11 +1,61 @@
 const express = require('express');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
 const { generatePrediction, generateMockOdds, isValueBet, calculateMatchProbabilities } = require('../utils/predictions');
 const Match = require('../models/Match');
 const User = require('../models/User');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const { fetchMatchesByDateRange } = require('../services/footballApi');
 
 const router = express.Router();
+
+const optionalAuth = (req, res, next) => {
+  let token = req.cookies?.token;
+
+  if (!token) {
+    const authHeader = req.headers['authorization'];
+    token = authHeader && authHeader.split(' ')[1];
+  }
+
+  if (!token) return next();
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (!err) req.user = user;
+    next();
+  });
+};
+
+const toDateString = (date) => date.toISOString().split('T')[0];
+
+const normalizeDateParam = (value) => {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  return value;
+};
+
+const getLocalDayRange = (dateString) => {
+  const start = new Date(`${dateString}T00:00:00`);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+  return { start, end };
+};
+
+const getMatchKey = (homeTeam, awayTeam, date, league = '') => {
+  const day = toDateString(new Date(date));
+  return [homeTeam, awayTeam, league, day]
+    .map(value => String(value || '').trim().toLowerCase())
+    .join('|');
+};
+
+const filterPredictionsByTier = (predictions = [], userTier = 'none') => predictions.filter(pred => {
+  const visibility = pred.visibility || 'all';
+
+  if (visibility === 'all') return true;
+  if (visibility === 'vip') return userTier === 'vip' || userTier === 'vvip';
+  if (visibility === 'vvip') return userTier === 'vvip';
+  if (visibility === 'both') return userTier === 'vip' || userTier === 'vvip';
+
+  return false;
+});
 
 // Mock data for development
 const mockFixtures = [
@@ -39,17 +89,28 @@ const mockFixtures = [
   }
 ];
 
-// Fetch admin-created matches only (filter VIP/VVIP games for non-VIP users and only matches with predictions)
-router.get('/', authenticateToken, async (req, res) => {
+// Fetch live available fixtures and merge any admin-created predictions onto them.
+// Public users can see live fixtures and public predictions; authenticated users
+// additionally get predictions allowed for their VIP/VVIP tier.
+router.get('/', optionalAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = req.user?.id ? await User.findById(req.user.id) : null;
     const userTier = user ? user.vipTier : 'none';
 
-    console.log(`[Matches] Fetching matches for user tier: ${userTier}`);
+    const today = toDateString(new Date());
+    const requestedDate = normalizeDateParam(req.query.date);
+    const requestedFrom = normalizeDateParam(req.query.from);
+    const requestedTo = normalizeDateParam(req.query.to);
+    const fromDate = requestedFrom || requestedDate || today;
+    const toDate = requestedTo || requestedDate || toDateString(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
 
-    // Build query - only include matches with predictions
+    console.log(`[Matches] Fetching matches from ${fromDate} to ${toDate} for user tier: ${userTier}`);
+
+    const { start } = getLocalDayRange(fromDate);
+    const { end } = getLocalDayRange(toDate);
+
     const query = {
-      predictions: { $exists: true, $ne: [], $not: { $size: 0 } }
+      date: { $gte: start, $lt: end }
     };
 
     // Filter games based on user tier
@@ -62,57 +123,66 @@ router.get('/', authenticateToken, async (req, res) => {
     }
     // VVIP users can see all games (no additional filter needed)
 
-    const matches = await Match.find(query)
+    const adminMatches = await Match.find(query)
       .sort({ date: 1 })
       .select('homeTeam awayTeam date league predictions bookmakerOdds gameTier');
 
-    console.log(`[Matches] Found ${matches.length} matches for user tier ${userTier}`);
+    const liveFixtures = await fetchMatchesByDateRange(fromDate, toDate);
+    const adminByKey = new Map();
 
-    // Filter predictions based on visibility settings
-    const formattedMatches = matches.map(match => {
-      let visiblePredictions = match.predictions || [];
+    adminMatches.forEach(match => {
+      adminByKey.set(getMatchKey(match.homeTeam, match.awayTeam, match.date, match.league), match);
+    });
 
-      // Filter predictions based on user tier and visibility
-      visiblePredictions = visiblePredictions.filter(pred => {
-        const visibility = pred.visibility || 'all';
+    const formattedLiveMatches = liveFixtures.map(fixture => {
+      const adminMatch = adminByKey.get(getMatchKey(fixture.homeTeam, fixture.awayTeam, fixture.utcDate, fixture.competition));
+      const visiblePredictions = adminMatch
+        ? filterPredictionsByTier(adminMatch.predictions || [], userTier)
+        : [];
 
-        if (visibility === 'all') {
-          return true;
-        } else if (visibility === 'vip') {
-          return userTier === 'vip' || userTier === 'vvip';
-        } else if (visibility === 'vvip') {
-          return userTier === 'vvip';
-        } else if (visibility === 'both') {
-          return userTier === 'vip' || userTier === 'vvip';
-        }
-
-        return false;
-      });
+      if (adminMatch) {
+        adminByKey.delete(getMatchKey(adminMatch.homeTeam, adminMatch.awayTeam, adminMatch.date, adminMatch.league));
+      }
 
       return {
-        id: match._id,
-        utcDate: match.date.toISOString(),
+        id: adminMatch?._id || fixture.id,
+        fixtureId: fixture.id,
+        utcDate: fixture.utcDate,
         homeTeam: {
-          name: match.homeTeam
+          name: fixture.homeTeam
         },
         awayTeam: {
-          name: match.awayTeam
+          name: fixture.awayTeam
         },
         competition: {
-          name: match.league
+          name: fixture.competition
         },
+        status: fixture.status,
+        source: adminMatch ? 'admin-live' : 'live',
         predictions: visiblePredictions,
-        bookmakerOdds: match.bookmakerOdds,
-        gameTier: match.gameTier
+        bookmakerOdds: adminMatch?.bookmakerOdds,
+        gameTier: adminMatch?.gameTier || 'none'
       };
     });
 
-    // Only return matches that still have visible predictions after filtering
-    const matchesWithVisiblePredictions = formattedMatches.filter(match => match.predictions.length > 0);
+    const formattedAdminOnlyMatches = Array.from(adminByKey.values()).map(match => ({
+      id: match._id,
+      utcDate: match.date.toISOString(),
+      homeTeam: { name: match.homeTeam },
+      awayTeam: { name: match.awayTeam },
+      competition: { name: match.league },
+      source: 'admin',
+      predictions: filterPredictionsByTier(match.predictions || [], userTier),
+      bookmakerOdds: match.bookmakerOdds,
+      gameTier: match.gameTier
+    })).filter(match => match.predictions.length > 0);
 
-    console.log(`[Matches] Returning ${matchesWithVisiblePredictions.length} matches with visible predictions`);
+    const allMatches = [...formattedLiveMatches, ...formattedAdminOnlyMatches]
+      .sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
 
-    res.json(matchesWithVisiblePredictions);
+    console.log(`[Matches] Returning ${allMatches.length} matches (${formattedLiveMatches.length} live, ${formattedAdminOnlyMatches.length} admin-only)`);
+
+    res.json(allMatches);
   } catch (err) {
     console.error('Error fetching matches:', err);
     res.status(500).json({ error: err.message });
