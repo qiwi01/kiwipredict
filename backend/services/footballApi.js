@@ -3,6 +3,10 @@ const axios = require('axios');
 // Football-data.org API v4
 const API_BASE_URL = 'https://api.football-data.org/v4';
 const API_KEY = process.env.FOOTBALL_API_KEY || '';
+const PRIORITY_COMPETITIONS = (process.env.FOOTBALL_PRIORITY_COMPETITIONS || 'PL,DED,PD,SA,BL1,FL1,ELC,CL')
+  .split(',')
+  .map(code => code.trim())
+  .filter(Boolean);
 
 // Cache for fetched fixtures to avoid repeated API calls
 let fixturesCache = {
@@ -28,6 +32,47 @@ const transformMatch = (match) => ({
   awayCrest: match.awayTeam?.crest || '',
   lastUpdated: match.lastUpdated
 });
+
+const getFixtureKey = (fixture) => [
+  fixture.utcDate,
+  fixture.homeTeam,
+  fixture.awayTeam,
+  fixture.competitionCode || fixture.competition
+].map(value => String(value || '').trim().toLowerCase()).join('|');
+
+const mergeFixtures = (...fixtureGroups) => {
+  const fixturesByKey = new Map();
+
+  fixtureGroups.flat().forEach(fixture => {
+    const key = getFixtureKey(fixture);
+    if (!fixturesByKey.has(key)) fixturesByKey.set(key, fixture);
+  });
+
+  return Array.from(fixturesByKey.values())
+    .sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
+};
+
+const fetchCompetitionMatches = async (competitionCode, from, to) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/competitions/${competitionCode}/matches`, {
+      params: {
+        dateFrom: from,
+        dateTo: to
+      },
+      headers: {
+        'X-Auth-Token': API_KEY
+      },
+      timeout: 10000
+    });
+
+    const transformed = (response.data.matches || []).map(transformMatch);
+    console.log(`[FootballAPI] Found ${transformed.length} ${competitionCode} matches from ${from} to ${to}`);
+    return transformed;
+  } catch (error) {
+    console.warn(`[FootballAPI] Could not fetch ${competitionCode} matches:`, error.response?.status || error.message);
+    return [];
+  }
+};
 
 /**
  * Fetch matches from football-data.org API for a specific date.
@@ -65,8 +110,12 @@ async function fetchMatchesByDate(date) {
       timeout: 10000
     });
 
-    const transformed = (response.data.matches || []).map(transformMatch);
-    console.log(`[FootballAPI] Found ${transformed.length} matches for ${targetDate}`);
+    const generalMatches = (response.data.matches || []).map(transformMatch);
+    const competitionMatches = (await Promise.all(
+      PRIORITY_COMPETITIONS.map(code => fetchCompetitionMatches(code, targetDate, targetDate))
+    )).flat();
+    const transformed = mergeFixtures(generalMatches, competitionMatches);
+    console.log(`[FootballAPI] Found ${transformed.length} total matches for ${targetDate}`);
 
     fixturesCache = {
       data: transformed,
@@ -116,8 +165,12 @@ async function fetchMatchesByDateRange(fromDate, toDate) {
       timeout: 10000
     });
 
-    const transformed = (response.data.matches || []).map(transformMatch);
-    console.log(`[FootballAPI] Found ${transformed.length} matches`);
+    const generalMatches = (response.data.matches || []).map(transformMatch);
+    const competitionMatches = (await Promise.all(
+      PRIORITY_COMPETITIONS.map(code => fetchCompetitionMatches(code, from, to))
+    )).flat();
+    const transformed = mergeFixtures(generalMatches, competitionMatches);
+    console.log(`[FootballAPI] Found ${transformed.length} total matches from ${from} to ${to}`);
 
     return transformed;
   } catch (error) {
