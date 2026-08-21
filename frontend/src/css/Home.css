@@ -16,7 +16,7 @@
   max-width: 1280px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 1rem;
   align-items: center;
 }
@@ -28,7 +28,7 @@
 }
 
 .home-announcement-shell-no-title {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .home-announcement-pulse {
@@ -57,6 +57,7 @@
 
 .home-announcement-track {
   overflow: hidden;
+  min-width: 0;
 }
 
 .home-announcement-message {
@@ -66,9 +67,41 @@
   animation: announcementSlide 0.45s ease;
 }
 
+.home-announcement-marquee {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+  width: max-content;
+  max-width: none;
+  white-space: nowrap;
+  animation: announcementMarquee 24s linear infinite;
+  will-change: transform;
+}
+
+.home-announcement-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.home-announcement-marquee-item::after {
+  content: '•';
+  margin-left: 2.5rem;
+  opacity: 0.7;
+}
+
+.home-announcement-track:hover .home-announcement-marquee {
+  animation-play-state: paused;
+}
+
 @keyframes announcementSlide {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes announcementMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 .home-announcement-dots {
@@ -2059,4 +2092,90 @@
 .dark .home-empty-description,
 .dark .home-matches-subtitle {
   color: var(--gray-300) !important;
+}
+
+/* Mobile: tighten the prediction/outcome sections without changing desktop/light styling */
+@media (max-width: 768px) {
+  .home-matches-section {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0.45rem !important;
+    padding-right: 0.45rem !important;
+  }
+
+  .home-matches-grid {
+    gap: 0.7rem !important;
+  }
+
+  .home-match-card {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .home-matches-header {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .home-announcement-bar {
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+  }
+
+  .home-announcement-shell {
+    gap: 0.65rem;
+  }
+
+  .home-announcement-label {
+    white-space: nowrap;
+  }
+}
+
+/* Dark-mode readability pass: only scoped to dark mode so light mode remains unchanged */
+.dark .home-matches-title,
+.dark .home-feature-title,
+.dark .home-overview-heading,
+.dark .home-converter-title,
+.dark .hero-headline,
+.dark .hero-preview-brand strong,
+.dark .hero-preview-mini-card span,
+.dark .home-match-teams,
+.dark .home-prediction-value,
+.dark .home-prediction-type-label,
+.dark .home-empty-title,
+.dark .home-no-predictions,
+.dark .home-no-predictions span {
+  color: #f8fafc !important;
+}
+
+.dark .hero-subheadline,
+.dark .hero-highlight-card span,
+.dark .hero-preview-list div,
+.dark .home-overview-copy,
+.dark .home-feature-description,
+.dark .home-match-league,
+.dark .home-match-meta,
+.dark .home-prediction-confidence,
+.dark .home-empty-description,
+.dark .home-converter-subtitle,
+.dark .home-metric-label,
+.dark .hero-preview-mini-card small {
+  color: #dbeafe !important;
+}
+
+.dark .home-match-meta-item,
+.dark .home-prediction-item-display,
+.dark .home-feature-card,
+.dark .home-metric-card,
+.dark .hero-highlight-card,
+.dark .hero-preview-mini-card,
+.dark .hero-preview-card,
+.dark .home-match-card,
+.dark .home-empty-state,
+.dark .home-no-predictions {
+  border-color: rgba(203, 213, 225, 0.24) !important;
+}
+
+.dark .home-view-all {
+  color: #111827 !important;
 }

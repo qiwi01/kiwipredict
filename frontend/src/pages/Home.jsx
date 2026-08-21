@@ -21,7 +21,6 @@ const Home = () => {
   const [todaysMatches, setTodaysMatches] = useState([]);
   const [outcomes, setOutcomes] = useState([]);
   const [siteSettings, setSiteSettings] = useState(null);
-  const [activeAnnouncementIndex, setActiveAnnouncementIndex] = useState(0);
 
   // Helper to check if a match is a World Cup match
   const isWorldCupMatch = (match) => {
@@ -82,16 +81,6 @@ const Home = () => {
     siteSettings?.announcements?.items?.filter(item => item.isActive) || []
   ), [siteSettings]);
   const announcementTitle = siteSettings?.announcements?.title?.trim() || '';
-
-  useEffect(() => {
-    if (!siteSettings?.announcements?.enabled || activeAnnouncements.length <= 1) return undefined;
-
-    const interval = setInterval(() => {
-      setActiveAnnouncementIndex(prev => (prev + 1) % activeAnnouncements.length);
-    }, siteSettings.announcements.rotationSpeed || 3500);
-
-    return () => clearInterval(interval);
-  }, [siteSettings, activeAnnouncements]);
 
   // Mini converter functions
   const handleConverterInputChange = (field, value) => {
@@ -154,24 +143,14 @@ const Home = () => {
             )}
 
             <div className="home-announcement-track">
-              <div key={activeAnnouncementIndex} className="home-announcement-message">
-                {activeAnnouncements[activeAnnouncementIndex]?.text}
-              </div>
-            </div>
-
-            {activeAnnouncements.length > 1 && (
-              <div className="home-announcement-dots">
-                {activeAnnouncements.map((_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className={`home-announcement-dot ${index === activeAnnouncementIndex ? 'active' : ''}`}
-                    onClick={() => setActiveAnnouncementIndex(index)}
-                    aria-label={`Show announcement ${index + 1}`}
-                  />
+              <div className="home-announcement-message home-announcement-marquee">
+                {[...activeAnnouncements, ...activeAnnouncements].map((announcement, index) => (
+                  <span key={`${announcement.text}-${index}`} className="home-announcement-marquee-item">
+                    {announcement.text}
+                  </span>
                 ))}
               </div>
-            )}
+            </div>
           </div>
         </section>
       )}
@@ -248,15 +227,6 @@ const Home = () => {
                   </div>
                 </div>
                 <span className="hero-live-pill">Live</span>
-              </div>
-
-              <div className="hero-preview-match">
-                <span className="hero-preview-league">Featured match</span>
-                <strong>{featuredMatches[0] ? `${featuredMatches[0].homeTeam?.name} vs ${featuredMatches[0].awayTeam?.name}` : 'Daily match insights'}</strong>
-                <div className="hero-preview-pick-row">
-                  <span>Top signal</span>
-                  <strong>{featuredMatches[0]?.predictions?.[0]?.prediction || 'Available from live API data'}</strong>
-                </div>
               </div>
 
               <div className="hero-preview-grid">
