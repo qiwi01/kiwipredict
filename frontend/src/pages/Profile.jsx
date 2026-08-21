@@ -102,20 +102,19 @@ const Profile = () => {
         </section>
       )}
 
-      <section className="profile-dashboard-hero">
+      <section className="profile-dashboard-hero profile-dashboard-standard">
         <div className="profile-dashboard-copy">
           <span className="profile-dashboard-badge">
             <LayoutDashboard size={16} />
-            Member Dashboard
+            Member Console
           </span>
           <h1 className="profile-dashboard-title">Welcome back, {user.username}</h1>
           <p className="profile-dashboard-subtitle">
-            Your central workspace for semi-AI daily football picks, VIP access, saved teams, account status,
-            outcomes, and important platform updates.
+            Start from today&apos;s picks, check your membership status, save teams you follow, and move quickly to VIP tools.
           </p>
           <div className="profile-dashboard-actions">
             <Link to="/predictions/today/win" className="profile-dashboard-primary-btn">
-              View Today&apos;s Predictions
+              Open Today&apos;s Picks
               <ArrowRight className="profile-btn-icon" />
             </Link>
             <Link to={vipLink} className="profile-dashboard-secondary-btn">
@@ -147,14 +146,18 @@ const Profile = () => {
             <span className="profile-summary-label"><ShieldCheck size={16} /> Access</span>
             <strong className="profile-summary-value">{user.role === 'admin' ? 'Administrator' : 'Member'}</strong>
           </div>
+          <div className="profile-summary-mini-actions">
+            <Link to="/outcomes">View outcomes</Link>
+            <Link to="/vip/converter">Bet converter</Link>
+          </div>
         </div>
       </section>
 
       <section className="profile-stats">
         <div className="profile-stats-header">
           <div>
-            <span className="profile-section-eyebrow">Account overview</span>
-            <h2 className="profile-stats-title">Quick Stats</h2>
+            <span className="profile-section-eyebrow">Your workspace</span>
+            <h2 className="profile-stats-title">Dashboard Summary</h2>
           </div>
           <span className={`profile-status-pill ${user.isActive ? 'active' : 'inactive'}`}>
             {user.isActive ? 'Active Account' : 'Inactive Account'}
@@ -189,8 +192,8 @@ const Profile = () => {
           <div className="profile-section-header">
             <Target className="profile-section-icon" />
             <div>
-              <h2 className="profile-section-title">Next Best Actions</h2>
-              <p className="profile-section-subtitle">Jump straight into the most-used member areas.</p>
+              <h2 className="profile-section-title">Quick Actions</h2>
+              <p className="profile-section-subtitle">Use these shortcuts to continue from the most important areas.</p>
             </div>
           </div>
 
@@ -198,24 +201,24 @@ const Profile = () => {
             <Link to="/predictions/top-picks" className="profile-action-card">
               <TrendingUp className="profile-action-icon" />
               <div>
-                <strong>Top Picks</strong>
-                <span>See the strongest predictions selected for today.</span>
+                <strong>Today&apos;s Top Picks</strong>
+                <span>Go straight to the strongest available prediction list.</span>
               </div>
               <ArrowRight size={18} />
             </Link>
             <Link to="/predictions/today/over25" className="profile-action-card">
               <Zap className="profile-action-icon" />
               <div>
-                <strong>Over 2.5 Goals</strong>
-                <span>Open one of the most popular prediction markets.</span>
+                <strong>Goal Markets</strong>
+                <span>Open popular over/under prediction markets quickly.</span>
               </div>
               <ArrowRight size={18} />
             </Link>
             <Link to={vipLink} className="profile-action-card premium">
               <Star className="profile-action-icon" />
               <div>
-                <strong>VIP Predictions</strong>
-                <span>{user.vipTier === 'none' ? 'Upgrade for premium picks.' : 'Continue to your premium area.'}</span>
+                <strong>VIP Area</strong>
+                <span>{user.vipTier === 'none' ? 'Upgrade when you want premium selections.' : 'Continue to your premium picks and tools.'}</span>
               </div>
               <ArrowRight size={18} />
             </Link>

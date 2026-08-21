@@ -116,7 +116,7 @@ const Home = () => {
       }
     } catch (error) {
       if (error.response?.status === 403) {
-        setConverterError('VIP membership required to use the bet converter. Upgrade now to access this premium feature!');
+        setConverterError('Bet converter access is included with VIP membership. Upgrade when you are ready to convert booking codes.');
       } else {
         const errorMessage = error.response?.data?.error || 'Conversion failed';
         setConverterError(errorMessage);
@@ -155,8 +155,8 @@ const Home = () => {
         </section>
       )}
 
-      {/* Hero Section - Redesigned */}
-      <section className="home-hero">
+      {/* Hero Section - Standard landing layout */}
+      <section className="home-hero home-hero-standard">
         <div className="hero-bg-layer">
           <div className="hero-bg-gradient"></div>
           <div className="hero-bg-pattern"></div>
@@ -166,69 +166,43 @@ const Home = () => {
 
         <div className="hero-content">
           {/* Main hero content */}
-          <div className={`hero-main ${user ? 'hero-main-authenticated' : ''}`}>
+          <div className={`hero-main hero-main-standard ${user ? 'hero-main-authenticated' : ''}`}>
             {!user && (
-              <div className="hero-copy-panel">
+              <div className="hero-copy-panel hero-copy-panel-standard">
+                <span className="hero-standard-eyebrow">
+                  <Sparkles size={16} /> Semi-AI football insight platform
+                </span>
                 <div className="hero-text-block">
                   <h1 className="hero-headline">
-                    <span className="hero-headline-accent">Semi-AI</span> Football Predictions,
+                    Make smarter football decisions with
                     <br />
-                    Organized for Better Decisions
+                    <span className="hero-headline-accent">organized predictions</span>
                   </h1>
                   <p className="hero-subheadline">
-                    Kiwi Predict blends structured match data, algorithm-assisted signals, and human review to give fans
-                    cleaner daily football predictions, VIP markets, and transparent result tracking.
+                    Kiwi Predict gives you a cleaner way to review daily picks, VIP markets, and completed outcomes.
+                    We combine structured match data, algorithm-assisted signals, and human review into one simple workspace.
                   </p>
-                </div>
-
-                <div className="hero-highlight-grid">
-                  <div className="hero-highlight-card">
-                    <Sparkles className="hero-highlight-icon" />
-                    <div>
-                      <strong>Semi-AI prediction hub</strong>
-                      <span>Data-assisted picks are arranged by market so visitors can understand what to check first.</span>
-                    </div>
-                  </div>
-                  <div className="hero-highlight-card">
-                    <LayoutDashboard className="hero-highlight-icon" />
-                    <div>
-                      <strong>Clear match workflow</strong>
-                      <span>Start with today&apos;s matches, compare top signals, then review recent outcomes before joining.</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="hero-guest-steps" aria-label="How Kiwi Predict works">
-                  <div className="hero-guest-step">
-                    <span>01</span>
-                    <strong>Analyze</strong>
-                    <small>Fixtures, form cues, markets, and probabilities are grouped into simple signals.</small>
-                  </div>
-                  <div className="hero-guest-step">
-                    <span>02</span>
-                    <strong>Review</strong>
-                    <small>Predictions are organized by confidence, market type, and available access level.</small>
-                  </div>
-                  <div className="hero-guest-step">
-                    <span>03</span>
-                    <strong>Track</strong>
-                    <small>Outcomes stay visible so users can judge performance from recent and older results.</small>
-                  </div>
                 </div>
 
                 <div className="hero-actions">
                   <Link to="/predictions" className="hero-btn-primary">
                     <TrendingUp size={20} />
-                    <span>View Predictions</span>
+                    <span>Explore Predictions</span>
                   </Link>
                   <Link to="/register" className="hero-btn-secondary">
-                    Get Started Free
+                    Join Free
                   </Link>
+                </div>
+
+                <div className="hero-standard-points" aria-label="Platform strengths">
+                  <span><Target size={15} /> Daily market picks</span>
+                  <span><ShieldCheck size={15} /> Outcome tracking</span>
+                  <span><Crown size={15} /> VIP selections</span>
                 </div>
               </div>
             )}
 
-            <aside className="hero-preview-card" aria-label="Platform preview">
+            <aside className="hero-preview-card hero-preview-standard" aria-label="Platform preview">
               <div className="hero-preview-top">
                 <div className="hero-preview-brand">
                   <img
@@ -240,8 +214,8 @@ const Home = () => {
                     }}
                   />
                   <div>
-                    <span className="hero-preview-kicker">Semi-AI workspace</span>
-                    <strong>Prediction Dashboard</strong>
+                    <span className="hero-preview-kicker">Today&apos;s workspace</span>
+                    <strong>Prediction Overview</strong>
                   </div>
                 </div>
                 <span className="hero-live-pill">Live</span>
@@ -263,9 +237,9 @@ const Home = () => {
               </div>
 
               <div className="hero-preview-list">
-                <div><Target size={16} /><span>Semi-AI assisted markets and confidence signals</span></div>
-                <div><ShieldCheck size={16} /><span>No fake match fallbacks; API-only fixtures</span></div>
-                <div><LayoutDashboard size={16} /><span>Clean member dashboard and quick actions</span></div>
+                <div><Target size={16} /><span>Browse picks by market and confidence</span></div>
+                <div><ShieldCheck size={16} /><span>Review results before trusting any signal</span></div>
+                <div><LayoutDashboard size={16} /><span>Keep predictions, VIP, and tools easy to reach</span></div>
               </div>
 
               {user && (

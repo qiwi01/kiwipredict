@@ -20,6 +20,7 @@ import AdminLogin from './pages/AdminLogin';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Outcomes from './pages/Outcomes';
+import Contact from './pages/Contact';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -143,6 +144,7 @@ function AppContent() {
           <Routes>
             {/* Home page - accessible without authentication */}
             <Route path="/" element={<Home />} />
+            <Route path="/contact" element={<Contact />} />
 
             {/* All other routes require authentication */}
             <Route path="/predictions" element={

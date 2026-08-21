@@ -148,6 +148,10 @@ const Navbar = () => {
               Home
             </Link>
 
+            <Link to="/contact" className="navbar-link navbar-link-contact">
+              Contact
+            </Link>
+
             {/* Predictions Main Dropdown */}
             <div className="navbar-dropdown" ref={predictionsDropdownRef}>
               <button
@@ -454,6 +458,11 @@ const Navbar = () => {
             <Link to="/" className="navbar-mobile-link" onClick={closeMobileMenu}>
               <span className="navbar-mobile-link-icon">🏠</span>
               <span>Home</span>
+            </Link>
+
+            <Link to="/contact" className="navbar-mobile-link" onClick={closeMobileMenu}>
+              <span className="navbar-mobile-link-icon">✉️</span>
+              <span>Contact</span>
             </Link>
 
             {/* Today's Predictions Submenu */}

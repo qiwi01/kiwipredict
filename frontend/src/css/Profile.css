@@ -257,6 +257,31 @@
   border-color: var(--gray-700);
 }
 
+/* Keep profile hero/readability correct in dark mode */
+.dark .profile-dashboard-badge,
+.dark .profile-dashboard-badge svg,
+.dark .profile-dashboard-title,
+.dark .profile-dashboard-subtitle,
+.dark .profile-dashboard-secondary-btn,
+.dark .profile-dashboard-secondary-btn svg,
+.dark .profile-dashboard-secondary-btn span {
+  color: #f8fafc !important;
+}
+
+.dark .profile-dashboard-subtitle {
+  color: #dbeafe !important;
+}
+
+.dark .profile-dashboard-secondary-btn {
+  background: rgba(30, 41, 59, 0.92) !important;
+  border-color: rgba(203, 213, 225, 0.26) !important;
+}
+
+.dark .profile-dashboard-secondary-btn:hover {
+  background: rgba(51, 65, 85, 0.98) !important;
+  color: #ffffff !important;
+}
+
 .profile-dashboard-summary-card {
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -642,6 +667,168 @@
 
 .dark .profile-loading-text {
   color: var(--gray-400);
+}
+
+/* ===== STANDARD MEMBER DASHBOARD REDESIGN - FINAL LAYER ===== */
+.profile-container {
+  max-width: 1280px;
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.profile-dashboard-standard {
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.72fr) !important;
+  align-items: stretch;
+  gap: clamp(1rem, 3vw, 2rem) !important;
+  margin-bottom: 1.25rem !important;
+  padding: clamp(1.35rem, 4vw, 2.4rem) !important;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(37, 99, 235, 0.16), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(20, 184, 166, 0.13), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.9)) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+.dark .profile-dashboard-standard {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(96, 165, 250, 0.18), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(45, 212, 191, 0.13), transparent 32%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.94)) !important;
+  border-color: rgba(203, 213, 225, 0.18) !important;
+}
+
+.profile-dashboard-standard .profile-dashboard-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-dashboard-standard .profile-dashboard-title {
+  font-size: clamp(2rem, 4vw, 3.2rem) !important;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+.profile-dashboard-standard .profile-dashboard-subtitle {
+  max-width: 640px;
+  font-size: 1rem;
+  color: #475569;
+}
+
+.dark .profile-dashboard-standard .profile-dashboard-subtitle {
+  color: #dbeafe !important;
+}
+
+.profile-dashboard-standard .profile-dashboard-primary-btn,
+.profile-dashboard-standard .profile-dashboard-secondary-btn {
+  border-radius: 14px;
+  min-height: 3rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.profile-dashboard-standard .profile-dashboard-primary-btn:hover,
+.profile-dashboard-standard .profile-dashboard-secondary-btn:hover {
+  transform: translateY(-2px);
+}
+
+.profile-dashboard-summary-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+.dark .profile-dashboard-summary-card {
+  background: rgba(15, 23, 42, 0.78) !important;
+  border-color: rgba(203, 213, 225, 0.16) !important;
+}
+
+.profile-summary-mini-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.profile-summary-mini-actions a {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 2.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary-700);
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 0.84rem;
+}
+
+.dark .profile-summary-mini-actions a {
+  background: rgba(96, 165, 250, 0.16);
+  color: #dbeafe;
+}
+
+.profile-stats {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.profile-stat-item {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+.dark .profile-stat-item {
+  background: rgba(15, 23, 42, 0.86) !important;
+  border-color: rgba(203, 213, 225, 0.16) !important;
+}
+
+.profile-dashboard-grid {
+  align-items: start;
+  gap: 1rem !important;
+}
+
+.profile-action-card {
+  border-radius: 18px !important;
+}
+
+@media (max-width: 900px) {
+  .profile-dashboard-standard {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .profile-dashboard-actions,
+  .profile-summary-mini-actions,
+  .profile-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-dashboard-actions {
+    display: grid;
+  }
+
+  .profile-dashboard-standard .profile-dashboard-primary-btn,
+  .profile-dashboard-standard .profile-dashboard-secondary-btn {
+    justify-content: center;
+  }
 }
 
 /* ===== EMPTY STATES ===== */
