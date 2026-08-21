@@ -110,8 +110,8 @@ const Profile = () => {
           </span>
           <h1 className="profile-dashboard-title">Welcome back, {user.username}</h1>
           <p className="profile-dashboard-subtitle">
-            Your central betting workspace for daily football picks, VIP access, saved teams, account status,
-            and important platform updates.
+            Your central workspace for semi-AI daily football picks, VIP access, saved teams, account status,
+            outcomes, and important platform updates.
           </p>
           <div className="profile-dashboard-actions">
             <Link to="/predictions/today/win" className="profile-dashboard-primary-btn">

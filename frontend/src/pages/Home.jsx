@@ -171,13 +171,13 @@ const Home = () => {
               <div className="hero-copy-panel">
                 <div className="hero-text-block">
                   <h1 className="hero-headline">
-                    <span className="hero-headline-accent">Smarter</span> Football Insights,
+                    <span className="hero-headline-accent">Semi-AI</span> Football Predictions,
                     <br />
-                    Built for Better Decisions
+                    Organized for Better Decisions
                   </h1>
                   <p className="hero-subheadline">
-                    Follow daily football predictions, value picks, VIP markets, and result tracking from one clean,
-                    data-led platform built for serious fans.
+                    Kiwi Predict blends structured match data, algorithm-assisted signals, and human review to give fans
+                    cleaner daily football predictions, VIP markets, and transparent result tracking.
                   </p>
                 </div>
 
@@ -185,16 +185,34 @@ const Home = () => {
                   <div className="hero-highlight-card">
                     <Sparkles className="hero-highlight-icon" />
                     <div>
-                      <strong>Daily prediction hub</strong>
-                      <span>Move quickly between today&apos;s picks, top markets, and VIP selections.</span>
+                      <strong>Semi-AI prediction hub</strong>
+                      <span>Data-assisted picks are arranged by market so visitors can understand what to check first.</span>
                     </div>
                   </div>
                   <div className="hero-highlight-card">
                     <LayoutDashboard className="hero-highlight-icon" />
                     <div>
-                      <strong>Member-first dashboard</strong>
-                      <span>Keep announcements, actions, and account status easy to find.</span>
+                      <strong>Clear match workflow</strong>
+                      <span>Start with today&apos;s matches, compare top signals, then review recent outcomes before joining.</span>
                     </div>
+                  </div>
+                </div>
+
+                <div className="hero-guest-steps" aria-label="How Kiwi Predict works">
+                  <div className="hero-guest-step">
+                    <span>01</span>
+                    <strong>Analyze</strong>
+                    <small>Fixtures, form cues, markets, and probabilities are grouped into simple signals.</small>
+                  </div>
+                  <div className="hero-guest-step">
+                    <span>02</span>
+                    <strong>Review</strong>
+                    <small>Predictions are organized by confidence, market type, and available access level.</small>
+                  </div>
+                  <div className="hero-guest-step">
+                    <span>03</span>
+                    <strong>Track</strong>
+                    <small>Outcomes stay visible so users can judge performance from recent and older results.</small>
                   </div>
                 </div>
 
@@ -222,7 +240,7 @@ const Home = () => {
                     }}
                   />
                   <div>
-                    <span className="hero-preview-kicker">Today&apos;s workspace</span>
+                    <span className="hero-preview-kicker">Semi-AI workspace</span>
                     <strong>Prediction Dashboard</strong>
                   </div>
                 </div>
@@ -245,7 +263,7 @@ const Home = () => {
               </div>
 
               <div className="hero-preview-list">
-                <div><Target size={16} /><span>Organized markets and confidence signals</span></div>
+                <div><Target size={16} /><span>Semi-AI assisted markets and confidence signals</span></div>
                 <div><ShieldCheck size={16} /><span>No fake match fallbacks; API-only fixtures</span></div>
                 <div><LayoutDashboard size={16} /><span>Clean member dashboard and quick actions</span></div>
               </div>

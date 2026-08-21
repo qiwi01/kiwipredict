@@ -229,7 +229,7 @@ const VIP = () => {
           <div>
             <h1 className="vip-title">Unlock VIP Access</h1>
             <p className="vip-subtitle">
-              Join thousands of successful bettors who trust our premium predictions
+              Unlock premium semi-AI football predictions built from data signals, market context, and expert review
             </p>
           </div>
         </div>

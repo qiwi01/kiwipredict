@@ -353,6 +353,51 @@
   color: var(--gray-300) !important;
 }
 
+/* ===== BROADER DARK MODE READABILITY FOR PREDICTIONS / OUTCOMES / VIP-CARD VIEWS ===== */
+.dark .predictions-container,
+.dark .predictions-content,
+.dark .predictions-grid,
+.dark .predictions-stats,
+.dark .predictions-empty {
+  color: #f8fafc;
+}
+
+.dark .predictions-stat-card,
+.dark .predictions-match-card,
+.dark .admin-match-card,
+.dark .admin-prediction-item-display,
+.dark .predictions-outcome-item,
+.dark .predictions-empty {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(203, 213, 225, 0.22) !important;
+}
+
+.dark .predictions-stat-value,
+.dark .predictions-stat-label,
+.dark .predictions-empty-description,
+.dark .predictions-loading-text,
+.dark .admin-prediction-type-label,
+.dark .admin-no-predictions,
+.dark .admin-no-predictions span,
+.dark .outcomes-section-count-badge {
+  color: #f8fafc !important;
+}
+
+.dark .outcomes-date-display span,
+.dark .outcomes-section-tab span,
+.dark .outcomes-section-count,
+.dark .predictions-match-score,
+.dark .predictions-score {
+  color: #f8fafc !important;
+}
+
+.dark .predictions-outcome-badge.correct,
+.dark .predictions-outcome-badge.incorrect,
+.dark .predictions-vip-badge,
+.dark .predictions-vip-badge span {
+  color: #ffffff !important;
+}
+
 .predictions-filter-btn:not(.active) {
   background: var(--gray-100);
   color: var(--gray-900);

@@ -22,7 +22,7 @@ const Outcomes = () => {
   const fetchOutcomes = async () => {
     try {
       setLoading(true);
-      const params = selectedDate ? { date: selectedDate } : { days: 30 };
+      const params = selectedDate ? { date: selectedDate } : {};
       const response = await api.get('/api/outcomes', { params });
       setOutcomesData(response.data);
     } catch (err) {
@@ -187,7 +187,7 @@ const Outcomes = () => {
             Prediction Outcomes
           </h1>
           <p className="predictions-subtitle">
-            Track the accuracy of past predictions and analyze performance
+            Track every completed prediction outcome, with the most recent results shown first
           </p>
         </div>
       </div>

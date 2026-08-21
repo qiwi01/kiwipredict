@@ -734,6 +734,52 @@
   color: var(--gray-400);
 }
 
+/* ===== VIP DARK MODE READABILITY PASS ===== */
+.dark .vip-container,
+.dark .vip-pricing,
+.dark .vip-tier-selection,
+.dark .vip-features,
+.dark .vip-testimonials {
+  color: #f8fafc;
+}
+
+.dark .vip-pricing-card,
+.dark .vip-feature-card,
+.dark .vip-testimonial,
+.dark .vip-tier-btn,
+.dark .vip-benefit {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(203, 213, 225, 0.22) !important;
+}
+
+.dark .vip-pricing-card.selected,
+.dark .vip-tier-btn.selected {
+  background: linear-gradient(135deg, rgba(120, 53, 15, 0.94), rgba(30, 41, 59, 0.94)) !important;
+}
+
+.dark .vip-pricing-title,
+.dark .vip-pricing-price,
+.dark .vip-price-currency,
+.dark .vip-price-period,
+.dark .vip-benefits-title,
+.dark .vip-benefit-stat,
+.dark .vip-tier-info h3,
+.dark .vip-feature-title,
+.dark .vip-testimonials-title,
+.dark .vip-author-name {
+  color: #f8fafc !important;
+}
+
+.dark .vip-subtitle,
+.dark .vip-feature-description,
+.dark .vip-feature-item,
+.dark .vip-benefit-label,
+.dark .vip-security-note,
+.dark .vip-testimonial-content,
+.dark .vip-tier-info p {
+  color: #dbeafe !important;
+}
+
 /* ===== ACCESSIBILITY ===== */
 @media (prefers-reduced-motion: reduce) {
   .vip-feature-card,

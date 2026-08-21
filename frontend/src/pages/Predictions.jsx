@@ -212,7 +212,7 @@ const Predictions = () => {
       case 'today-win':
         return {
           title: "Today's Win/Draw Predictions",
-          subtitle: "AI-powered match winner predictions for today's football matches"
+          subtitle: "Semi-AI match winner predictions for today's football matches, reviewed and organized for clarity"
         };
       case 'today-over15':
         return {
@@ -232,7 +232,7 @@ const Predictions = () => {
       case 'today-corners':
         return {
           title: "Today's Corner Predictions",
-          subtitle: "AI predictions for corner kicks in today's matches"
+          subtitle: "Semi-AI corner kick predictions for today's matches"
         };
       case 'today-ggng':
         return {
@@ -247,7 +247,7 @@ const Predictions = () => {
       case 'today-players':
         return {
           title: "Today's Player Predictions",
-          subtitle: "AI predictions for player performances and scoring today"
+          subtitle: "Semi-AI predictions for player performances and scoring today"
         };
       case 'top-picks':
         return {
@@ -297,12 +297,12 @@ const Predictions = () => {
       case 'vip':
         return {
           title: "VIP Predictions",
-          subtitle: "Premium predictions with enhanced accuracy algorithms"
+          subtitle: "Premium semi-AI predictions with enhanced data checks and market organization"
         };
       case 'all-win':
         return {
           title: "Win/Draw Predictions",
-          subtitle: "AI-powered match winner predictions for all upcoming matches"
+          subtitle: "Semi-AI match winner predictions for all upcoming matches"
         };
       case 'all-over15':
         return {
@@ -322,7 +322,7 @@ const Predictions = () => {
       case 'all-corners':
         return {
           title: "Corner Predictions",
-          subtitle: "AI predictions for corner kicks in all upcoming matches"
+          subtitle: "Semi-AI corner kick predictions for all upcoming matches"
         };
       case 'all-ggng':
         return {
@@ -337,12 +337,12 @@ const Predictions = () => {
       case 'all-players':
         return {
           title: "Player Predictions",
-          subtitle: "AI predictions for player performances and scoring"
+          subtitle: "Semi-AI predictions for player performances and scoring"
         };
       default:
         return {
-          title: "AI Predictions",
-          subtitle: "Professional predictions powered by advanced algorithms using Poisson distribution modeling, statistical home advantage analysis, and real-time bookmaker odds comparison for maximum accuracy."
+          title: "Semi-AI Predictions",
+          subtitle: "Professional football predictions supported by algorithmic data signals, statistical review, market context, and human oversight."
         };
     }
   };

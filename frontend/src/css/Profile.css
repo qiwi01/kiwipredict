@@ -7,17 +7,61 @@
   padding: var(--space-6) var(--space-4);
 }
 
+.profile-container:has(.profile-announcement-card) {
+  padding-top: 0;
+}
+
 .profile-announcement-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: var(--space-4);
   align-items: center;
-  margin-bottom: var(--space-6);
+  margin: 0 calc(-1 * var(--space-4)) var(--space-6);
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-2xl);
   background: linear-gradient(135deg, #d4af37 0%, #f6d365 48%, #b8860b 100%);
   border: 1px solid rgba(120, 72, 0, 0.3);
   box-shadow: 0 18px 42px rgba(180, 120, 0, 0.18);
+}
+
+/* ===== PROFILE DARK MODE READABILITY PASS ===== */
+.dark .profile-container,
+.dark .profile-section,
+.dark .profile-stats,
+.dark .profile-dashboard-grid,
+.dark .profile-actions-panel {
+  color: #f8fafc;
+}
+
+.dark .profile-section,
+.dark .profile-stat-item,
+.dark .profile-action-card,
+.dark .profile-empty-panel {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(203, 213, 225, 0.2) !important;
+}
+
+.dark .profile-section-title,
+.dark .profile-stats-title,
+.dark .profile-stat-value,
+.dark .profile-action-card strong,
+.dark .profile-summary-top h2,
+.dark .profile-summary-value,
+.dark .profile-overview-value,
+.dark .profile-favorite-name {
+  color: #f8fafc !important;
+}
+
+.dark .profile-section-subtitle,
+.dark .profile-section-eyebrow,
+.dark .profile-stat-label,
+.dark .profile-action-card span,
+.dark .profile-summary-label,
+.dark .profile-summary-top p,
+.dark .profile-overview-kicker,
+.dark .profile-empty-text,
+.dark .profile-loading-text {
+  color: #dbeafe !important;
 }
 
 .profile-announcement-label {
