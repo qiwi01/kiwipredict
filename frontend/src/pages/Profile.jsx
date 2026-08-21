@@ -26,7 +26,6 @@ const Profile = () => {
   const [favorites, setFavorites] = useState([]);
   const [newFavorite, setNewFavorite] = useState('');
   const [siteSettings, setSiteSettings] = useState(null);
-  const [activeAnnouncementIndex, setActiveAnnouncementIndex] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -43,16 +42,6 @@ const Profile = () => {
   const activeAnnouncements = useMemo(() => (
     siteSettings?.announcements?.items?.filter(item => item.isActive) || []
   ), [siteSettings]);
-
-  useEffect(() => {
-    if (!siteSettings?.announcements?.enabled || activeAnnouncements.length <= 1) return undefined;
-
-    const interval = setInterval(() => {
-      setActiveAnnouncementIndex(prev => (prev + 1) % activeAnnouncements.length);
-    }, siteSettings.announcements.rotationSpeed || 3500);
-
-    return () => clearInterval(interval);
-  }, [siteSettings, activeAnnouncements]);
 
   const addFavorite = async () => {
     if (!newFavorite.trim()) return;
@@ -101,23 +90,15 @@ const Profile = () => {
             </div>
           )}
 
-          <p key={activeAnnouncementIndex} className="profile-announcement-message">
-            {activeAnnouncements[activeAnnouncementIndex]?.text}
-          </p>
-
-          {activeAnnouncements.length > 1 && (
-            <div className="profile-announcement-dots">
-              {activeAnnouncements.map((_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  className={`profile-announcement-dot ${index === activeAnnouncementIndex ? 'active' : ''}`}
-                  onClick={() => setActiveAnnouncementIndex(index)}
-                  aria-label={`Show announcement ${index + 1}`}
-                />
+          <div className="profile-announcement-track">
+            <div className="profile-announcement-message profile-announcement-marquee">
+              {[...activeAnnouncements, ...activeAnnouncements].map((announcement, index) => (
+                <span key={`${announcement.text}-${index}`} className="profile-announcement-marquee-item">
+                  {announcement.text}
+                </span>
               ))}
             </div>
-          )}
+          </div>
         </section>
       )}
 

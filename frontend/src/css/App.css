@@ -315,6 +315,35 @@
   border-width: 0;
   border-style: solid;
   border-color: currentColor;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus,
+[role="button"]:focus {
+  outline: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.28);
 }
 
 html {
@@ -343,6 +372,22 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: var(--transition-colors);
+}
+
+.kiwi-toast {
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(148, 163, 184, 0.28) !important;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 700 !important;
+}
+
+.dark .kiwi-toast {
+  background: rgba(15, 23, 42, 0.96) !important;
+  color: #f8fafc !important;
+  border-color: rgba(203, 213, 225, 0.22) !important;
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.5) !important;
 }
 
 .dark body {

@@ -9,23 +9,24 @@
 
 .profile-announcement-card {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: var(--space-4);
   align-items: center;
   margin-bottom: var(--space-6);
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-2xl);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.94));
-  border: 1px solid rgba(96, 165, 250, 0.18);
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+  background: linear-gradient(135deg, #d4af37 0%, #f6d365 48%, #b8860b 100%);
+  border: 1px solid rgba(120, 72, 0, 0.3);
+  box-shadow: 0 18px 42px rgba(180, 120, 0, 0.18);
 }
 
 .profile-announcement-label {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  color: #f8fafc;
+  color: #1f2937;
   font-size: var(--font-size-sm);
+  font-weight: 800;
   white-space: nowrap;
 }
 
@@ -33,7 +34,7 @@
   width: 0.65rem;
   height: 0.65rem;
   border-radius: var(--radius-full);
-  background: var(--success-400);
+  background: #14532d;
   box-shadow: 0 0 0 rgba(52, 211, 153, 0.7);
   animation: profileAnnouncementPulse 2s infinite;
 }
@@ -46,14 +47,51 @@
 
 .profile-announcement-message {
   margin: 0;
-  color: rgba(255, 255, 255, 0.9);
+  color: #1f2937;
   line-height: 1.6;
-  animation: profileAnnouncementSlide 0.35s ease;
+  font-weight: 800;
+}
+
+.profile-announcement-track {
+  overflow: hidden;
+  min-width: 0;
+}
+
+.profile-announcement-marquee {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+  width: max-content;
+  max-width: none;
+  white-space: nowrap;
+  animation: profileAnnouncementMarquee 24s linear infinite;
+  will-change: transform;
+}
+
+.profile-announcement-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.profile-announcement-marquee-item::after {
+  content: '•';
+  margin-left: 2.5rem;
+  opacity: 0.7;
+}
+
+.profile-announcement-track:hover .profile-announcement-marquee {
+  animation-play-state: paused;
 }
 
 @keyframes profileAnnouncementSlide {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes profileAnnouncementMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 .profile-announcement-dots {
@@ -833,10 +871,25 @@
 }
 
 @media (max-width: 900px) {
-  .profile-announcement-card,
   .profile-dashboard-hero,
   .profile-dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .profile-announcement-card {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  .profile-announcement-label {
+    flex: 0 0 auto;
+  }
+
+  .profile-announcement-track {
+    flex: 1 1 auto;
   }
 
   .profile-announcement-dots {

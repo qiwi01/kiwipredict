@@ -271,11 +271,65 @@
 
 .dark .predictions-subtitle,
 .dark .predictions-match-league,
+.dark .predictions-match-meta,
+.dark .predictions-match-meta-item,
+.dark .predictions-match-meta-item span,
+.dark .predictions-match-icon,
 .dark .admin-match-league,
 .dark .admin-prediction-confidence,
 .dark .predictions-outcome-label,
+.dark .predictions-outcome-type,
+.dark .predictions-outcome-prediction,
+.dark .predictions-strength-label,
+.dark .predictions-odds-label,
+.dark .predictions-odds-bookmaker,
 .dark .predictions-no-matches-subtitle {
-  color: var(--gray-300) !important;
+  color: #dbeafe !important;
+}
+
+.dark .predictions-filter-btn,
+.dark .predictions-league-select,
+.dark .predictions-date-select,
+.dark .converter-select,
+.dark .converter-select option,
+.dark .converter-input,
+.dark .converter-label,
+.dark .converter-help,
+.dark .converter-reset-btn,
+.dark .result-title,
+.dark .result-label,
+.dark .result-value,
+.dark .result-code,
+.dark .result-notice,
+.dark .predictions-prediction-btn,
+.dark .outcomes-date-btn,
+.dark .outcomes-date-display,
+.dark .outcomes-section-tab,
+.dark .outcomes-section-count,
+.dark .predictions-modal,
+.dark .predictions-modal input,
+.dark .predictions-modal select,
+.dark .predictions-modal textarea {
+  color: #f8fafc !important;
+}
+
+.dark .predictions-match-card,
+.dark .predictions-single-prediction,
+.dark .predictions-outcome-item,
+.dark .outcomes-date-nav,
+.dark .outcomes-date-btn,
+.dark .outcomes-date-display,
+.dark .outcomes-section-tab,
+.dark .outcomes-section-header {
+  border-color: rgba(203, 213, 225, 0.22) !important;
+}
+
+.dark .outcomes-section-tab.active,
+.dark .outcomes-section-tab.active span,
+.dark .outcomes-section-tab.active .outcomes-section-count,
+.dark .outcomes-date-reset,
+.dark .predictions-filter-btn.active {
+  color: #ffffff !important;
 }
 
 .dark .predictions-filter-btn,

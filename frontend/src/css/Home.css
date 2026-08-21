@@ -2099,8 +2099,8 @@
   .home-matches-section {
     margin-left: 0 !important;
     margin-right: 0 !important;
-    padding-left: 0.45rem !important;
-    padding-right: 0.45rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
 
   .home-matches-grid {
@@ -2123,7 +2123,17 @@
   }
 
   .home-announcement-shell {
+    display: flex;
+    flex-wrap: nowrap;
     gap: 0.65rem;
+  }
+
+  .home-announcement-label-wrap {
+    flex: 0 0 auto;
+  }
+
+  .home-announcement-track {
+    flex: 1 1 auto;
   }
 
   .home-announcement-label {
@@ -2159,7 +2169,15 @@
 .dark .home-empty-description,
 .dark .home-converter-subtitle,
 .dark .home-metric-label,
-.dark .hero-preview-mini-card small {
+.dark .hero-preview-mini-card small,
+.dark .home-match-meta-item,
+.dark .home-match-meta-item span,
+.dark .home-match-meta-item svg,
+.dark .mini-converter-select,
+.dark .mini-converter-code,
+.dark .mini-converter-select option,
+.dark .hero-btn-secondary,
+.dark .hero-btn-secondary span {
   color: #dbeafe !important;
 }
 
