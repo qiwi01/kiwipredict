@@ -1602,7 +1602,13 @@
 }
 
 .hero-preview-mini-card.accent {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(20, 184, 166, 0.12));
+  background: rgba(255, 255, 255, 0.76);
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+.dark .hero-preview-mini-card.accent {
+  background: rgba(30, 41, 59, 0.72);
+  border-color: rgba(148, 163, 184, 0.18);
 }
 
 .hero-preview-list {

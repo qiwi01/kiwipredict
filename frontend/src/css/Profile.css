@@ -18,7 +18,7 @@
   align-items: center;
   margin: 0 calc(-1 * var(--space-4)) var(--space-6);
   padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-2xl);
+  border-radius: 0;
   background: linear-gradient(135deg, #d4af37 0%, #f6d365 48%, #b8860b 100%);
   border: 1px solid rgba(120, 72, 0, 0.3);
   box-shadow: 0 18px 42px rgba(180, 120, 0, 0.18);
@@ -765,6 +765,13 @@
   max-width: 640px;
   font-size: 1rem;
   color: #475569;
+}
+
+.profile-dashboard-standard,
+.profile-dashboard-standard.profile-section {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .dark .profile-dashboard-standard .profile-dashboard-subtitle {

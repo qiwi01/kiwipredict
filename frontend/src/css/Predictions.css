@@ -2283,7 +2283,8 @@ padding: var(--space-3);
 }
 
 .dark .outcomes-section-header {
-  background: linear-gradient(135deg, var(--gray-900), var(--gray-800));
+  background: linear-gradient(135deg, #020617, #0f172a) !important;
+  border: 1px solid rgba(203, 213, 225, 0.16) !important;
 }
 
 .outcomes-section-icon {
@@ -2300,7 +2301,38 @@ padding: var(--space-3);
 }
 
 .dark .outcomes-section-title {
-  color: var(--gray-100);
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+.dark .outcomes-section-header,
+.dark .outcomes-section-header * {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+.admin-prediction-item-display.locked {
+  border-style: dashed;
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.admin-prediction-item-display.locked .admin-prediction-value {
+  letter-spacing: 0.08em;
+  filter: blur(0.3px);
+}
+
+.admin-prediction-item-display.locked .admin-prediction-confidence {
+  color: var(--warning-700);
+  font-weight: 800;
+}
+
+.dark .admin-prediction-item-display.locked {
+  background: rgba(107, 78, 14, 0.2) !important;
+  border-color: rgba(246, 211, 101, 0.35) !important;
+}
+
+.dark .admin-prediction-item-display.locked .admin-prediction-confidence {
+  color: #fde68a !important;
 }
 
 .outcomes-section-count-badge {

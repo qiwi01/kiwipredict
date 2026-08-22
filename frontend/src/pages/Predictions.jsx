@@ -448,7 +448,7 @@ const Predictions = () => {
               <div className="admin-predictions-list">
                 {match.predictions && match.predictions.length > 0 ? (
                   (predictionTypeFilter ? match.predictions.filter(pred => pred.type === predictionTypeFilter) : match.predictions).map((prediction, predIndex) => (
-                    <div key={predIndex} className={`admin-prediction-item-display ${prediction.valueBet ? 'admin-match-value' : ''} ${prediction.type === predictionTypeFilter ? 'selected-prediction' : ''}`}>
+                    <div key={predIndex} className={`admin-prediction-item-display ${prediction.valueBet ? 'admin-match-value' : ''} ${prediction.type === predictionTypeFilter ? 'selected-prediction' : ''} ${prediction.locked ? 'locked' : ''}`}>
                       <div className="admin-prediction-type">
                         <span className="admin-prediction-type-label">
                           {prediction.type === 'win' ? 'WIN/DRAW' :
@@ -468,8 +468,10 @@ const Predictions = () => {
                       </div>
 
                       <div className="admin-prediction-details">
-                        <div className="admin-prediction-value">{prediction.prediction}</div>
-                        <div className="admin-prediction-confidence">{prediction.confidence}% confidence</div>
+                        <div className="admin-prediction-value">{prediction.locked ? '████████' : prediction.prediction}</div>
+                        <div className="admin-prediction-confidence">
+                          {prediction.locked ? 'VIP members only' : `${prediction.confidence}% confidence`}
+                        </div>
                       </div>
                     </div>
                   ))
