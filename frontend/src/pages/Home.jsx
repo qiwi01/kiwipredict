@@ -315,10 +315,7 @@ const Home = () => {
         <section className="home-converter-section">
           <div className="home-converter-container">
             <div className="home-converter-header">
-              <h2 className="home-converter-title">
-                <Shuffle className="home-converter-icon" />
-                Quick Bet Converter
-              </h2>
+              <h2 className="home-converter-title">Quick Bet Converter</h2>
               <p className="home-converter-subtitle">
                 Convert booking codes between sportsbooks instantly
               </p>

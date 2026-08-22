@@ -148,10 +148,6 @@ const Navbar = () => {
               Home
             </Link>
 
-            <Link to="/contact" className="navbar-link navbar-link-contact">
-              Contact
-            </Link>
-
             {/* Predictions Main Dropdown */}
             <div className="navbar-dropdown" ref={predictionsDropdownRef}>
               <button
@@ -401,6 +397,10 @@ const Navbar = () => {
                 </Link>
               </>
             )}
+
+            <Link to="/contact" className="navbar-link navbar-link-contact">
+              Contact
+            </Link>
           </div>
 
           {/* Right Side Actions */}
@@ -458,11 +458,6 @@ const Navbar = () => {
             <Link to="/" className="navbar-mobile-link" onClick={closeMobileMenu}>
               <span className="navbar-mobile-link-icon">🏠</span>
               <span>Home</span>
-            </Link>
-
-            <Link to="/contact" className="navbar-mobile-link" onClick={closeMobileMenu}>
-              <span className="navbar-mobile-link-icon">✉️</span>
-              <span>Contact</span>
             </Link>
 
             {/* Today's Predictions Submenu */}
@@ -560,6 +555,10 @@ const Navbar = () => {
                   <span className="navbar-mobile-link-icon">👤</span>
                   <span>Profile</span>
                 </Link>
+                <Link to="/contact" className="navbar-mobile-link" onClick={closeMobileMenu}>
+                  <span className="navbar-mobile-link-icon">✉️</span>
+                  <span>Contact</span>
+                </Link>
                 <button onClick={() => { handleLogout(); closeMobileMenu(); }} className="navbar-mobile-link">
                   <span className="navbar-mobile-link-icon">🚪</span>
                   <span>Logout</span>
@@ -568,6 +567,10 @@ const Navbar = () => {
             )}
             {!user && (
               <>
+                <Link to="/contact" className="navbar-mobile-link" onClick={closeMobileMenu}>
+                  <span className="navbar-mobile-link-icon">✉️</span>
+                  <span>Contact</span>
+                </Link>
                 <Link to="/login" className="navbar-mobile-link" onClick={closeMobileMenu}>
                   <span className="navbar-mobile-link-icon">🔑</span>
                   <span>Login</span>

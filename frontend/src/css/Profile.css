@@ -24,6 +24,17 @@
   box-shadow: 0 18px 42px rgba(180, 120, 0, 0.18);
 }
 
+.dark .profile-announcement-card {
+  background: linear-gradient(135deg, #3f2f08 0%, #6b4e0e 52%, #2b2109 100%) !important;
+  border-color: rgba(246, 211, 101, 0.24) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+.dark .profile-announcement-label,
+.dark .profile-announcement-message {
+  color: #fff7d6 !important;
+}
+
 /* ===== PROFILE DARK MODE READABILITY PASS ===== */
 .dark .profile-container,
 .dark .profile-section,
@@ -94,6 +105,31 @@
   color: #1f2937;
   line-height: 1.6;
   font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .profile-announcement-card {
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    gap: 0.55rem !important;
+    margin-left: calc(-1 * var(--space-4)) !important;
+    margin-right: calc(-1 * var(--space-4)) !important;
+    border-radius: 0 !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  .profile-announcement-label {
+    gap: 0.35rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .profile-announcement-label svg {
+    display: none !important;
+  }
+
+  .profile-announcement-message {
+    font-size: 0.8rem !important;
+    line-height: 1.35 !important;
+  }
 }
 
 .profile-announcement-track {

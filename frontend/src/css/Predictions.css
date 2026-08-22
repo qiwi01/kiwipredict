@@ -461,6 +461,69 @@
   border-color: var(--gray-700);
 }
 
+/* Final dark-mode pass: remove light cards/backgrounds from all prediction pages */
+.dark .predictions-container,
+.dark .predictions-content {
+  background: #020617 !important;
+  color: #f8fafc !important;
+}
+
+.dark .predictions-match-card,
+.dark .predictions-stat-card,
+.dark .predictions-single-prediction,
+.dark .predictions-outcome-item,
+.dark .predictions-no-matches,
+.dark .predictions-empty,
+.dark .predictions-modal,
+.dark .predictions-modal-content,
+.dark .admin-match-card,
+.dark .admin-prediction-item-display {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: rgba(203, 213, 225, 0.18) !important;
+}
+
+.dark .predictions-match-meta-item,
+.dark .predictions-prediction-type,
+.dark .predictions-strength-badge,
+.dark .predictions-odds-card,
+.dark .predictions-filter-btn:not(.active),
+.dark .predictions-league-select,
+.dark .predictions-date-select,
+.dark .predictions-modal input,
+.dark .predictions-modal select,
+.dark .predictions-modal textarea {
+  background: #111827 !important;
+  color: #f8fafc !important;
+  border-color: rgba(203, 213, 225, 0.18) !important;
+}
+
+.dark .predictions-match-teams-title,
+.dark .predictions-prediction-value,
+.dark .predictions-title,
+.dark .predictions-modal-title,
+.dark .predictions-no-matches-title,
+.dark .predictions-empty-title,
+.dark .admin-match-teams,
+.dark .admin-prediction-value {
+  color: #ffffff !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.dark .predictions-subtitle,
+.dark .predictions-match-meta-item,
+.dark .predictions-match-meta-item span,
+.dark .predictions-outcome-label,
+.dark .predictions-outcome-type,
+.dark .predictions-outcome-prediction,
+.dark .predictions-prediction-confidence,
+.dark .predictions-no-matches-subtitle,
+.dark .predictions-empty-description,
+.dark .admin-prediction-confidence,
+.dark .admin-prediction-type-label {
+  color: #dbeafe !important;
+}
+
 .value-bet-btn {
   background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
   color: white;
