@@ -432,9 +432,9 @@
 
 .dark .outcomes-section-tab.active,
 .dark .outcomes-date-reset {
-  background: linear-gradient(135deg, #2563eb, #14b8a6) !important;
-  color: #ffffff !important;
-  border-color: rgba(191, 219, 254, 0.36) !important;
+  background: #111827 !important;
+  color: #f8fafc !important;
+  border-color: rgba(203, 213, 225, 0.28) !important;
 }
 
 .predictions-match-card:has(.predictions-value-badge.vip),
@@ -497,6 +497,22 @@
 .dark .predictions-outcome-type,
 .dark .admin-prediction-type-label {
   color: #f8fafc !important;
+}
+
+.dark .outcomes-section-tab,
+.dark .outcomes-section-tab.active,
+.dark .outcomes-section-tab span,
+.dark .outcomes-section-tab svg,
+.dark .outcomes-section-count,
+.dark .predictions-outcome-type {
+  background-color: #111827 !important;
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+.dark .predictions-outcome-type {
+  border: 1px solid rgba(203, 213, 225, 0.22) !important;
+  box-shadow: none !important;
 }
 
 .dark .predictions-outcome-prediction,

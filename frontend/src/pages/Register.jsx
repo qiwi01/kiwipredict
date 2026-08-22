@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
-import logoImage from '../assets/ball-logo.jpeg';
+import logoImage from '../assets/brand-logo.jpeg';
 import api from '../utils/api';
 import '../css/Register.css';
 

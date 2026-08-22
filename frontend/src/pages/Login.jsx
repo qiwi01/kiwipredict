@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
-import logoImage from '../assets/ball-logo.jpeg';
+import logoImage from '../assets/brand-logo.jpeg';
 import api from '../utils/api';
 import '../css/Login.css';
 
@@ -47,7 +47,6 @@ const Login = () => {
 
       if (res.data.user) {
         login(res.data.user); // Token is handled via httpOnly cookie
-        toast.success('Login successful!');
         navigate('/');
       } else {
         throw new Error('Invalid response from server');

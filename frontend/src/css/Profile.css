@@ -286,15 +286,16 @@
 }
 
 .profile-dashboard-secondary-btn {
-  border: 1px solid var(--gray-300);
-  color: var(--gray-800);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(120, 72, 0, 0.3);
+  color: #1f2937;
+  background: linear-gradient(135deg, #d4af37 0%, #f6d365 48%, #b8860b 100%);
+  box-shadow: 0 16px 34px rgba(212, 175, 55, 0.2);
 }
 
 .dark .profile-dashboard-secondary-btn {
-  background: rgba(17, 24, 39, 0.7);
-  color: var(--gray-100);
-  border-color: var(--gray-700);
+  background: linear-gradient(135deg, #3f2f08 0%, #6b4e0e 52%, #2b2109 100%);
+  color: #fffbeb;
+  border-color: rgba(246, 211, 101, 0.3);
 }
 
 /* Keep profile hero/readability correct in dark mode */
@@ -313,8 +314,20 @@
 }
 
 .dark .profile-dashboard-secondary-btn {
-  background: rgba(30, 41, 59, 0.92) !important;
-  border-color: rgba(203, 213, 225, 0.26) !important;
+  background: linear-gradient(135deg, #3f2f08 0%, #6b4e0e 52%, #2b2109 100%) !important;
+  border-color: rgba(246, 211, 101, 0.3) !important;
+}
+
+.profile-dashboard-secondary-btn,
+.profile-dashboard-secondary-btn svg,
+.profile-dashboard-secondary-btn span {
+  color: #1f2937 !important;
+}
+
+.dark .profile-dashboard-secondary-btn,
+.dark .profile-dashboard-secondary-btn svg,
+.dark .profile-dashboard-secondary-btn span {
+  color: #fffbeb !important;
 }
 
 .dark .profile-dashboard-secondary-btn:hover {

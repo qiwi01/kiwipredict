@@ -5,7 +5,7 @@ import { LogOut, LogIn, UserPlus, Menu, X, ChevronDown, Trophy, Users, Crown } f
 import toast from 'react-hot-toast';
 import ThemeToggle from './ThemeToggle';
 import '../css/Navbar.css';
-import logoImage from '../assets/ball-logo.jpeg';
+import logoImage from '../assets/brand-logo.jpeg';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
