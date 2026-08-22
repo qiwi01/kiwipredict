@@ -1,7 +1,56 @@
+import { useEffect } from 'react';
 import { Mail, MessageCircle, Clock, ShieldCheck } from 'lucide-react';
 import '../css/Contact.css';
 
+const SMARTSUPP_KEY = 'f91dfd08f8b4027c5bbebed0818316eb217413de';
+
+const loadSmartsupp = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  window._smartsupp = window._smartsupp || {};
+  window._smartsupp.key = SMARTSUPP_KEY;
+
+  if (window.smartsupp) {
+    window.smartsupp('chat:show');
+    return;
+  }
+
+  window.smartsupp = function smartsuppLoader() {
+    window.smartsupp._.push(arguments);
+  };
+  window.smartsupp._ = [];
+
+  const firstScript = document.getElementsByTagName('script')[0];
+  const script = document.createElement('script');
+  script.id = 'smartsupp-live-chat-script';
+  script.type = 'text/javascript';
+  script.charset = 'utf-8';
+  script.async = true;
+  script.src = 'https://www.smartsuppchat.com/loader.js?';
+
+  firstScript.parentNode.insertBefore(script, firstScript);
+};
+
+const openSmartsuppChat = (event) => {
+  event.preventDefault();
+
+  if (window.smartsupp) {
+    window.smartsupp('chat:show');
+    window.smartsupp('chat:open');
+  }
+};
+
 const Contact = () => {
+  useEffect(() => {
+    loadSmartsupp();
+
+    return () => {
+      if (window.smartsupp) {
+        window.smartsupp('chat:hide');
+      }
+    };
+  }, []);
+
   return (
     <div className="contact-container">
       <section className="contact-hero">
@@ -22,12 +71,12 @@ const Contact = () => {
           </div>
         </a>
 
-        <a className="contact-card" href="mailto:support@kiwipredict.com?subject=Kiwi%20Predict%20support%20request">
+        <a className="contact-card" href="#live-chat" onClick={openSmartsuppChat}>
           <MessageCircle className="contact-card-icon" />
           <div>
-            <h2>VIP and access help</h2>
-            <p>Send a support request</p>
-            <span>Use this for subscription, access, or prediction page issues.</span>
+            <h2>Live chat</h2>
+            <p>Chat with support</p>
+            <span>Use Smartsupp live chat for fast help with VIP, access, or prediction page issues.</span>
           </div>
         </a>
 
