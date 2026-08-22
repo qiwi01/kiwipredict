@@ -74,6 +74,16 @@
   margin-bottom: var(--space-6);
 }
 
+.login-logo-image {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+  border: 2px solid rgba(212, 175, 55, 0.8);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
+}
+
 .login-logo-icon {
   width: 2rem;
   height: 2rem;

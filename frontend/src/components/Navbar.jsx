@@ -5,6 +5,7 @@ import { LogOut, LogIn, UserPlus, Menu, X, ChevronDown, Trophy, Users, Crown } f
 import toast from 'react-hot-toast';
 import ThemeToggle from './ThemeToggle';
 import '../css/Navbar.css';
+import logoImage from '../assets/ball-logo.jpeg';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -135,7 +136,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="navbar-logo">
             <div className="navbar-logo-icon">
-              <span className="navbar-logo-initials">KP</span>
+              <img src={logoImage} alt="Kiwi Predict" className="navbar-logo-img" />
             </div>
             <span className="navbar-logo-text">
               Kiwi Predict

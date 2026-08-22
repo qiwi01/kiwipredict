@@ -2719,15 +2719,39 @@
 }
 
 .home-outcome-badge.correct {
-  background: rgba(16, 185, 129, 0.14) !important;
+  background: transparent !important;
   color: #047857 !important;
   border: 1px solid rgba(16, 185, 129, 0.28) !important;
 }
 
 .dark .home-outcome-badge.correct {
-  background: rgba(20, 83, 45, 0.84) !important;
+  background: transparent !important;
   color: #dcfce7 !important;
   border-color: rgba(134, 239, 172, 0.28) !important;
+}
+
+.hero-preview-logo {
+  border-radius: 999px !important;
+  object-fit: cover !important;
+  animation: heroBallFloat 3s ease-in-out infinite, heroBallSpin 9s linear infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 18px 24px rgba(15, 23, 42, 0.22));
+}
+
+@keyframes heroBallFloat {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
+}
+
+@keyframes heroBallSpin {
+  from { rotate: 0deg; }
+  to { rotate: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-preview-logo {
+    animation: none !important;
+  }
 }
 
 .home-outcome-badge.incorrect {

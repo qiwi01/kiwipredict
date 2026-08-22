@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
+import logoImage from '../assets/ball-logo.jpeg';
 import api from '../utils/api';
 import '../css/Register.css';
 
@@ -84,7 +85,7 @@ const Register = () => {
       <div className="register-card">
         <div className="register-header">
           <div className="register-logo">
-            <span className="register-logo-text">KP</span>
+            <img src={logoImage} alt="Kiwi Predict" className="register-logo-image" />
           </div>
           <h2 className="register-title">
             Join Kiwi Predict

@@ -180,6 +180,10 @@
   gap: 0.4rem;
 }
 
+.profile-dashboard-summary-last {
+  margin-top: var(--space-8);
+}
+
 .profile-announcement-dot {
   width: 0.55rem;
   height: 0.55rem;

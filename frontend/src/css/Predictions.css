@@ -461,6 +461,74 @@
   border-color: var(--gray-700);
 }
 
+/* Final dark-mode contrast: outcomes + predictions chips/cards */
+.dark .predictions-match-card.correct,
+.dark .predictions-match-card.incorrect,
+.dark .predictions-match-card.correct:hover,
+.dark .predictions-match-card.incorrect:hover {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: rgba(203, 213, 225, 0.2) !important;
+}
+
+.dark .predictions-outcome-item,
+.dark .predictions-outcome-header,
+.dark .predictions-outcome-details {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+.dark .predictions-outcome-type,
+.dark .predictions-outcome-type:has(+ .predictions-vip-badge),
+.dark .admin-prediction-type-label,
+.dark .admin-match-meta-item,
+.dark .admin-match-meta-item span,
+.dark .predictions-match-league,
+.dark .predictions-match-meta-item,
+.dark .predictions-match-meta-item span,
+.dark .predictions-date-select,
+.dark .predictions-league-select,
+.dark .predictions-league-select option {
+  background: #111827 !important;
+  color: #f8fafc !important;
+  border-color: rgba(203, 213, 225, 0.22) !important;
+}
+
+.dark .predictions-outcome-type,
+.dark .admin-prediction-type-label {
+  color: #f8fafc !important;
+}
+
+.dark .predictions-outcome-prediction,
+.dark .predictions-outcome-label,
+.dark .predictions-prediction-value,
+.dark .predictions-actual-value,
+.dark .admin-prediction-value,
+.dark .admin-prediction-confidence,
+.dark .admin-match-teams {
+  color: #f8fafc !important;
+}
+
+.dark .predictions-outcome-badge.correct,
+.dark .predictions-outcome-badge.incorrect {
+  background: #111827 !important;
+  color: #f8fafc !important;
+  border-color: rgba(203, 213, 225, 0.24) !important;
+}
+
+.dark .predictions-score {
+  background: #111827 !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(203, 213, 225, 0.22) !important;
+}
+
+.dark .admin-prediction-item-display,
+.dark .selected-prediction {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: rgba(203, 213, 225, 0.2) !important;
+}
+
 /* Final dark-mode pass: remove light cards/backgrounds from all prediction pages */
 .dark .predictions-container,
 .dark .predictions-content {

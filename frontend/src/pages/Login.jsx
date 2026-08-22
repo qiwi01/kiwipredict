@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
+import logoImage from '../assets/ball-logo.jpeg';
 import api from '../utils/api';
 import '../css/Login.css';
 
@@ -65,7 +66,7 @@ const Login = () => {
       <div className="login-card">
         <div className="login-header">
           <div className="login-logo">
-            <span className="login-logo-text">KP</span>
+            <img src={logoImage} alt="Kiwi Predict" className="login-logo-image" />
           </div>
           <h2 className="login-title">
             Welcome Back

@@ -25,11 +25,6 @@ router.get('/', authenticateToken, async (req, res) => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysAgo);
       query.date = { $gte: startDate };
-    } else {
-      // Default to last 30 days
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      query.date = { $gte: thirtyDaysAgo };
     }
 
     // VIP/VVIP games are shown for everyone in outcomes, but marked with their tier

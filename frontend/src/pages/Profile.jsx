@@ -123,34 +123,6 @@ const Profile = () => {
             </Link>
           </div>
         </div>
-
-        <div className="profile-dashboard-summary-card">
-          <div className="profile-summary-top">
-            <div className="profile-avatar-icon">
-              <User className="profile-avatar-user-icon" />
-            </div>
-            <div>
-              <h2>{user.username}</h2>
-              <p>{user.email}</p>
-            </div>
-          </div>
-          <div className="profile-summary-row">
-            <span className="profile-summary-label"><Crown size={16} /> Membership</span>
-            <strong className="profile-summary-value">{vipLabel}</strong>
-          </div>
-          <div className="profile-summary-row">
-            <span className="profile-summary-label"><CalendarDays size={16} /> Joined</span>
-            <strong className="profile-summary-value">{memberSince}</strong>
-          </div>
-          <div className="profile-summary-row">
-            <span className="profile-summary-label"><ShieldCheck size={16} /> Access</span>
-            <strong className="profile-summary-value">{user.role === 'admin' ? 'Administrator' : 'Member'}</strong>
-          </div>
-          <div className="profile-summary-mini-actions">
-            <Link to="/outcomes">View outcomes</Link>
-            <Link to="/vip/converter">Bet converter</Link>
-          </div>
-        </div>
       </section>
 
       <section className="profile-stats">
@@ -274,6 +246,32 @@ const Profile = () => {
                 </div>
               ))
             )}
+          </div>
+        </section>
+
+        <section className="profile-dashboard-summary-card profile-dashboard-summary-last">
+          <div className="profile-summary-top">
+            <LayoutDashboard className="profile-summary-icon" />
+            <div>
+              <h2>Dashboard Summary</h2>
+              <p>Your current account snapshot.</p>
+            </div>
+          </div>
+          <div className="profile-summary-row">
+            <span className="profile-summary-label"><Crown size={16} /> Membership</span>
+            <strong className="profile-summary-value">{vipLabel}</strong>
+          </div>
+          <div className="profile-summary-row">
+            <span className="profile-summary-label"><CalendarDays size={16} /> Joined</span>
+            <strong className="profile-summary-value">{memberSince}</strong>
+          </div>
+          <div className="profile-summary-row">
+            <span className="profile-summary-label"><ShieldCheck size={16} /> Access</span>
+            <strong className="profile-summary-value">{user.role === 'admin' ? 'Administrator' : 'Member'}</strong>
+          </div>
+          <div className="profile-summary-mini-actions">
+            <Link to="/outcomes">View outcomes</Link>
+            <Link to="/vip/converter">Bet converter</Link>
           </div>
         </section>
       </div>

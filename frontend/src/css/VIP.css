@@ -5,6 +5,11 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-4);
+  color: var(--gray-900);
+}
+
+.dark .vip-container {
+  color: var(--gray-100);
 }
 
 /* ===== HEADER SECTION ===== */
@@ -419,6 +424,179 @@
   transition: var(--transition-all);
   box-shadow: var(--shadow-lg);
   margin-bottom: var(--space-4);
+}
+
+.dark .vip-subscribe-btn {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e, #2b2109);
+  color: #fffbeb;
+  border: 1px solid rgba(246, 211, 101, 0.28);
+  box-shadow: 0 18px 38px rgba(2, 6, 23, 0.42);
+}
+
+.dark .vip-subscribe-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6b4e0e, #8a650f, #3f2f08);
+}
+
+/* ===== NON-VIP SUBSCRIPTION PAGE POLISH ===== */
+.vip-container {
+  position: relative;
+}
+
+.vip-container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(212, 175, 55, 0.18), transparent 26%),
+    radial-gradient(circle at 88% 10%, rgba(37, 99, 235, 0.12), transparent 28%),
+    linear-gradient(180deg, #fffdf4 0%, #f8fafc 52%, #ffffff 100%);
+}
+
+.dark .vip-container::before {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(107, 78, 14, 0.36), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(20, 184, 166, 0.12), transparent 26%),
+    linear-gradient(180deg, #020617 0%, #0f172a 56%, #020617 100%);
+}
+
+.vip-header {
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 251, 235, 0.74)),
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.22), transparent 34%);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.1);
+}
+
+.dark .vip-header {
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.9)),
+    radial-gradient(circle at top right, rgba(107, 78, 14, 0.34), transparent 36%);
+  border-color: rgba(246, 211, 101, 0.22);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.45);
+}
+
+.vip-header-icon,
+.vip-pricing-icon,
+.vip-tier-icon {
+  filter: drop-shadow(0 10px 16px rgba(212, 175, 55, 0.28));
+}
+
+.vip-title {
+  color: #1f2937;
+  font-size: clamp(2.2rem, 5vw, 4.4rem);
+  letter-spacing: -0.055em;
+}
+
+.vip-subtitle {
+  color: #475569;
+  font-weight: 700;
+}
+
+.dark .vip-subtitle {
+  color: #dbeafe;
+}
+
+.vip-tier-selection,
+.vip-pricing,
+.vip-testimonial {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 28px;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+}
+
+.dark .vip-tier-selection,
+.dark .vip-pricing,
+.dark .vip-testimonial {
+  background: rgba(15, 23, 42, 0.86);
+  border-color: rgba(246, 211, 101, 0.16);
+  box-shadow: 0 20px 52px rgba(2, 6, 23, 0.42);
+}
+
+.vip-tier-title,
+.vip-benefits-title,
+.vip-testimonials-title {
+  color: #1f2937;
+}
+
+.dark .vip-tier-title,
+.dark .vip-benefits-title,
+.dark .vip-testimonials-title {
+  color: #f8fafc;
+}
+
+.vip-tier-btn,
+.vip-pricing-card {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 235, 0.82)) !important;
+  border-color: rgba(212, 175, 55, 0.32) !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08) !important;
+}
+
+.dark .vip-tier-btn,
+.dark .vip-pricing-card {
+  background:
+    linear-gradient(145deg, rgba(17, 24, 39, 0.98), rgba(15, 23, 42, 0.92)) !important;
+  border-color: rgba(246, 211, 101, 0.22) !important;
+}
+
+.vip-tier-btn.selected,
+.vip-pricing-card.selected {
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18), 0 22px 46px rgba(212, 175, 55, 0.16) !important;
+}
+
+.dark .vip-tier-btn.selected,
+.dark .vip-pricing-card.selected {
+  border-color: #6b4e0e !important;
+  box-shadow: 0 0 0 3px rgba(246, 211, 101, 0.14), 0 22px 46px rgba(2, 6, 23, 0.48) !important;
+}
+
+.vip-tier-info h3,
+.vip-pricing-title,
+.vip-feature-item,
+.vip-testimonial-content {
+  color: #1f2937 !important;
+}
+
+.vip-tier-info p,
+.vip-price-period,
+.vip-benefit-label,
+.vip-security-note {
+  color: #475569 !important;
+}
+
+.dark .vip-tier-info h3,
+.dark .vip-pricing-title,
+.dark .vip-feature-item,
+.dark .vip-testimonial-content {
+  color: #f8fafc !important;
+}
+
+.dark .vip-tier-info p,
+.dark .vip-price-period,
+.dark .vip-benefit-label,
+.dark .vip-security-note {
+  color: #dbeafe !important;
+}
+
+.vip-plan-select-btn.active,
+.vip-subscribe-btn {
+  background: linear-gradient(135deg, #d4af37 0%, #f6d365 48%, #b8860b 100%) !important;
+  color: #1f2937 !important;
+  border-color: rgba(120, 72, 0, 0.28) !important;
+}
+
+.dark .vip-plan-select-btn.active,
+.dark .vip-subscribe-btn {
+  background: linear-gradient(135deg, #3f2f08 0%, #6b4e0e 52%, #2b2109 100%) !important;
+  color: #fffbeb !important;
+  border-color: rgba(246, 211, 101, 0.28) !important;
 }
 
 .vip-subscribe-btn:hover:not(:disabled) {
