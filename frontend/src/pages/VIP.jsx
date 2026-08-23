@@ -22,7 +22,7 @@ const VIP = () => {
   }, [user]);
 
   useEffect(() => {
-    if (vipStatus?.isVIP) {
+    if (vipStatus !== null) {
       fetchVIPPredictions();
     }
   }, [vipStatus]);
@@ -39,12 +39,14 @@ const VIP = () => {
   const fetchVIPPredictions = async () => {
     try {
       setLoading(true);
-      // For VIP users, only show games with VIP visibility
       const response = await api.get('/api/matches');
       const allMatches = response.data || [];
 
-      // Filter to only show matches that have VIP predictions
+      // Filter to show any matches that contain VIP/VVIP prediction cards.
+      // For non-VIP users the backend returns these predictions as locked.
       const vipMatches = allMatches.filter(match =>
+        match.gameTier === 'vip' ||
+        match.gameTier === 'vvip' ||
         match.predictions && match.predictions.some(pred =>
           pred.visibility === 'vip' || pred.visibility === 'vvip' || pred.visibility === 'both'
         )
@@ -56,6 +58,98 @@ const VIP = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getPredictionTypeLabel = (pred) => {
+    if (pred.locked) return '████████';
+    if (pred.type === 'win') return 'Match Winner';
+    if (pred.type === 'over15') return 'Over/Under 1.5';
+    if (pred.type === 'over25') return 'Over/Under 2.5';
+    if (pred.type === 'over35') return 'Over/Under 3.5';
+    if (pred.type === 'corners') return 'Corners';
+    if (pred.type === 'ggng') return 'GG/NG';
+    if (pred.type === 'others') return 'Others';
+    return 'Player Prediction';
+  };
+
+  const renderVIPPredictionCards = ({ isVVIP = false, lockedPreview = false } = {}) => {
+    if (loading) {
+      return (
+        <div className="predictions-loading">
+          <div className="predictions-loading-spinner"></div>
+          <div className="predictions-loading-text">
+            <div className="predictions-loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            Loading {isVVIP ? 'VVIP' : 'VIP'} predictions...
+          </div>
+        </div>
+      );
+    }
+
+    return vipMatches.length === 0 ? (
+      <div className="predictions-empty">
+        <div className="predictions-empty-icon">{isVVIP ? '👑' : '⭐'}</div>
+        <h3 className="predictions-empty-title">No {isVVIP ? 'VVIP' : 'VIP'} predictions available</h3>
+        <p className="predictions-empty-description">{isVVIP ? 'VVIP' : 'VIP'} predictions will be available soon. Check back later!</p>
+      </div>
+    ) : (
+      <div className="predictions-grid">
+        {vipMatches.map((match, index) => (
+          <div key={match.id || index} className="predictions-match-card">
+            <div className="predictions-match-header">
+              <div className="predictions-match-meta">
+                <div className="predictions-match-meta-item">
+                  <Calendar className="predictions-match-icon" />
+                  <span>{new Date(match.utcDate).toLocaleDateString()}</span>
+                </div>
+                <div className="predictions-match-meta-item">
+                  <span>{match.competition?.name || 'Premier League'}</span>
+                </div>
+              </div>
+
+              <div className={`predictions-value-badge ${match.predictions?.some(pred => pred.visibility === 'vvip') || match.gameTier === 'vvip' ? 'vvip' : 'vip'}`}>
+                <Crown className="predictions-value-icon" />
+                <span>{match.predictions?.some(pred => pred.visibility === 'vvip') || match.gameTier === 'vvip' ? 'VVIP' : 'VIP'}</span>
+              </div>
+            </div>
+
+            <div className="predictions-match-teams">
+              <h3 className="predictions-match-teams-title">
+                {match.homeTeam.name} vs {match.awayTeam.name}
+              </h3>
+            </div>
+
+            <div className="predictions-outcomes-list">
+              {match.predictions && match.predictions.map((pred, predIndex) => (
+                <div key={predIndex} className={`predictions-outcome-item ${pred.locked || lockedPreview ? 'locked' : ''}`}>
+                  <div className="predictions-outcome-header">
+                    <span className="predictions-outcome-type">{getPredictionTypeLabel(pred)}</span>
+
+                    <div className={`predictions-outcome-badge ${pred.visibility === 'vvip' ? 'vvip' : 'vip'}`}>
+                      <Crown className="predictions-outcome-icon" />
+                      <span>{pred.visibility === 'vvip' ? 'VVIP' : 'VIP'}</span>
+                    </div>
+                  </div>
+
+                  <div className="predictions-outcome-details">
+                    <div className="predictions-outcome-prediction">
+                      <span className="predictions-outcome-label">Predicted:</span>
+                      <span className="predictions-prediction-value">{pred.locked || lockedPreview ? '████████' : pred.prediction}</span>
+                    </div>
+                    <div className="predictions-outcome-confidence">
+                      {pred.locked || lockedPreview ? 'VIP members only' : `${pred.confidence}% confidence`}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const handlePayment = async () => {
@@ -141,87 +235,29 @@ const VIP = () => {
         </div>
 
         {/* Predictions Grid */}
-        {vipMatches.length === 0 ? (
-          <div className="predictions-empty">
-            <div className="predictions-empty-icon">
-              {isVVIP ? '👑' : '⭐'}
-            </div>
-            <h3 className="predictions-empty-title">
-              No {isVVIP ? 'VVIP' : 'VIP'} predictions available
-            </h3>
-            <p className="predictions-empty-description">
-              {isVVIP ? 'VVIP' : 'VIP'} predictions will be available soon. Check back later!'
-            </p>
-          </div>
-        ) : (
-          <div className="predictions-grid">
-            {vipMatches.map((match, index) => (
-              <div
-                key={match.id || index}
-                className="predictions-match-card"
-              >
-                <div className="predictions-match-header">
-                  <div className="predictions-match-meta">
-                    <div className="predictions-match-meta-item">
-                      <Calendar className="predictions-match-icon" />
-                      <span>{new Date(match.utcDate).toLocaleDateString()}</span>
-                    </div>
-                    <div className="predictions-match-meta-item">
-                      <span>{match.competition?.name || 'Premier League'}</span>
-                    </div>
-                  </div>
-
-                  <div className={`predictions-value-badge ${match.predictions.some(pred => pred.visibility === 'vvip') ? 'vvip' : 'vip'}`}>
-                    <Crown className="predictions-value-icon" />
-                    <span>{match.predictions.some(pred => pred.visibility === 'vvip') ? 'VVIP' : 'VIP'}</span>
-                  </div>
-                </div>
-
-                <div className="predictions-match-teams">
-                  <h3 className="predictions-match-teams-title">
-                    {match.homeTeam.name} vs {match.awayTeam.name}
-                  </h3>
-                </div>
-
-                <div className="predictions-outcomes-list">
-                  {match.predictions && match.predictions.map((pred, predIndex) => (
-                    <div key={predIndex} className="predictions-outcome-item">
-                      <div className="predictions-outcome-header">
-                        <span className="predictions-outcome-type">
-                          {pred.type === 'win' ? 'Match Winner' :
-                           pred.type === 'over15' ? 'Over/Under 1.5' :
-                           pred.type === 'over25' ? 'Over/Under 2.5' :
-                           'Player Prediction'}
-                        </span>
-
-                        <div className={`predictions-outcome-badge ${pred.visibility === 'vvip' ? 'vvip' : 'vip'}`}>
-                          <Crown className="predictions-outcome-icon" />
-                          <span>{pred.visibility === 'vvip' ? 'VVIP' : 'VIP'}</span>
-                        </div>
-                      </div>
-
-                      <div className="predictions-outcome-details">
-                        <div className="predictions-outcome-prediction">
-                          <span className="predictions-outcome-label">Predicted:</span>
-                          <span className="predictions-prediction-value">{pred.prediction}</span>
-                        </div>
-                        <div className="predictions-outcome-confidence">
-                          {pred.confidence}% confidence
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {renderVIPPredictionCards({ isVVIP })}
       </div>
     );
   }
 
-  // Non-VIP user sees subscription page
+  // Non-VIP user sees locked VIP/VVIP prediction cards and subscription page
   return (
+    <>
+    <div className="predictions-container">
+      <div className="predictions-header">
+        <div className="predictions-title-section">
+          <h1 className="predictions-title">
+            <Crown className="predictions-title-icon" />
+            VIP Predictions
+          </h1>
+          <p className="predictions-subtitle">
+            VIP/VVIP match cards are visible to everyone. Subscribe to reveal the prediction details.
+          </p>
+        </div>
+      </div>
+      {renderVIPPredictionCards({ lockedPreview: true })}
+    </div>
+
     <div className="vip-container">
       <div className="vip-header">
         <div className="vip-header-content">
@@ -487,6 +523,7 @@ const VIP = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
