@@ -151,6 +151,35 @@
   border-color: var(--primary-300);
 }
 
+.predictions-search-input {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--gray-300);
+  background: var(--gray-50);
+  color: var(--gray-900);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+  transition: var(--transition-all);
+  min-width: 260px;
+}
+
+.dark .predictions-search-input {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+  color: var(--gray-100);
+}
+
+.predictions-search-input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.dark .predictions-search-input:focus {
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px var(--primary-900);
+}
+
 /* ===== COMPACT MATCH CARDS AND DARK MODE CONTRAST OVERHAUL ===== */
 .predictions-container {
   padding-top: 1.5rem;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
-import { Users, UserCheck, Shield, BarChart3, Settings, Plus, Calendar, Trophy, Target, Gamepad2, Star, LogOut, CheckCircle } from 'lucide-react';
+import { Users, UserCheck, Shield, BarChart3, Settings, Plus, Calendar, Trophy, Target, Gamepad2, Star, LogOut, CheckCircle, Mail } from 'lucide-react';
 import api from '../utils/api';
 import Modal from '../components/Modal';
 import '../css/Admin.css';
@@ -27,6 +27,9 @@ const Admin = () => {
     predictions: []
   });
   const [selectedOutcomes, setSelectedOutcomes] = useState({});
+  const [outcomeSearchTerm, setOutcomeSearchTerm] = useState('');
+  const [broadcastEmail, setBroadcastEmail] = useState({ subject: '', message: '' });
+  const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [vipPayments, setVipPayments] = useState([]);
   const [siteSettings, setSiteSettings] = useState({
     announcements: {
@@ -192,6 +195,34 @@ const Admin = () => {
       fetchData(); // Refresh the data
     } catch (error) {
       toast.error('Failed to mark outcome');
+    }
+  };
+
+  const filteredOutcomeGames = games.filter(game => {
+    if (!outcomeSearchTerm.trim()) return true;
+    const term = outcomeSearchTerm.trim().toLowerCase();
+    return game.homeTeam?.name?.toLowerCase().includes(term) ||
+      game.awayTeam?.name?.toLowerCase().includes(term) ||
+      game.competition?.name?.toLowerCase().includes(term) ||
+      game.league?.toLowerCase().includes(term);
+  });
+
+  const handleSendBroadcastEmail = async (event) => {
+    event.preventDefault();
+    if (!broadcastEmail.subject.trim() || !broadcastEmail.message.trim()) {
+      toast.error('Enter an email subject and message');
+      return;
+    }
+
+    setSendingBroadcast(true);
+    try {
+      const response = await api.post('/api/admin/email-users', broadcastEmail);
+      toast.success(response.data.message || 'Email sent to users');
+      setBroadcastEmail({ subject: '', message: '' });
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to send email');
+    } finally {
+      setSendingBroadcast(false);
     }
   };
 
@@ -1571,6 +1602,36 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
               Mark predictions as win or loss to update user outcomes and statistics
             </p>
 
+            <input
+              type="search"
+              value={outcomeSearchTerm}
+              onChange={(e) => setOutcomeSearchTerm(e.target.value)}
+              className="admin-search-input"
+              placeholder="Search outcomes by team or league..."
+            />
+
+            <form className="admin-broadcast-card" onSubmit={handleSendBroadcastEmail}>
+              <h4><Mail className="admin-icon-inline" /> Email all users</h4>
+              <p className="admin-section-description">Send an announcement after selecting predictions or outcomes.</p>
+              <input
+                type="text"
+                value={broadcastEmail.subject}
+                onChange={(e) => setBroadcastEmail(prev => ({ ...prev, subject: e.target.value }))}
+                className="admin-search-input"
+                placeholder="Email subject"
+              />
+              <textarea
+                value={broadcastEmail.message}
+                onChange={(e) => setBroadcastEmail(prev => ({ ...prev, message: e.target.value }))}
+                className="admin-broadcast-textarea"
+                placeholder="Write your message to all users..."
+                rows="4"
+              />
+              <button type="submit" className="admin-action-btn primary" disabled={sendingBroadcast}>
+                {sendingBroadcast ? 'Sending...' : 'Send Email to All Users'}
+              </button>
+            </form>
+
             {loading ? (
               <div className="predictions-loading">
                 <div className="predictions-loading-spinner"></div>
@@ -1585,7 +1646,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
               </div>
             ) : (
               <div className="admin-matches-outcomes">
-                {games.map((game, index) => (
+                {filteredOutcomeGames.map((game, index) => (
                   <div key={game.id || index} className="admin-match-card">
                     <div className="admin-match-outcome-header">
                       <div className="admin-match-outcome-teams">
@@ -1903,10 +1964,10 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                   </div>
                 ))}
 
-                {games.length === 0 && (
+                {filteredOutcomeGames.length === 0 && (
                   <div className="admin-empty-state">
-                    <div className="admin-empty-text">No recent matches found</div>
-                    <div className="admin-empty-subtitle">Add some matches first to manage their outcomes</div>
+                    <div className="admin-empty-text">No matching matches found</div>
+                    <div className="admin-empty-subtitle">Try another team name or add matches first to manage their outcomes</div>
                   </div>
                 )}
               </div>

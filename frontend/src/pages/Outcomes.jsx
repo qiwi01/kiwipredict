@@ -13,6 +13,7 @@ const Outcomes = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [activeSection, setActiveSection] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchOutcomes();
@@ -113,7 +114,7 @@ const Outcomes = () => {
       case 'todays':
         return "Today's Predictions";
       case 'topPicks':
-        return 'Top Picks';
+        return 'Top Picks (VVIP Outcomes)';
       case 'vip':
         return 'VIP Predictions';
       default:
@@ -124,15 +125,14 @@ const Outcomes = () => {
   const navigateDate = (direction) => {
     if (!availableDates.length) return;
 
-    const currentIndex = selectedDate
-      ? availableDates.indexOf(selectedDate)
-      : availableDates.length - 1;
+    const currentIndex = selectedDate ? availableDates.indexOf(selectedDate) : -1;
+    const safeIndex = currentIndex === -1 ? 0 : currentIndex;
 
     let newIndex;
     if (direction === 'prev') {
-      newIndex = Math.max(0, currentIndex - 1);
+      newIndex = Math.min(availableDates.length - 1, safeIndex + 1);
     } else {
-      newIndex = Math.min(availableDates.length - 1, currentIndex + 1);
+      newIndex = Math.max(0, safeIndex - 1);
     }
 
     setSelectedDate(availableDates[newIndex]);
@@ -140,7 +140,7 @@ const Outcomes = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'All Time';
-    const date = new Date(dateString);
+    const date = new Date(`${dateString}T00:00:00`);
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -152,11 +152,17 @@ const Outcomes = () => {
   const sections = [
     { id: 'all', label: 'All Predictions', icon: Target },
     { id: 'todays', label: 'Today\'s Predictions', icon: Calendar },
-    { id: 'topPicks', label: 'Top Picks', icon: Star },
+    { id: 'topPicks', label: 'Top Picks (VVIP)', icon: Star },
     { id: 'vip', label: 'VIP Predictions', icon: Crown }
   ];
 
-  const currentData = getCurrentDisplayData();
+  const currentData = getCurrentDisplayData().filter(match => {
+    if (!searchTerm.trim()) return true;
+    const term = searchTerm.trim().toLowerCase();
+    return String(match.homeTeam || '').toLowerCase().includes(term) ||
+      String(match.awayTeam || '').toLowerCase().includes(term) ||
+      String(match.league || '').toLowerCase().includes(term);
+  });
   const stats = calculateStats(currentData);
 
   if (loading) {
@@ -197,7 +203,7 @@ const Outcomes = () => {
         <button
           onClick={() => navigateDate('next')}
           className="outcomes-date-btn"
-          disabled={!availableDates.length || selectedDate === availableDates[availableDates.length - 1]}
+          disabled={!availableDates.length || selectedDate === availableDates[0]}
         >
           <ChevronLeft className="outcomes-date-icon" />
         </button>
@@ -210,7 +216,7 @@ const Outcomes = () => {
         <button
           onClick={() => navigateDate('prev')}
           className="outcomes-date-btn"
-          disabled={!availableDates.length || selectedDate === availableDates[0]}
+          disabled={!availableDates.length || selectedDate === availableDates[availableDates.length - 1]}
         >
           <ChevronRight className="outcomes-date-icon" />
         </button>
@@ -223,6 +229,16 @@ const Outcomes = () => {
             View All
           </button>
         )}
+      </div>
+
+      <div className="predictions-filters">
+        <input
+          type="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="predictions-search-input"
+          placeholder="Search team or league outcomes..."
+        />
       </div>
 
       {/* Section Tabs */}

@@ -3,6 +3,8 @@ import { Mail, MessageCircle, Clock, ShieldCheck } from 'lucide-react';
 import '../css/Contact.css';
 
 const SMARTSUPP_KEY = 'f91dfd08f8b4027c5bbebed0818316eb217413de';
+const SUPPORT_EMAIL = 'support@kiwipredict.com';
+const WHATSAPP_CHANNEL = 'https://whatsapp.com/channel/0029VbDOi2G4Y9lwQoTCc03I';
 
 const loadSmartsupp = () => {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -62,12 +64,21 @@ const Contact = () => {
       </section>
 
       <section className="contact-grid">
-        <a className="contact-card" href="mailto:support@kiwipredict.com">
+        <a className="contact-card" href={`mailto:${SUPPORT_EMAIL}`}>
           <Mail className="contact-card-icon" />
           <div>
             <h2>Email us</h2>
-            <p>support@kiwipredict.com</p>
+            <p>{SUPPORT_EMAIL}</p>
             <span>Best for account, payment, and VIP questions.</span>
+          </div>
+        </a>
+
+        <a className="contact-card" href={WHATSAPP_CHANNEL} target="_blank" rel="noreferrer">
+          <MessageCircle className="contact-card-icon" />
+          <div>
+            <h2>WhatsApp channel</h2>
+            <p>Follow Kiwi Predict</p>
+            <span>Get official updates, announcements, and prediction alerts from our WhatsApp channel.</span>
           </div>
         </a>
 

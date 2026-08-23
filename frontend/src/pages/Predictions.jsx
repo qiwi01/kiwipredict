@@ -19,6 +19,7 @@ const Predictions = () => {
   const [filteredMatches, setFilteredMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedLeague, setSelectedLeague] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   // Set default date to today
   const [selectedDate, setSelectedDate] = useState(formatLocalDate(new Date()));
   const location = useLocation();
@@ -97,8 +98,18 @@ const Predictions = () => {
       filtered = filtered.filter(match => getMatchLocalDate(match.utcDate) === selectedDate);
     }
 
+    if (searchTerm.trim()) {
+      const term = searchTerm.trim().toLowerCase();
+      filtered = filtered.filter(match =>
+        match.homeTeam?.name?.toLowerCase().includes(term) ||
+        match.awayTeam?.name?.toLowerCase().includes(term) ||
+        match.competition?.name?.toLowerCase().includes(term) ||
+        match.league?.toLowerCase().includes(term)
+      );
+    }
+
     setFilteredMatches(filtered);
-  }, [matches, selectedLeague, selectedDate]);
+  }, [matches, selectedLeague, selectedDate, searchTerm]);
 
   // Get unique leagues from matches
   const getAvailableLeagues = () => {
@@ -379,6 +390,14 @@ const Predictions = () => {
           placeholder="Filter by date"
         />
 
+        <input
+          type="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="predictions-search-input"
+          placeholder="Search team or league..."
+        />
+
         {/* Prediction Type Filter - Show on "All Predictions" page and specific type pages */}
         {(predictionType === 'all' || predictionType.includes('-win') || predictionType.includes('-over15') || predictionType.includes('-over25') || predictionType.includes('-over35') || predictionType.includes('-corners') || predictionType.includes('-ggng') || predictionType.includes('-others') || predictionType.includes('-player') || predictionType.includes('-players')) && (
           <select
@@ -451,7 +470,8 @@ const Predictions = () => {
                     <div key={predIndex} className={`admin-prediction-item-display ${prediction.valueBet ? 'admin-match-value' : ''} ${prediction.type === predictionTypeFilter ? 'selected-prediction' : ''} ${prediction.locked ? 'locked' : ''}`}>
                       <div className="admin-prediction-type">
                         <span className="admin-prediction-type-label">
-                          {prediction.type === 'win' ? 'WIN/DRAW' :
+                          {prediction.locked ? '████████' :
+                           prediction.type === 'win' ? 'WIN/DRAW' :
                            prediction.type === 'over15' ? 'OVER/UNDER 1.5' :
                            prediction.type === 'over25' ? 'OVER/UNDER 2.5' :
                            prediction.type === 'corners' ? 'CORNERS' :

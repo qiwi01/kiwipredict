@@ -132,6 +132,53 @@
   height: 1.25rem;
 }
 
+.admin-search-input,
+.admin-broadcast-textarea {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--gray-300);
+  background: var(--gray-50);
+  color: var(--gray-900);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+  margin: var(--space-3) 0;
+}
+
+.dark .admin-search-input,
+.dark .admin-broadcast-textarea {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+  color: var(--gray-100);
+}
+
+.admin-search-input:focus,
+.admin-broadcast-textarea:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.admin-broadcast-card {
+  margin: var(--space-4) 0 var(--space-6);
+  padding: var(--space-4);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  background: var(--gray-50);
+}
+
+.dark .admin-broadcast-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+.admin-broadcast-card h4 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+}
+
 /* ===== DASHBOARD SECTION ===== */
 .admin-dashboard {
   display: flex;
