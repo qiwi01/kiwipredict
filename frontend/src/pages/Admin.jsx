@@ -216,7 +216,13 @@ const Admin = () => {
 
     setSendingBroadcast(true);
     try {
-      const response = await api.post('/api/admin/email-users', broadcastEmail);
+      let response;
+      try {
+        response = await api.post('/api/admin/email-users', broadcastEmail);
+      } catch (err) {
+        if (err.response?.status !== 404) throw err;
+        response = await api.post('/api/admin/broadcast-email', broadcastEmail);
+      }
       toast.success(response.data.message || 'Email sent to users');
       setBroadcastEmail({ subject: '', message: '' });
     } catch (err) {

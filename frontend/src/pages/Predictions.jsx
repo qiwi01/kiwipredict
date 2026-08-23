@@ -466,7 +466,7 @@ const Predictions = () => {
 
               <div className="admin-predictions-list">
                 {match.predictions && match.predictions.length > 0 ? (
-                  (predictionTypeFilter ? match.predictions.filter(pred => pred.type === predictionTypeFilter) : match.predictions).map((prediction, predIndex) => (
+                  (predictionTypeFilter ? match.predictions.filter(pred => pred.type === predictionTypeFilter || pred.originalType === predictionTypeFilter) : match.predictions).map((prediction, predIndex) => (
                     <div key={predIndex} className={`admin-prediction-item-display ${prediction.valueBet ? 'admin-match-value' : ''} ${prediction.type === predictionTypeFilter ? 'selected-prediction' : ''} ${prediction.locked ? 'locked' : ''}`}>
                       <div className="admin-prediction-type">
                         <span className="admin-prediction-type-label">

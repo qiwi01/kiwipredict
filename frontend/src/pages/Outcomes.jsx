@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Calendar, TrendingUp, Target, Star, CheckCircle, XCircle, ChevronLeft, ChevronRight, Crown } from 'lucide-react';
 import api from '../utils/api';
 import '../css/Predictions.css';
@@ -14,6 +14,7 @@ const Outcomes = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [activeSection, setActiveSection] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const calendarInputRef = useRef(null);
 
   useEffect(() => {
     fetchOutcomes();
@@ -138,6 +139,18 @@ const Outcomes = () => {
     setSelectedDate(availableDates[newIndex]);
   };
 
+  const openCalendar = () => {
+    const input = calendarInputRef.current;
+    if (!input) return;
+
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+    } else {
+      input.focus();
+      input.click();
+    }
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'All Time';
     const date = new Date(`${dateString}T00:00:00`);
@@ -208,10 +221,18 @@ const Outcomes = () => {
           <ChevronLeft className="outcomes-date-icon" />
         </button>
 
-        <div className="outcomes-date-display">
+        <button type="button" className="outcomes-date-display" onClick={openCalendar}>
           <Calendar className="outcomes-date-icon" />
           <span>{formatDate(selectedDate)}</span>
-        </div>
+          <input
+            ref={calendarInputRef}
+            type="date"
+            value={selectedDate || ''}
+            onChange={(e) => setSelectedDate(e.target.value || null)}
+            className="outcomes-date-picker-input"
+            aria-label="Select outcome date"
+          />
+        </button>
 
         <button
           onClick={() => navigateDate('prev')}
