@@ -6,6 +6,7 @@ const Match = require('../models/Match');
 const User = require('../models/User');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
 const { fetchMatchesByDateRange } = require('../services/footballApi');
+const { sendPredictionNotificationEmail } = require('../services/emailNotifications');
 
 const router = express.Router();
 
@@ -46,8 +47,14 @@ const getMatchKey = (homeTeam, awayTeam, date, league = '') => {
     .join('|');
 };
 
-const filterPredictionsByTier = (predictions = [], userTier = 'none') => predictions.filter(pred => {
-  const visibility = pred.visibility || 'all';
+const getEffectiveVisibility = (prediction = {}, gameTier = 'none') => {
+  const visibility = prediction.visibility || 'all';
+  if (visibility !== 'all') return visibility;
+  return ['vip', 'vvip'].includes(gameTier) ? gameTier : 'all';
+};
+
+const isPredictionVisibleToTier = (prediction = {}, userTier = 'none', gameTier = 'none') => {
+  const visibility = getEffectiveVisibility(prediction, gameTier);
 
   if (visibility === 'all') return true;
   if (visibility === 'vip') return userTier === 'vip' || userTier === 'vvip';
@@ -55,7 +62,31 @@ const filterPredictionsByTier = (predictions = [], userTier = 'none') => predict
   if (visibility === 'both') return userTier === 'vip' || userTier === 'vvip';
 
   return false;
+};
+
+const redactPrediction = (prediction = {}) => ({
+  ...prediction.toObject?.() || prediction,
+  originalType: prediction.type,
+  prediction: '••••••••',
+  confidence: null,
+  odds: {},
+  locked: true
 });
+
+const formatPredictionsForTier = (predictions = [], userTier = 'none', gameTier = 'none') => predictions
+  .map(prediction => {
+    const formattedPrediction = prediction.toObject?.() || prediction;
+    const effectiveVisibility = getEffectiveVisibility(formattedPrediction, gameTier);
+    const predictionWithTier = {
+      ...formattedPrediction,
+      visibility: effectiveVisibility,
+      sourceVisibility: formattedPrediction.visibility || 'all'
+    };
+
+    return isPredictionVisibleToTier(predictionWithTier, userTier, gameTier)
+      ? predictionWithTier
+      : redactPrediction(predictionWithTier);
+  });
 
 // Mock data for development
 const mockFixtures = [
@@ -110,14 +141,14 @@ router.get('/', optionalAuth, async (req, res) => {
     const { end } = getLocalDayRange(toDate);
 
     const query = {
-      date: { $gte: start, $lt: end }
+      date: { $gte: start, $lt: end },
+      predictionStatus: { $in: ['manual', 'approved'] }
     };
 
-    // Filter games based on user tier
-    if (userTier === 'none') {
-      // Normal users can only see 'none' tier games
-      query.gameTier = 'none';
-    } else if (userTier === 'vip') {
+    // Filter games based on user tier. Non-VIP users still receive VIP/VVIP
+    // admin matches with locked prediction values so the match card can show
+    // the VIP badge and upgrade cue.
+    if (userTier === 'vip') {
       // VIP users can see 'none' and 'vip' tier games, but not 'vvip'
       query.gameTier = { $in: ['none', 'vip'] };
     }
@@ -125,7 +156,7 @@ router.get('/', optionalAuth, async (req, res) => {
 
     const adminMatches = await Match.find(query)
       .sort({ date: 1 })
-      .select('homeTeam awayTeam date league predictions bookmakerOdds gameTier');
+      .select('homeTeam awayTeam date league predictions bookmakerOdds gameTier predictionStatus');
 
     const liveFixtures = await fetchMatchesByDateRange(fromDate, toDate);
     const adminByKey = new Map();
@@ -137,7 +168,7 @@ router.get('/', optionalAuth, async (req, res) => {
     const formattedLiveMatches = liveFixtures.map(fixture => {
       const adminMatch = adminByKey.get(getMatchKey(fixture.homeTeam, fixture.awayTeam, fixture.utcDate, fixture.competition));
       const visiblePredictions = adminMatch
-        ? filterPredictionsByTier(adminMatch.predictions || [], userTier)
+        ? formatPredictionsForTier(adminMatch.predictions || [], userTier, adminMatch.gameTier)
         : [];
 
       if (adminMatch) {
@@ -172,7 +203,7 @@ router.get('/', optionalAuth, async (req, res) => {
       awayTeam: { name: match.awayTeam },
       competition: { name: match.league },
       source: 'admin',
-      predictions: filterPredictionsByTier(match.predictions || [], userTier),
+      predictions: formatPredictionsForTier(match.predictions || [], userTier, match.gameTier),
       bookmakerOdds: match.bookmakerOdds,
       gameTier: match.gameTier
     })).filter(match => match.predictions.length > 0);
@@ -267,6 +298,16 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
 
     await newMatch.save();
 
+    User.find({ isActive: true }).select('email username').lean()
+      .then(users => sendPredictionNotificationEmail({
+        users,
+        match: newMatch,
+        predictions: processedPredictions
+      }))
+      .catch(error => {
+        console.error('Failed to queue prediction notification email:', error.message);
+      });
+
     res.status(201).json({
       message: 'Match added successfully',
       match: {
@@ -290,7 +331,7 @@ router.get('/admin', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const matches = await Match.find({})
       .sort({ date: -1 })
-      .select('homeTeam awayTeam date league predictions bookmakerOdds gameTier homeGoals awayGoals outcomes')
+      .select('homeTeam awayTeam date league predictions bookmakerOdds gameTier homeGoals awayGoals outcomes predictionStatus predictionBatchId predictionsGeneratedAt predictionsGeneratedBy predictionsApprovedAt predictionsApprovedBy externalFixtureId apiSource competitionCode')
       .populate('outcomes.outcomeSetBy', 'username');
 
     res.json(matches.map(match => ({
@@ -305,9 +346,59 @@ router.get('/admin', authenticateToken, requireAdmin, async (req, res) => {
       homeGoals: match.homeGoals,
       awayGoals: match.awayGoals,
       outcomes: match.outcomes || []
+      ,predictionStatus: match.predictionStatus || 'manual',
+      predictionBatchId: match.predictionBatchId,
+      predictionsGeneratedAt: match.predictionsGeneratedAt,
+      predictionsGeneratedBy: match.predictionsGeneratedBy,
+      predictionsApprovedAt: match.predictionsApprovedAt,
+      externalFixtureId: match.externalFixtureId,
+      apiSource: match.apiSource,
+      competitionCode: match.competitionCode
     })));
   } catch (err) {
     console.error('Error fetching admin matches:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Approve/publish AI-generated predictions so they appear publicly
+router.put('/:id/predictions/approve', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const match = await Match.findByIdAndUpdate(
+      req.params.id,
+      {
+        predictionStatus: 'approved',
+        predictionsApprovedAt: new Date(),
+        predictionsApprovedBy: req.user.id
+      },
+      { new: true }
+    );
+
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    res.json({ success: true, message: 'Predictions approved and published', predictionStatus: match.predictionStatus });
+  } catch (err) {
+    console.error('Error approving predictions:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Hide predictions from public pages again
+router.put('/:id/predictions/unpublish', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const match = await Match.findByIdAndUpdate(
+      req.params.id,
+      {
+        predictionStatus: 'unpublished',
+        predictionsApprovedAt: null,
+        predictionsApprovedBy: null
+      },
+      { new: true }
+    );
+
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    res.json({ success: true, message: 'Predictions unpublished', predictionStatus: match.predictionStatus });
+  } catch (err) {
+    console.error('Error unpublishing predictions:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -432,6 +523,16 @@ router.post('/:id/prediction', authenticateToken, requireAdmin, async (req, res)
 
     match.predictions.push(newPrediction);
     await match.save();
+
+    User.find({ isActive: true }).select('email username').lean()
+      .then(users => sendPredictionNotificationEmail({
+        users,
+        match,
+        predictions: [newPrediction]
+      }))
+      .catch(error => {
+        console.error('Failed to queue prediction notification email:', error.message);
+      });
 
     res.json({
       success: true,

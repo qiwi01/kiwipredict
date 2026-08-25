@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Shield } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+import logoImage from '../assets/brand-logo.jpeg';
 import api from '../utils/api';
 import '../css/Login.css';
 
@@ -51,7 +52,7 @@ const AdminLogin = () => {
       <div className="login-card">
         <div className="login-header">
           <div className="login-logo">
-            <Shield className="login-logo-icon" />
+            <img src={logoImage} alt="Kiwi Predict" className="login-logo-image" />
           </div>
           <h2 className="login-title">
             Admin Access

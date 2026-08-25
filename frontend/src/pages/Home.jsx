@@ -5,7 +5,7 @@ import { TrendingUp, Target, Zap, Star, Calendar, ArrowRight, Shuffle, Crown, Al
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import '../css/Home.css';
-import footballImage from '../assets/ball-logo.jpeg';
+import footballImage from '../assets/brand-logo.jpeg';
 
 const formatLocalDate = (date) => {
   const year = date.getFullYear();

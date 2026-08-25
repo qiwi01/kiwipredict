@@ -17,6 +17,10 @@ const vipRoutes = require('./routes/vip');
 const leagueRoutes = require('./routes/leagues');
 const fixtureRoutes = require('./routes/fixtures');
 const siteSettingsRoutes = require('./routes/siteSettings');
+const User = require('./models/User');
+const { authenticateToken } = require('./middleware/auth');
+const { requireAdmin } = require('./middleware/admin');
+const { sendBroadcastEmail } = require('./services/emailNotifications');
 
 // Import monitoring middleware
 const {
@@ -29,6 +33,7 @@ const {
 
 // Import keep-alive mechanism
 const { startKeepAlive, wakeUpHandler } = require('./keepalive');
+const { startWeeklyPredictionCron } = require('./jobs/weeklyPredictionsJob');
 
 const app = express();
 
@@ -127,6 +132,29 @@ app.get('/health', healthCheck);
 app.get('/metrics', metrics);
 app.get('/wakeup', wakeUpHandler); // Quick wake-up endpoint for cold starts
 
+const directBroadcastEmailToUsers = async (req, res) => {
+  try {
+    const { subject, message } = req.body;
+
+    if (!subject || !message) {
+      return res.status(400).json({ error: 'Subject and message are required' });
+    }
+
+    const users = await User.find({ isActive: true }).select('email username').lean();
+    const result = await sendBroadcastEmail({ users, subject, message });
+
+    res.json({ success: true, message: `Email queued for ${result?.sent || 0} users` });
+  } catch (err) {
+    console.error('Direct broadcast email error:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Direct admin email endpoints. Kept outside the admin router so Render exposes
+// them unambiguously after deploy, even if old legacy route mounting changes.
+app.post('/api/admin/email-users', authenticateToken, requireAdmin, directBroadcastEmailToUsers);
+app.post('/api/admin/broadcast-email', authenticateToken, requireAdmin, directBroadcastEmailToUsers);
+
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/matches', matchRoutes);
@@ -178,4 +206,5 @@ app.listen(PORT, () => {
   
   // Start keep-alive mechanism for Render free tier
   startKeepAlive();
+  startWeeklyPredictionCron();
 });

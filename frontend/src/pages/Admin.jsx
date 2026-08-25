@@ -50,6 +50,8 @@ const Admin = () => {
   const [apiConfigured, setApiConfigured] = useState(false);
   const [importingFixtures, setImportingFixtures] = useState(new Set());
   const [importingAll, setImportingAll] = useState(false);
+  const [generatingWeeklyPredictions, setGeneratingWeeklyPredictions] = useState(false);
+  const [weeklyPredictionSummary, setWeeklyPredictionSummary] = useState(null);
 
   // Modal state
   const [modal, setModal] = useState({
@@ -230,6 +232,40 @@ const Admin = () => {
     } finally {
       setSendingBroadcast(false);
     }
+  };
+
+  const handleGenerateWeeklyPredictions = async (overwrite = false) => {
+    setGeneratingWeeklyPredictions(true);
+    setWeeklyPredictionSummary(null);
+
+    try {
+      const response = await api.post('/api/admin/generate-weekly-predictions', { overwrite });
+      setWeeklyPredictionSummary(response.data.summary);
+      toast.success(response.data.message || 'Weekly semi-AI predictions generated');
+      if (activeTab === 'games') fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to generate weekly predictions');
+    } finally {
+      setGeneratingWeeklyPredictions(false);
+    }
+  };
+
+  const handlePredictionReviewAction = async (gameId, action) => {
+    try {
+      const endpoint = action === 'approve' ? 'approve' : 'unpublish';
+      const response = await api.put(`/api/matches/${gameId}/predictions/${endpoint}`);
+      toast.success(response.data.message || 'Prediction status updated');
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to update prediction status');
+    }
+  };
+
+  const getPredictionStatusLabel = (status) => {
+    if (status === 'pending_review') return 'Pending Admin Review';
+    if (status === 'approved') return 'Published';
+    if (status === 'unpublished') return 'Unpublished';
+    return 'Manual / Published';
   };
 
   // Fetch fixtures from API
@@ -509,6 +545,13 @@ const Admin = () => {
                       className="admin-action-btn success"
                     >
                       Add Games
+                    </button>
+                    <button
+                      onClick={() => handleGenerateWeeklyPredictions(false)}
+                      className="admin-action-btn primary"
+                      disabled={generatingWeeklyPredictions}
+                    >
+                      {generatingWeeklyPredictions ? 'Generating...' : 'Generate Weekly AI'}
                     </button>
                     <button
                       onClick={() => setActiveTab('outcomes')}
@@ -867,6 +910,50 @@ Arsenal FC
       {/* Games Management */}
       {activeTab === 'games' && (
         <div className="admin-games-section">
+          {/* Semi-AI Weekly Generator */}
+          <div className="admin-data-card">
+            <h3 className="admin-data-title">
+              <Target className="admin-icon-inline" />
+              Semi-AI Weekly Prediction Generator
+            </h3>
+            <p className="admin-section-description">
+              Fetch fixtures for the next 7 days from Football-data.org, generate Poisson-based semi-AI predictions, and save them for admin review.
+            </p>
+            <div className="admin-quick-actions">
+              <button
+                type="button"
+                onClick={() => handleGenerateWeeklyPredictions(false)}
+                className="admin-action-btn primary"
+                disabled={generatingWeeklyPredictions}
+              >
+                {generatingWeeklyPredictions ? 'Generating Weekly Predictions...' : 'Generate Weekly AI Predictions'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleGenerateWeeklyPredictions(true)}
+                className="admin-action-btn warning"
+                disabled={generatingWeeklyPredictions}
+              >
+                Regenerate & Overwrite Existing
+              </button>
+            </div>
+
+            {weeklyPredictionSummary && (
+              <div className="admin-ai-summary">
+                <div><strong>Batch:</strong> {weeklyPredictionSummary.batchId}</div>
+                <div><strong>Date range:</strong> {weeklyPredictionSummary.from} to {weeklyPredictionSummary.to}</div>
+                <div className="admin-ai-summary-grid">
+                  <span>Fixtures: {weeklyPredictionSummary.fixturesFound}</span>
+                  <span>Created: {weeklyPredictionSummary.created}</span>
+                  <span>Updated: {weeklyPredictionSummary.updated}</span>
+                  <span>Skipped: {weeklyPredictionSummary.skipped}</span>
+                  <span>Predictions: {weeklyPredictionSummary.predictionsGenerated}</span>
+                  <span>Errors: {weeklyPredictionSummary.errors}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Fetch Matches from API */}
           <div className="admin-data-card">
             <h3 className="admin-data-title">
@@ -1549,6 +1636,15 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                         {game.homeTeam.name} vs {game.awayTeam.name}
                       </h3>
                       <p className="admin-match-league">{game.competition?.name || game.league}</p>
+                      <div className={`admin-review-status ${game.predictionStatus || 'manual'}`}>
+                        {getPredictionStatusLabel(game.predictionStatus)}
+                      </div>
+                      {game.predictionsGeneratedBy && (
+                        <p className="admin-ai-meta">
+                          AI: {game.predictionsGeneratedBy}
+                          {game.predictionsGeneratedAt ? ` • ${new Date(game.predictionsGeneratedAt).toLocaleString()}` : ''}
+                        </p>
+                      )}
                     </div>
 
                     <div className="admin-predictions-list">
@@ -1586,6 +1682,27 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                       )}
                     </div>
 
+
+                    <div className="admin-review-actions">
+                      {(game.predictionStatus === 'pending_review' || game.predictionStatus === 'unpublished') && (
+                        <button
+                          type="button"
+                          className="admin-match-action-btn approve"
+                          onClick={() => handlePredictionReviewAction(game.id, 'approve')}
+                        >
+                          Approve & Publish
+                        </button>
+                      )}
+                      {game.predictionStatus === 'approved' && (
+                        <button
+                          type="button"
+                          className="admin-match-action-btn unpublish"
+                          onClick={() => handlePredictionReviewAction(game.id, 'unpublish')}
+                        >
+                          Unpublish
+                        </button>
+                      )}
+                    </div>
 
                   </div>
                 ))}

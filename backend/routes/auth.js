@@ -5,6 +5,7 @@ const validator = require('validator');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const { authenticateToken } = require('../middleware/auth');
+const { sendWelcomeEmail } = require('../services/emailNotifications');
 
 // Validation middleware
 const validateRegister = [
@@ -80,6 +81,10 @@ router.post('/register', validateRegister, handleValidationErrors, async (req, r
     });
 
     await user.save();
+
+    sendWelcomeEmail(user).catch(error => {
+      console.error('Failed to queue welcome email:', error.message);
+    });
 
     // Create token
     const token = jwt.sign(

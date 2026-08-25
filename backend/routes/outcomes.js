@@ -8,13 +8,12 @@ const router = express.Router();
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const { type, days, date } = req.query;
-    const user = await require('../models/User').findById(req.user.id);
 
     let query = {};
 
     // Date filtering
     if (date) {
-      const targetDate = new Date(date);
+      const targetDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(`${date}T00:00:00`) : new Date(date);
       const startOfDay = new Date(targetDate);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(targetDate);
@@ -59,6 +58,19 @@ router.get('/', authenticateToken, async (req, res) => {
     today.setHours(0, 0, 0, 0);
 
     filteredMatches.forEach(match => {
+      const predictions = match.predictions || [];
+      const completedOutcomes = (match.outcomes || []).filter(outcome => outcome.actualResult !== 'pending');
+      const hasVipPrediction = predictions.some(prediction => ['vip', 'both'].includes(prediction.visibility));
+      const hasVvipPrediction = predictions.some(prediction => prediction.visibility === 'vvip');
+      const hasTieredOutcome = completedOutcomes.some(outcome => {
+        const linkedPrediction = predictions.find(prediction =>
+          prediction.type === outcome.predictionType && prediction.prediction === outcome.prediction
+        );
+        return linkedPrediction && ['vip', 'vvip', 'both'].includes(linkedPrediction.visibility);
+      });
+      const isVipOutcome = match.gameTier === 'vip' || match.gameTier === 'vvip' || hasVipPrediction || hasVvipPrediction || hasTieredOutcome;
+      const isVvipOutcome = match.gameTier === 'vvip' || hasVvipPrediction;
+
       const matchData = {
         id: match._id,
         homeTeam: match.homeTeam,
@@ -68,7 +80,7 @@ router.get('/', authenticateToken, async (req, res) => {
         gameTier: match.gameTier,
         homeGoals: match.homeGoals,
         awayGoals: match.awayGoals,
-        outcomes: match.outcomes || []
+        outcomes: completedOutcomes
       };
 
       // Today's predictions
@@ -76,18 +88,18 @@ router.get('/', authenticateToken, async (req, res) => {
         outcomesByType.todays.push(matchData);
       }
 
-      // Top picks (value bets)
-      if (match.predictions.some(p => p.valueBet)) {
+      // Top picks should display VVIP completed game outcomes only
+      if (isVvipOutcome) {
         outcomesByType.topPicks.push(matchData);
       }
 
-      // VIP predictions
-      if (match.gameTier === 'vip') {
+      // VIP predictions/outcomes include VIP and VVIP tier games
+      if (isVipOutcome) {
         outcomesByType.vip.push(matchData);
       }
 
       // VVIP predictions
-      if (match.gameTier === 'vvip') {
+      if (isVvipOutcome) {
         outcomesByType.vvip.push(matchData);
       }
 

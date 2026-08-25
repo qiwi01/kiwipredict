@@ -2,6 +2,8 @@ const express = require('express');
 const User = require('../models/User');
 const { authenticateToken } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/admin');
+const { sendBroadcastEmail } = require('../services/emailNotifications');
+const { generateWeeklyPredictions, getWeekRange } = require('../jobs/weeklyPredictionsJob');
 
 const router = express.Router();
 
@@ -48,6 +50,30 @@ router.delete('/users/:userId', authenticateToken, requireAdmin, async (req, res
   }
 });
 
+// Send a broadcast email to all active users
+const broadcastEmailToUsers = async (req, res) => {
+  try {
+    const { subject, message } = req.body;
+
+    if (!subject || !message) {
+      return res.status(400).json({ error: 'Subject and message are required' });
+    }
+
+    const users = await User.find({ isActive: true }).select('email username').lean();
+    const result = await sendBroadcastEmail({ users, subject, message });
+
+    res.json({ success: true, message: `Email queued for ${result?.sent || 0} users` });
+  } catch (err) {
+    console.error('Broadcast email error:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+router.post('/email-users', authenticateToken, requireAdmin, broadcastEmailToUsers);
+router.post('/broadcast-email', authenticateToken, requireAdmin, broadcastEmailToUsers);
+
+router.broadcastEmailToUsers = broadcastEmailToUsers;
+
 // Get admin statistics
 router.get('/stats', authenticateToken, requireAdmin, async (req, res) => {
   try {
@@ -89,6 +115,24 @@ router.get('/stats', authenticateToken, requireAdmin, async (req, res) => {
       averageROI: 0 // TODO: implement when bets are added
     });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Manually generate semi-AI predictions for the current/upcoming week
+router.post('/generate-weekly-predictions', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { from, to, overwrite = false } = req.body || {};
+    const range = from && to ? { from, to } : getWeekRange();
+    const summary = await generateWeeklyPredictions({ ...range, overwrite });
+
+    res.json({
+      success: true,
+      message: `Generated ${summary.predictionsGenerated} predictions from ${summary.fixturesFound} fixtures`,
+      summary
+    });
+  } catch (err) {
+    console.error('Manual weekly prediction generation error:', err);
     res.status(500).json({ error: err.message });
   }
 });

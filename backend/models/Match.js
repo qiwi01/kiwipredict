@@ -17,6 +17,29 @@ const MatchSchema = new mongoose.Schema({
     type: Number,
     default: null
   },
+  externalFixtureId: {
+    type: Number,
+    index: true
+  },
+  competitionCode: String,
+  apiSource: {
+    type: String,
+    default: 'manual'
+  },
+  predictionBatchId: String,
+  predictionsGeneratedAt: Date,
+  predictionsGeneratedBy: String,
+  predictionStatus: {
+    type: String,
+    enum: ['manual', 'pending_review', 'approved', 'unpublished'],
+    default: 'manual',
+    index: true
+  },
+  predictionsApprovedAt: Date,
+  predictionsApprovedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   date: {
     type: Date,
     required: true
@@ -56,6 +79,12 @@ const MatchSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
+    probability: Number,
+    fairOdds: Number,
+    modelVersion: String,
+    generatedBy: String,
+    generatedAt: Date,
+    explanation: String,
     odds: {
       home: Number,
       draw: Number,
