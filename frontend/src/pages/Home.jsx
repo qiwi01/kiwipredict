@@ -194,12 +194,6 @@ const Home = () => {
                     <span>My Dashboard</span>
                   </Link>
                 </div>
-
-                <div className="hero-standard-points" aria-label="Dashboard shortcuts">
-                  <span><Target size={15} /> {todaysMatches.length} today</span>
-                  <span><ShieldCheck size={15} /> Outcomes ready</span>
-                  <span><Crown size={15} /> {user.vipTier === 'none' ? 'Upgrade available' : 'VIP access'}</span>
-                </div>
               </div>
             ) : (
               <div className="hero-copy-panel hero-copy-panel-standard">

@@ -81,7 +81,7 @@ const Predictions = () => {
 
   useEffect(() => {
     fetchPredictions();
-  }, [predictionType]);
+  }, [predictionType, selectedDate]);
 
   useEffect(() => {
     let filtered = matches;
@@ -126,19 +126,23 @@ const Predictions = () => {
 
   const fetchPredictions = async () => {
     try {
-      // Get all matches with predictions
-      const todayDate = new Date();
-      const rangeEnd = new Date(todayDate);
-      rangeEnd.setDate(todayDate.getDate() + 14);
-      const res = await api.get(`/api/matches?from=${formatLocalDate(todayDate)}&to=${formatLocalDate(rangeEnd)}`);
+      setLoading(true);
+      const requestedDate = selectedDate || formatLocalDate(new Date());
+      const rangeStart = new Date(`${requestedDate}T00:00:00`);
+      const rangeEnd = new Date(rangeStart);
+      rangeEnd.setDate(rangeStart.getDate() + 14);
+
+      const fromDate = selectedDate ? requestedDate : formatLocalDate(rangeStart);
+      const toDate = selectedDate ? requestedDate : formatLocalDate(rangeEnd);
+      const res = await api.get(`/api/matches?from=${fromDate}&to=${toDate}`);
       let matchesData = res.data;
 
       console.log(`[Predictions] Fetched ${matchesData.length} matches`);
 
       // Filter matches based on prediction type for specific pages
       if (predictionType.includes('today-')) {
-        const today = formatLocalDate(new Date());
-        matchesData = matchesData.filter(match => getMatchLocalDate(match.utcDate) === today);
+        const activeDate = selectedDate || formatLocalDate(new Date());
+        matchesData = matchesData.filter(match => getMatchLocalDate(match.utcDate) === activeDate);
       }
 
       // For specific prediction types, still filter matches, but show ALL predictions for those matches
