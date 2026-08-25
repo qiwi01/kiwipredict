@@ -167,7 +167,41 @@ const Home = () => {
         <div className="hero-content">
           {/* Main hero content */}
           <div className={`hero-main hero-main-standard ${user ? 'hero-main-authenticated' : ''}`}>
-            {!user && (
+            {user ? (
+              <div className="hero-copy-panel hero-copy-panel-standard home-member-welcome-card">
+                <span className="hero-standard-eyebrow">
+                  <LayoutDashboard size={16} /> Member dashboard
+                </span>
+                <div className="hero-text-block">
+                  <h1 className="hero-headline">
+                    Welcome back, {user.username}
+                    <br />
+                    <span className="hero-headline-accent">start with today&apos;s edge</span>
+                  </h1>
+                  <p className="hero-subheadline">
+                    Jump into today&apos;s reviewed football predictions, track recent outcomes, manage your account,
+                    and use VIP tools from one organized home dashboard.
+                  </p>
+                </div>
+
+                <div className="hero-actions">
+                  <Link to="/predictions/today/win" className="hero-btn-primary">
+                    <TrendingUp size={20} />
+                    <span>Today&apos;s Picks</span>
+                  </Link>
+                  <Link to="/profile" className="hero-btn-secondary">
+                    <LayoutDashboard size={18} />
+                    <span>My Dashboard</span>
+                  </Link>
+                </div>
+
+                <div className="hero-standard-points" aria-label="Dashboard shortcuts">
+                  <span><Target size={15} /> {todaysMatches.length} today</span>
+                  <span><ShieldCheck size={15} /> Outcomes ready</span>
+                  <span><Crown size={15} /> {user.vipTier === 'none' ? 'Upgrade available' : 'VIP access'}</span>
+                </div>
+              </div>
+            ) : (
               <div className="hero-copy-panel hero-copy-panel-standard">
                 <span className="hero-standard-eyebrow">
                   <Sparkles size={16} /> Semi-AI football insight platform
@@ -260,7 +294,7 @@ const Home = () => {
           {/* Stats bar */}
           <div className="hero-stats-bar">
             <div className="hero-stat-item">
-              <span className="hero-stat-value">Daily</span>
+              <span className="hero-stat-value">{todaysMatches.length}</span>
               <span className="hero-stat-label">Predictions</span>
             </div>
             <div className="hero-stat-divider"></div>
@@ -275,8 +309,8 @@ const Home = () => {
             </div>
             <div className="hero-stat-divider"></div>
             <div className="hero-stat-item">
-              <span className="hero-stat-value">Data</span>
-              <span className="hero-stat-label">Led</span>
+              <span className="hero-stat-value">{outcomes?.all?.length || 0}</span>
+              <span className="hero-stat-label">Outcomes</span>
             </div>
           </div>
 
@@ -309,6 +343,38 @@ const Home = () => {
           </div>
         </section>
       )}
+
+      <section className="home-standard-section home-standard-workflow">
+        <div className="home-standard-header">
+          <span className="home-overview-eyebrow">How Kiwi Predict works</span>
+          <h2 className="home-overview-heading">A simple workflow for cleaner football decisions</h2>
+          <p className="home-overview-copy">
+            Review markets in order: start with today&apos;s predictions, compare confidence, check historical outcomes,
+            then decide whether VIP tools are useful for your style.
+          </p>
+        </div>
+
+        <div className="home-workflow-grid">
+          <Link to="/predictions" className="home-workflow-card">
+            <div className="home-workflow-icon"><Target size={22} /></div>
+            <span>01</span>
+            <h3>Browse reviewed picks</h3>
+            <p>See approved football predictions by market, match date, and confidence.</p>
+          </Link>
+          <Link to="/outcomes" className="home-workflow-card">
+            <div className="home-workflow-icon"><ShieldCheck size={22} /></div>
+            <span>02</span>
+            <h3>Check outcomes</h3>
+            <p>Use results history to understand performance before following a selection.</p>
+          </Link>
+          <Link to="/vip" className="home-workflow-card premium">
+            <div className="home-workflow-icon"><Crown size={22} /></div>
+            <span>03</span>
+            <h3>Unlock premium tools</h3>
+            <p>Access VIP picks and converter tools when you want a deeper workspace.</p>
+          </Link>
+        </div>
+      </section>
 
       {/* Mini Bet Converter - Show for logged-in users */}
       {user && (

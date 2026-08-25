@@ -130,6 +130,114 @@ const Admin = () => {
     }
   };
 
+  const predictionTypeOptions = [
+    { value: 'win', label: 'Win' },
+    { value: 'over15', label: 'Over/Under 1.5' },
+    { value: 'over25', label: 'Over/Under 2.5' },
+    { value: 'over35', label: 'Over/Under 3.5' },
+    { value: 'corners', label: 'Corners' },
+    { value: 'ggng', label: 'GG/NG' },
+    { value: 'others', label: 'Others' },
+    { value: 'player', label: 'Player' }
+  ];
+
+  const predictionVisibilityOptions = [
+    { value: 'all', label: 'All Users' },
+    { value: 'vip', label: 'VIP Users Only' },
+    { value: 'vvip', label: 'VVIP Users Only' },
+    { value: 'both', label: 'VIP & VVIP Users' }
+  ];
+
+  const predictionFormFields = [
+    {
+      name: 'type',
+      label: 'Prediction Type',
+      type: 'select',
+      options: predictionTypeOptions
+    },
+    {
+      name: 'prediction',
+      label: 'Prediction',
+      type: 'text',
+      placeholder: 'Example: Over 2.5, Under 2.5, Home Win, BTTS Yes'
+    },
+    {
+      name: 'confidence',
+      label: 'Confidence (%)',
+      type: 'number',
+      placeholder: '0-100'
+    },
+    {
+      name: 'visibility',
+      label: 'Visibility',
+      type: 'select',
+      options: predictionVisibilityOptions
+    }
+  ];
+
+  const getPredictionTypeLabel = (type) => {
+    const option = predictionTypeOptions.find((item) => item.value === type);
+    return option ? option.label.toUpperCase() : 'PREDICTION';
+  };
+
+  const editPrediction = (game, pred, predIndex) => {
+    setModal({
+      isOpen: true,
+      type: 'form',
+      title: `Edit Prediction - ${game.homeTeam.name} vs ${game.awayTeam.name}`,
+      confirmText: 'Save Changes',
+      cancelText: 'Cancel',
+      formData: {
+        type: pred.type,
+        prediction: pred.prediction,
+        confidence: pred.confidence,
+        visibility: pred.visibility || 'all'
+      },
+      formFields: predictionFormFields,
+      onConfirm: async (formData) => {
+        try {
+          const response = await api.put(`/api/outcomes/${game.id}/prediction/${predIndex}`, {
+            type: formData.type,
+            prediction: formData.prediction,
+            confidence: parseInt(formData.confidence, 10) || pred.confidence,
+            visibility: formData.visibility
+          });
+
+          if (response.data.success) {
+            toast.success('Prediction updated successfully');
+            fetchData();
+          } else {
+            toast.error('Failed to update prediction');
+          }
+        } catch (err) {
+          console.error('Prediction update error:', err);
+          toast.error(err.response?.data?.error || 'Error updating prediction');
+        }
+      }
+    });
+  };
+
+  const deletePrediction = (game, pred, predIndex) => {
+    showConfirm(
+      'Delete Prediction',
+      `Delete prediction "${pred.prediction}" from ${game.homeTeam.name} vs ${game.awayTeam.name}?`,
+      async () => {
+        try {
+          const response = await api.delete(`/api/outcomes/${game.id}/prediction/${predIndex}`);
+
+          if (response.data.success) {
+            toast.success('Prediction deleted successfully');
+            fetchData();
+          } else {
+            toast.error('Failed to delete prediction');
+          }
+        } catch (err) {
+          toast.error(err.response?.data?.error || 'Error deleting prediction');
+        }
+      }
+    );
+  };
+
   const updateUserRole = async (userId, role) => {
     try {
       await api.put(`/api/admin/users/${userId}`, { role });
@@ -1653,13 +1761,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                           <div key={predIndex} className={`admin-prediction-item-display ${pred.valueBet ? 'admin-match-value' : ''}`}>
                             <div className="admin-prediction-type">
                               <span className="admin-prediction-type-label">
-                                {pred.type === 'win' ? 'WIN' :
-                                 pred.type === 'over15' ? 'OVER 1.5' :
-                                 pred.type === 'over25' ? 'OVER 2.5' :
-                                 pred.type === 'corners' ? 'CORNERS' :
-                                 pred.type === 'ggng' ? 'GG/NG' :
-                                 pred.type === 'others' ? 'OTHERS' :
-                                 pred.type === 'player' ? 'PLAYER' : 'PREDICTION'}
+                                {getPredictionTypeLabel(pred.type)}
                               </span>
                               {pred.valueBet && (
                                 <div className="admin-value-badge-small">
@@ -1672,6 +1774,23 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                             <div className="admin-prediction-details">
                               <div className="admin-prediction-value">{pred.prediction}</div>
                               <div className="admin-prediction-confidence">{pred.confidence}% confidence</div>
+                            </div>
+
+                            <div className="admin-prediction-review-actions">
+                              <button
+                                type="button"
+                                className="admin-prediction-review-btn edit"
+                                onClick={() => editPrediction(game, pred, predIndex)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-prediction-review-btn delete"
+                                onClick={() => deletePrediction(game, pred, predIndex)}
+                              >
+                                Delete
+                              </button>
                             </div>
                           </div>
                         ))

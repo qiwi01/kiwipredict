@@ -110,8 +110,14 @@ const Profile = () => {
           </span>
           <h1 className="profile-dashboard-title">Welcome back, {user.username}</h1>
           <p className="profile-dashboard-subtitle">
-            Start from today&apos;s picks, check your membership status, save teams you follow, and move quickly to VIP tools.
+            Your personal Kiwi Predict workspace is organized around today&apos;s picks, saved teams, outcome checks,
+            and premium tools when your plan includes them.
           </p>
+          <div className="profile-dashboard-insights">
+            <span><Target size={15} /> Today&apos;s markets</span>
+            <span><ShieldCheck size={15} /> Verified account</span>
+            <span><Heart size={15} /> {favorites.length} saved team{favorites.length === 1 ? '' : 's'}</span>
+          </div>
           <div className="profile-dashboard-actions">
             <Link to="/predictions/today/win" className="profile-dashboard-primary-btn">
               Open Today&apos;s Picks
@@ -123,6 +129,37 @@ const Profile = () => {
             </Link>
           </div>
         </div>
+
+        <aside className="profile-dashboard-side-panel" aria-label="Account overview">
+          <div className="profile-dashboard-side-top">
+            <div className="profile-dashboard-avatar-small">
+              <User size={22} />
+            </div>
+            <div>
+              <span>Signed in as</span>
+              <strong>{user.email}</strong>
+            </div>
+          </div>
+
+          <div className="profile-dashboard-side-grid">
+            <div>
+              <span>Plan</span>
+              <strong>{planLabel}</strong>
+            </div>
+            <div>
+              <span>Status</span>
+              <strong>{user.isActive ? 'Active' : 'Inactive'}</strong>
+            </div>
+            <div>
+              <span>Member since</span>
+              <strong>{memberSince}</strong>
+            </div>
+            <div>
+              <span>Access</span>
+              <strong>{user.role === 'admin' ? 'Admin' : 'Member'}</strong>
+            </div>
+          </div>
+        </aside>
       </section>
 
       <section className="profile-stats">
