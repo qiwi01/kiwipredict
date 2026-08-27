@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const Match = require('../models/Match');
 const { fetchMatchesByDateRange } = require('../services/footballApi');
-const { generatePredictionsForFixture } = require('../services/predictionEngine');
+const { generatePredictionsForFixture, MIN_CONFIDENCE } = require('../services/predictionEngine');
 
 const formatDate = (date) => date.toISOString().split('T')[0];
 
@@ -46,13 +46,6 @@ const generateWeeklyPredictions = async ({ from, to, overwrite = false } = {}) =
   const range = from && to ? { from, to } : getWeekRange();
   const batchId = `weekly-${range.from}-${range.to}-${Date.now()}`;
   const fixtures = await fetchMatchesByDateRange(range.from, range.to);
-  const historyFrom = new Date(range.from);
-  historyFrom.setMonth(historyFrom.getMonth() - 18);
-  const history = await Match.find({
-    date: { $gte: historyFrom, $lt: new Date(range.from) },
-    homeGoals: { $ne: null },
-    awayGoals: { $ne: null }
-  }).sort({ date: -1 }).limit(2500).lean();
 
   const summary = {
     batchId,
@@ -79,11 +72,11 @@ const generateWeeklyPredictions = async ({ from, to, overwrite = false } = {}) =
       const generated = generatePredictionsForFixture({
         ...fixture,
         competition: fixture.league
-      }, { history });
+      });
 
       if (!generated.predictions.length) {
         summary.skipped += 1;
-        summary.details.push({ fixture: `${fixture.homeTeam} vs ${fixture.awayTeam}`, status: 'skipped', reason: 'No generated prediction reached 60% confidence' });
+        summary.details.push({ fixture: `${fixture.homeTeam} vs ${fixture.awayTeam}`, status: 'skipped', reason: `No generated prediction reached ${MIN_CONFIDENCE}% confidence` });
         continue;
       }
       let match = await findExistingMatch(fixture);
