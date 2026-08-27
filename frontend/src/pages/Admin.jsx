@@ -182,6 +182,11 @@ const Admin = () => {
     return option ? option.label.toUpperCase() : 'PREDICTION';
   };
 
+  const getPredictionVisibilityLabel = (visibility = 'all') => {
+    const option = predictionVisibilityOptions.find((item) => item.value === visibility);
+    return option ? option.label : 'All Users';
+  };
+
   const editPrediction = (game, pred, predIndex) => {
     setModal({
       isOpen: true,
@@ -1886,7 +1891,9 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
 
                             <div className="admin-prediction-details">
                               <div className="admin-prediction-value">{pred.prediction}</div>
-                              <div className="admin-prediction-confidence">{pred.confidence}% confidence</div>
+                              <div className="admin-prediction-confidence">
+                                {pred.confidence}% confidence • {getPredictionVisibilityLabel(pred.visibility)}
+                              </div>
                             </div>
 
                             <div className="admin-prediction-review-actions">

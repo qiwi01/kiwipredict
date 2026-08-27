@@ -16,11 +16,17 @@ const getTransporter = () => {
 
   if (!transporter) {
     const port = Number(process.env.SMTP_PORT || 587);
+    const secure = process.env.SMTP_SECURE === 'true' || port === 465;
 
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port,
-      secure: process.env.SMTP_SECURE === 'true' || port === 465,
+      secure,
+      requireTLS: !secure,
+      connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 30000),
+      greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 30000),
+      socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 60000),
+      pool: false,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
@@ -86,7 +92,14 @@ const sendMail = async ({ to, bcc, subject, html, text }) => {
     console.log(`[Email] Sent: ${subject}`);
     return result;
   } catch (error) {
-    console.error(`[Email] Failed to send: ${subject}`, error.message);
+    console.error(`[Email] Failed to send: ${subject}`, {
+      message: error.message,
+      code: error.code,
+      command: error.command,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: process.env.SMTP_SECURE
+    });
     throw error;
   }
 };

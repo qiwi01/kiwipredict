@@ -46,6 +46,13 @@ const generateWeeklyPredictions = async ({ from, to, overwrite = false } = {}) =
   const range = from && to ? { from, to } : getWeekRange();
   const batchId = `weekly-${range.from}-${range.to}-${Date.now()}`;
   const fixtures = await fetchMatchesByDateRange(range.from, range.to);
+  const historyFrom = new Date(range.from);
+  historyFrom.setMonth(historyFrom.getMonth() - 18);
+  const history = await Match.find({
+    date: { $gte: historyFrom, $lt: new Date(range.from) },
+    homeGoals: { $ne: null },
+    awayGoals: { $ne: null }
+  }).sort({ date: -1 }).limit(2500).lean();
 
   const summary = {
     batchId,
@@ -72,7 +79,13 @@ const generateWeeklyPredictions = async ({ from, to, overwrite = false } = {}) =
       const generated = generatePredictionsForFixture({
         ...fixture,
         competition: fixture.league
-      });
+      }, { history });
+
+      if (!generated.predictions.length) {
+        summary.skipped += 1;
+        summary.details.push({ fixture: `${fixture.homeTeam} vs ${fixture.awayTeam}`, status: 'skipped', reason: 'No generated prediction reached 60% confidence' });
+        continue;
+      }
       let match = await findExistingMatch(fixture);
 
       if (match && match.predictions?.length && !overwrite) {

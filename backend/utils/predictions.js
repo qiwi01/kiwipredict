@@ -40,14 +40,14 @@ function generatePrediction(homeStrength, awayStrength) {
   const probs = calculateMatchProbabilities(homeStrength, awayStrength);
 
   // Determine prediction based on highest probability
-  let prediction = '1';
+  let prediction = 'home';
   let confidence = Math.round(probs.homeWinProb * 100);
 
   if (probs.awayWinProb > probs.homeWinProb && probs.awayWinProb > probs.drawProb) {
-    prediction = '2';
+    prediction = 'away';
     confidence = Math.round(probs.awayWinProb * 100);
   } else if (probs.drawProb > probs.homeWinProb && probs.drawProb > probs.awayWinProb) {
-    prediction = 'X';
+    prediction = 'draw';
     confidence = Math.round(probs.drawProb * 100);
   }
 
@@ -65,11 +65,11 @@ function isValueBet(prediction, bookmakerOdds, probabilities) {
   const { homeWinProb, drawProb, awayWinProb } = probabilities;
 
   switch (prediction) {
-    case '1':
+    case 'home':
       return parseFloat(bookmakerOdds.home) > (1 / homeWinProb);
-    case 'X':
+    case 'draw':
       return parseFloat(bookmakerOdds.draw) > (1 / drawProb);
-    case '2':
+    case 'away':
       return parseFloat(bookmakerOdds.away) > (1 / awayWinProb);
     default:
       return false;
