@@ -59,10 +59,26 @@ const broadcastEmailToUsers = async (req, res) => {
       return res.status(400).json({ error: 'Subject and message are required' });
     }
 
-    const users = await User.find({ isActive: true }).select('email username').lean();
+    const users = await User.find({ isActive: true, email: { $exists: true, $ne: '' } }).select('email username').lean();
     const result = await sendBroadcastEmail({ users, subject, message });
 
-    res.json({ success: true, message: `Email queued for ${result?.sent || 0} users` });
+    if (result.skipped) {
+      return res.status(500).json({ error: 'SMTP email is not configured. Check SMTP_HOST, SMTP_USER, and SMTP_PASS.' });
+    }
+
+    if (result.failed > 0 && result.sent === 0) {
+      return res.status(502).json({ error: `Email failed for all ${result.total || users.length} users. Check SMTP credentials/provider logs.` });
+    }
+
+    res.json({
+      success: true,
+      sent: result.sent,
+      failed: result.failed,
+      total: result.total,
+      message: result.failed > 0
+        ? `Email sent to ${result.sent} users. ${result.failed} failed.`
+        : `Email sent to ${result.sent} users`
+    });
   } catch (err) {
     console.error('Broadcast email error:', err);
     res.status(500).json({ error: err.message });

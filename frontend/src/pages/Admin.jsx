@@ -342,6 +342,30 @@ const Admin = () => {
     }
   };
 
+  const renderBroadcastEmailForm = (description = 'Send an announcement to every active user with an email address.') => (
+    <form className="admin-broadcast-card" onSubmit={handleSendBroadcastEmail}>
+      <h4><Mail className="admin-icon-inline" /> Email all users</h4>
+      <p className="admin-section-description">{description}</p>
+      <input
+        type="text"
+        value={broadcastEmail.subject}
+        onChange={(e) => setBroadcastEmail(prev => ({ ...prev, subject: e.target.value }))}
+        className="admin-search-input"
+        placeholder="Email subject"
+      />
+      <textarea
+        value={broadcastEmail.message}
+        onChange={(e) => setBroadcastEmail(prev => ({ ...prev, message: e.target.value }))}
+        className="admin-broadcast-textarea"
+        placeholder="Write your message to all users..."
+        rows="4"
+      />
+      <button type="submit" className="admin-action-btn primary" disabled={sendingBroadcast}>
+        {sendingBroadcast ? 'Sending...' : 'Send Email to All Users'}
+      </button>
+    </form>
+  );
+
   const handleGenerateWeeklyPredictions = async (overwrite = false) => {
     setGeneratingWeeklyPredictions(true);
     setWeeklyPredictionSummary(null);
@@ -618,6 +642,8 @@ const Admin = () => {
                   <div className="admin-stat-label">Total Games</div>
                 </div>
               </div>
+
+              {renderBroadcastEmailForm('Send an announcement from the dashboard to all active users.')}
 
               {/* Additional Stats */}
               <div className="admin-overview-grid">
@@ -1852,27 +1878,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
               placeholder="Search outcomes by team or league..."
             />
 
-            <form className="admin-broadcast-card" onSubmit={handleSendBroadcastEmail}>
-              <h4><Mail className="admin-icon-inline" /> Email all users</h4>
-              <p className="admin-section-description">Send an announcement after selecting predictions or outcomes.</p>
-              <input
-                type="text"
-                value={broadcastEmail.subject}
-                onChange={(e) => setBroadcastEmail(prev => ({ ...prev, subject: e.target.value }))}
-                className="admin-search-input"
-                placeholder="Email subject"
-              />
-              <textarea
-                value={broadcastEmail.message}
-                onChange={(e) => setBroadcastEmail(prev => ({ ...prev, message: e.target.value }))}
-                className="admin-broadcast-textarea"
-                placeholder="Write your message to all users..."
-                rows="4"
-              />
-              <button type="submit" className="admin-action-btn primary" disabled={sendingBroadcast}>
-                {sendingBroadcast ? 'Sending...' : 'Send Email to All Users'}
-              </button>
-            </form>
+            {renderBroadcastEmailForm('Send an announcement after updating predictions or outcomes.')}
 
             {loading ? (
               <div className="predictions-loading">
@@ -2222,6 +2228,8 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
       {activeTab === 'users' && (
         <div className="admin-data-card">
           <h3 className="admin-data-title">User Management</h3>
+
+          {renderBroadcastEmailForm('Send an email announcement to every active user in the list.')}
 
           {loading ? (
             <div className="predictions-loading">

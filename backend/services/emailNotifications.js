@@ -87,7 +87,7 @@ const sendMail = async ({ to, bcc, subject, html, text }) => {
     return result;
   } catch (error) {
     console.error(`[Email] Failed to send: ${subject}`, error.message);
-    return { error };
+    throw error;
   }
 };
 
@@ -171,7 +171,7 @@ const sendPredictionNotificationEmail = async ({ users = [], match, predictions 
 
 const sendBroadcastEmail = async ({ users = [], subject, message }) => {
   const recipients = [...new Set(users.map(user => user.email).filter(Boolean))];
-  if (recipients.length === 0 || !subject || !message) return { sent: 0 };
+  if (recipients.length === 0 || !subject || !message) return { sent: 0, failed: 0, skipped: false };
 
   const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
   const html = baseTemplate({
@@ -183,18 +183,33 @@ const sendBroadcastEmail = async ({ users = [], subject, message }) => {
   });
 
   const batchSize = Number(process.env.EMAIL_BATCH_SIZE || 50);
+  let sent = 0;
+  let failed = 0;
+  let skipped = false;
+
   for (let index = 0; index < recipients.length; index += batchSize) {
     const batch = recipients.slice(index, index + batchSize);
-    await sendMail({
-      to: process.env.EMAIL_TO_PLACEHOLDER || process.env.SMTP_USER,
-      bcc: batch,
-      subject,
-      html,
-      text: message
-    });
+    try {
+      const result = await sendMail({
+        to: process.env.EMAIL_TO_PLACEHOLDER || process.env.SMTP_USER,
+        bcc: batch,
+        subject,
+        html,
+        text: message
+      });
+
+      if (result?.skipped) {
+        skipped = true;
+        failed += batch.length;
+      } else {
+        sent += batch.length;
+      }
+    } catch (error) {
+      failed += batch.length;
+    }
   }
 
-  return { sent: recipients.length };
+  return { sent, failed, skipped, total: recipients.length };
 };
 
 module.exports = {
