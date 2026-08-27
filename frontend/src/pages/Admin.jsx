@@ -14,6 +14,8 @@ const Admin = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [games, setGames] = useState([]);
+  const [activeGamesSection, setActiveGamesSection] = useState(null);
+  const [gameSearchTerm, setGameSearchTerm] = useState('');
   const [leagues, setLeagues] = useState([]);
   const [newLeague, setNewLeague] = useState({ name: '', code: '', country: '', teams: [] });
   const [newTeamToAdd, setNewTeamToAdd] = useState({ name: '', code: '', founded: '', stadium: '' });
@@ -317,6 +319,16 @@ const Admin = () => {
       game.league?.toLowerCase().includes(term);
   });
 
+  const filteredGames = games.filter(game => {
+    if (!gameSearchTerm.trim()) return true;
+    const term = gameSearchTerm.trim().toLowerCase();
+    return game.homeTeam?.name?.toLowerCase().includes(term) ||
+      game.awayTeam?.name?.toLowerCase().includes(term) ||
+      game.competition?.name?.toLowerCase().includes(term) ||
+      game.league?.toLowerCase().includes(term) ||
+      game.predictionBatchId?.toLowerCase().includes(term);
+  });
+
   const handleSendBroadcastEmail = async (event) => {
     event.preventDefault();
     if (!broadcastEmail.subject.trim() || !broadcastEmail.message.trim()) {
@@ -380,6 +392,42 @@ const Admin = () => {
     } finally {
       setGeneratingWeeklyPredictions(false);
     }
+  };
+
+  const handleDeleteGeneratedWeek = () => {
+    showConfirm(
+      'Delete Generated Week',
+      'Delete all semi-AI generated matches and predictions for the current/upcoming week? Manual matches will be kept.',
+      async () => {
+        setGeneratingWeeklyPredictions(true);
+        try {
+          const response = await api.delete('/api/admin/generated-weekly-predictions');
+          toast.success(response.data.message || 'Generated week deleted');
+          setWeeklyPredictionSummary(null);
+          fetchData();
+        } catch (err) {
+          toast.error(err.response?.data?.error || 'Failed to delete generated week');
+        } finally {
+          setGeneratingWeeklyPredictions(false);
+        }
+      }
+    );
+  };
+
+  const handleDeleteMatch = (game) => {
+    showConfirm(
+      'Delete Match',
+      `Delete ${game.homeTeam.name} vs ${game.awayTeam.name}? This will also delete all predictions for this match.`,
+      async () => {
+        try {
+          const response = await api.delete(`/api/matches/${game.id}`);
+          toast.success(response.data.message || 'Match deleted successfully');
+          fetchData();
+        } catch (err) {
+          toast.error(err.response?.data?.error || 'Failed to delete match');
+        }
+      }
+    );
   };
 
   const handlePredictionReviewAction = async (gameId, action) => {
@@ -514,12 +562,21 @@ const Admin = () => {
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'leagues', label: 'Leagues & Teams', icon: Trophy },
     { id: 'games', label: 'Games', icon: Gamepad2 },
     { id: 'outcomes', label: 'Manage Outcomes', icon: CheckCircle },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'vip', label: 'VIP Management', icon: Star },
+    { id: 'email', label: 'Send Email', icon: Mail },
+    { id: 'leagues', label: 'Leagues & Teams', icon: Trophy },
     { id: 'settings', label: 'Settings', icon: Settings }
+  ];
+
+  const gamesSections = [
+    { id: 'generate', title: 'Generate Weekly AI Predictions', description: 'Create reviewed AI predictions for the current week.', icon: Target },
+    { id: 'fetch', title: 'Fetch Matches from API', description: 'Load fixtures from Football-data.org by date.', icon: Calendar },
+    { id: 'bulk', title: 'Bulk Import Matches', description: 'Paste many fixtures and import them at once.', icon: Plus },
+    { id: 'add', title: 'Add New Game', description: 'Create one match manually with predictions.', icon: Calendar },
+    { id: 'recent', title: 'Recent Games', description: 'Review, approve, search, edit, or delete existing matches.', icon: Gamepad2 }
   ];
 
   const updateAnnouncementItem = (index, field, value) => {
@@ -642,8 +699,6 @@ const Admin = () => {
                   <div className="admin-stat-label">Total Games</div>
                 </div>
               </div>
-
-              {renderBroadcastEmailForm('Send an announcement from the dashboard to all active users.')}
 
               {/* Additional Stats */}
               <div className="admin-overview-grid">
@@ -1044,8 +1099,32 @@ Arsenal FC
       {/* Games Management */}
       {activeTab === 'games' && (
         <div className="admin-games-section">
+          <div className="admin-games-menu">
+            {gamesSections.map(({ id, title, description, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                className={`admin-games-menu-btn ${activeGamesSection === id ? 'active' : ''}`}
+                onClick={() => setActiveGamesSection(activeGamesSection === id ? null : id)}
+              >
+                <Icon className="admin-games-menu-icon" />
+                <span className="admin-games-menu-content">
+                  <strong>{title}</strong>
+                  <small>{description}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {!activeGamesSection && (
+            <div className="admin-empty-state">
+              <div className="admin-empty-text">Choose a games action</div>
+              <div className="admin-empty-subtitle">Use the buttons above to open Fetch Matches, Bulk Import, Add Game, Recent Games, or Weekly AI generation.</div>
+            </div>
+          )}
+
           {/* Semi-AI Weekly Generator */}
-          <div className="admin-data-card">
+          {activeGamesSection === 'generate' && <div className="admin-data-card">
             <h3 className="admin-data-title">
               <Target className="admin-icon-inline" />
               Semi-AI Weekly Prediction Generator
@@ -1064,11 +1143,11 @@ Arsenal FC
               </button>
               <button
                 type="button"
-                onClick={() => handleGenerateWeeklyPredictions(true)}
-                className="admin-action-btn warning"
+                onClick={handleDeleteGeneratedWeek}
+                className="admin-action-btn danger"
                 disabled={generatingWeeklyPredictions}
               >
-                Regenerate & Overwrite Existing
+                Delete Generated Week
               </button>
             </div>
 
@@ -1086,10 +1165,10 @@ Arsenal FC
                 </div>
               </div>
             )}
-          </div>
+          </div>}
 
           {/* Fetch Matches from API */}
-          <div className="admin-data-card">
+          {activeGamesSection === 'fetch' && <div className="admin-data-card">
             <h3 className="admin-data-title">
               <Calendar className="admin-icon-inline" />
               Fetch Matches from API
@@ -1235,10 +1314,10 @@ Arsenal FC
                 </div>
               )}
             </form>
-          </div>
+          </div>}
 
           {/* Bulk Import Matches */}
-          <div className="admin-data-card">
+          {activeGamesSection === 'bulk' && <div className="admin-data-card">
             <h3 className="admin-data-title">
               <Plus className="admin-icon-inline" />
               Bulk Import Matches
@@ -1414,7 +1493,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                               time,
                               predictions: [{
                                 type: newGame.awayTeam || 'win',
-                                prediction: newGame.date || '1',
+                                prediction: newGame.date || 'home',
                                 confidence: parseInt(newGame.time) || 50,
                                 visibility: 'all'
                               }],
@@ -1457,10 +1536,10 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                 Import {newGame.homeTeam.trim().split('\n').filter(line => line.trim()).length > 0 ? `(${newGame.homeTeam.trim().split('\n').filter(line => line.trim()).length} matches)` : ''} Matches
               </button>
             </form>
-          </div>
+          </div>}
 
           {/* Add Game Form */}
-          <div className="admin-data-card">
+          {activeGamesSection === 'add' && <div className="admin-data-card">
             <h3 className="admin-data-title">
               <Calendar className="admin-icon-inline" />
               Add New Game
@@ -1565,7 +1644,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                       ...newGame,
                       predictions: [...newGame.predictions, {
                         type: 'win',
-                        prediction: '1',
+                        prediction: 'home',
                         confidence: 50,
                         valueBet: false
                       }]
@@ -1733,23 +1812,31 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                 Add Game
               </button>
             </form>
-          </div>
+          </div>}
 
           {/* Recent Games */}
-          <div className="admin-data-card">
+          {activeGamesSection === 'recent' && <div className="admin-data-card">
             <h3 className="admin-data-title">
               <Target className="admin-icon-inline" />
               Recent Games
             </h3>
 
-            {games.length === 0 ? (
+            <input
+              type="search"
+              value={gameSearchTerm}
+              onChange={(e) => setGameSearchTerm(e.target.value)}
+              className="admin-search-input"
+              placeholder="Search recent games by team, league, or batch..."
+            />
+
+            {filteredGames.length === 0 ? (
               <div className="admin-empty-state">
-                <div className="admin-empty-text">No games added yet</div>
-                <div className="admin-empty-subtitle">Use the form above to add your first game</div>
+                <div className="admin-empty-text">No games found</div>
+                <div className="admin-empty-subtitle">Use another search term or add/import matches first.</div>
               </div>
             ) : (
               <div className="admin-games-list">
-                {games
+                {filteredGames
                   .sort((a, b) => new Date(b.createdAt || b.utcDate) - new Date(a.createdAt || a.utcDate))
                   .map((game, index) => (
                   <div key={game.id || index} className="admin-match-card">
@@ -1829,6 +1916,13 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
 
 
                     <div className="admin-review-actions">
+                      <button
+                        type="button"
+                        className="admin-match-action-btn delete"
+                        onClick={() => handleDeleteMatch(game)}
+                      >
+                        Delete Match
+                      </button>
                       {(game.predictionStatus === 'pending_review' || game.predictionStatus === 'unpublished') && (
                         <button
                           type="button"
@@ -1853,7 +1947,18 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                 ))}
               </div>
             )}
-          </div>
+          </div>}
+        </div>
+      )}
+
+      {/* Send Email */}
+      {activeTab === 'email' && (
+        <div className="admin-data-card">
+          <h3 className="admin-data-title">
+            <Mail className="admin-icon-inline" />
+            Send Email to All Users
+          </h3>
+          {renderBroadcastEmailForm('Send an announcement to every active user with an email address.')}
         </div>
       )}
 
@@ -1877,8 +1982,6 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
               className="admin-search-input"
               placeholder="Search outcomes by team or league..."
             />
-
-            {renderBroadcastEmailForm('Send an announcement after updating predictions or outcomes.')}
 
             {loading ? (
               <div className="predictions-loading">
@@ -2138,7 +2241,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                             title: `Add New Prediction to ${game.homeTeam.name} vs ${game.awayTeam.name}`,
                             formData: {
                               type: 'win',
-                              prediction: '1',
+                              prediction: 'home',
                               confidence: 50,
                               visibility: 'all'
                             },
@@ -2228,8 +2331,6 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
       {activeTab === 'users' && (
         <div className="admin-data-card">
           <h3 className="admin-data-title">User Management</h3>
-
-          {renderBroadcastEmailForm('Send an email announcement to every active user in the list.')}
 
           {loading ? (
             <div className="predictions-loading">

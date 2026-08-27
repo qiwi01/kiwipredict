@@ -41,9 +41,9 @@ const fairOdds = (probability) => probability > 0 ? Number((1 / probability).toF
 
 const pickWinPrediction = ({ homeWin, draw, awayWin }) => {
   const options = [
-    { prediction: '1', probability: homeWin },
-    { prediction: 'X', probability: draw },
-    { prediction: '2', probability: awayWin }
+    { prediction: 'home', probability: homeWin },
+    { prediction: 'draw', probability: draw },
+    { prediction: 'away', probability: awayWin }
   ];
   return options.sort((a, b) => b.probability - a.probability)[0];
 };

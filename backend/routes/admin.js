@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('../models/User');
+const Match = require('../models/Match');
 const { authenticateToken } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/admin');
 const { sendBroadcastEmail } = require('../services/emailNotifications');
@@ -149,6 +150,40 @@ router.post('/generate-weekly-predictions', authenticateToken, requireAdmin, asy
     });
   } catch (err) {
     console.error('Manual weekly prediction generation error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete AI-generated matches/predictions for the current/upcoming week
+router.delete('/generated-weekly-predictions', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { from, to } = req.query || {};
+    const range = from && to ? { from, to } : getWeekRange();
+    const start = new Date(`${range.from}T00:00:00`);
+    const end = new Date(`${range.to}T23:59:59.999`);
+
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      return res.status(400).json({ error: 'Invalid date range' });
+    }
+
+    const deleteResult = await Match.deleteMany({
+      date: { $gte: start, $lte: end },
+      $or: [
+        { predictionBatchId: { $exists: true, $ne: '' } },
+        { predictionsGeneratedBy: { $exists: true, $ne: '' } },
+        { 'predictions.generatedBy': 'semi-ai-weekly-job' }
+      ]
+    });
+
+    res.json({
+      success: true,
+      deleted: deleteResult.deletedCount || 0,
+      from: range.from,
+      to: range.to,
+      message: `Deleted ${deleteResult.deletedCount || 0} generated match${deleteResult.deletedCount === 1 ? '' : 'es'} for ${range.from} to ${range.to}`
+    });
+  } catch (err) {
+    console.error('Delete generated weekly predictions error:', err);
     res.status(500).json({ error: err.message });
   }
 });
