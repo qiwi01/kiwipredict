@@ -33,6 +33,16 @@ const Admin = () => {
   const [broadcastEmail, setBroadcastEmail] = useState({ subject: '', message: '' });
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [vipPayments, setVipPayments] = useState([]);
+  const [bookingCodes, setBookingCodes] = useState([]);
+  const [bookingCodeForm, setBookingCodeForm] = useState({
+    bookmaker: 'sportybet',
+    code: '',
+    odds: '',
+    title: '',
+    description: '',
+    isActive: true,
+    validUntil: ''
+  });
   const [siteSettings, setSiteSettings] = useState({
     announcements: {
       enabled: true,
@@ -118,8 +128,14 @@ const Admin = () => {
         const betsRes = await api.get('/api/admin/bets');
         setBets(betsRes.data);
       } else if (activeTab === 'vip') {
-        const vipPaymentsRes = await api.get('/api/vip/pending-payments');
+        const [vipPaymentsRes, bookingCodesRes, usersRes] = await Promise.all([
+          api.get('/api/vip/pending-payments'),
+          api.get('/api/vip/admin/booking-codes'),
+          api.get('/api/admin/users')
+        ]);
         setVipPayments(vipPaymentsRes.data);
+        setBookingCodes(bookingCodesRes.data);
+        setUsers(usersRes.data);
       } else if (activeTab === 'settings') {
         const settingsRes = await api.get('/api/site-settings');
         setSiteSettings(settingsRes.data);
@@ -550,6 +566,48 @@ const Admin = () => {
       cancelText: 'Cancel',
       onConfirm,
       onCancel
+    });
+  };
+
+  const saveBookingCode = async () => {
+    if (!bookingCodeForm.code || !bookingCodeForm.odds) {
+      toast.error('Booking code and odds are required');
+      return;
+    }
+
+    try {
+      await api.post('/api/vip/admin/booking-codes', {
+        ...bookingCodeForm,
+        odds: Number(bookingCodeForm.odds),
+        validUntil: bookingCodeForm.validUntil || null
+      });
+      toast.success('Booking code saved');
+      setBookingCodeForm({ bookmaker: 'sportybet', code: '', odds: '', title: '', description: '', isActive: true, validUntil: '' });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to save booking code');
+    }
+  };
+
+  const toggleBookingCode = async (bookingCode) => {
+    try {
+      await api.put(`/api/vip/admin/booking-codes/${bookingCode._id}`, { isActive: !bookingCode.isActive });
+      toast.success('Booking code updated');
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to update booking code');
+    }
+  };
+
+  const deleteBookingCode = async (bookingCode) => {
+    showConfirm('Delete Booking Code', `Delete booking code ${bookingCode.code}?`, async () => {
+      try {
+        await api.delete(`/api/vip/admin/booking-codes/${bookingCode._id}`);
+        toast.success('Booking code deleted');
+        fetchData();
+      } catch (error) {
+        toast.error('Failed to delete booking code');
+      }
     });
   };
 
@@ -2488,6 +2546,70 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
       {/* VIP Management */}
       {activeTab === 'vip' && (
         <div className="admin-vip-section">
+          <div className="admin-data-card">
+            <h3 className="admin-data-title">
+              <Star className="admin-icon-inline" />
+              VIP Booking Codes
+            </h3>
+            <div className="admin-form-grid-3">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Bookmaker</label>
+                <select className="admin-form-select" value={bookingCodeForm.bookmaker} onChange={(e) => setBookingCodeForm({ ...bookingCodeForm, bookmaker: e.target.value })}>
+                  <option value="sportybet">SportyBet</option>
+                  <option value="bet9ja">Bet9ja</option>
+                  <option value="footballcom">Football.com</option>
+                </select>
+              </div>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Booking Code</label>
+                <input className="admin-form-input" value={bookingCodeForm.code} onChange={(e) => setBookingCodeForm({ ...bookingCodeForm, code: e.target.value })} placeholder="e.g. ABC123" />
+              </div>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Odds</label>
+                <input type="number" step="0.01" className="admin-form-input" value={bookingCodeForm.odds} onChange={(e) => setBookingCodeForm({ ...bookingCodeForm, odds: e.target.value })} placeholder="e.g. 2.45" />
+              </div>
+            </div>
+            <div className="admin-form-grid-2">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Title</label>
+                <input className="admin-form-input" value={bookingCodeForm.title} onChange={(e) => setBookingCodeForm({ ...bookingCodeForm, title: e.target.value })} placeholder="VIP Banker Code" />
+              </div>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Valid Until</label>
+                <input type="datetime-local" className="admin-form-input" value={bookingCodeForm.validUntil} onChange={(e) => setBookingCodeForm({ ...bookingCodeForm, validUntil: e.target.value })} />
+              </div>
+            </div>
+            <div className="admin-form-group">
+              <label className="admin-form-label">Description</label>
+              <textarea className="admin-form-textarea" value={bookingCodeForm.description} onChange={(e) => setBookingCodeForm({ ...bookingCodeForm, description: e.target.value })} placeholder="Optional note shown with this code" />
+            </div>
+            <button className="admin-btn-success" type="button" onClick={saveBookingCode}>Save Booking Code</button>
+
+            <div className="admin-table-wrapper" style={{ marginTop: '1rem' }}>
+              <table className="admin-table">
+                <thead>
+                  <tr><th>Bookmaker</th><th>Code</th><th>Odds</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  {bookingCodes.map(code => (
+                    <tr key={code._id}>
+                      <td>{code.bookmaker}</td>
+                      <td className="admin-user-name">{code.code}</td>
+                      <td>{Number(code.odds).toFixed(2)}</td>
+                      <td><span className={`admin-status-badge ${code.isActive ? 'active' : 'inactive'}`}>{code.isActive ? 'Active' : 'Inactive'}</span></td>
+                      <td>
+                        <div className="admin-bet-actions">
+                          <button className="admin-bet-action-btn win" onClick={() => toggleBookingCode(code)}>{code.isActive ? 'Disable' : 'Enable'}</button>
+                          <button className="admin-bet-action-btn loss" onClick={() => deleteBookingCode(code)}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           {/* Pending VIP Payments */}
           <div className="admin-data-card">
             <h3 className="admin-data-title">

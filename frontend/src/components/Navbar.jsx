@@ -376,7 +376,7 @@ const Navbar = () => {
 
             {/* VIP Button */}
             <button
-              onClick={() => handleProtectedNavigation((user?.vipTier === 'vip' || user?.vipTier === 'vvip') ? "/predictions/vip" : "/vip")}
+              onClick={() => handleProtectedNavigation("/vip")}
               className="navbar-link navbar-link-vip"
             >
               <Crown className="navbar-btn-icon" />
@@ -402,6 +402,12 @@ const Navbar = () => {
             <Link to="/contact" className="navbar-link navbar-link-contact">
               Contact
             </Link>
+
+            {user && user.vipTier === 'none' && (
+              <button onClick={() => handleProtectedNavigation('/upgrade-vip')} className="navbar-link navbar-link-upgrade">
+                Upgrade to VIP
+              </button>
+            )}
           </div>
 
           {/* Right Side Actions */}
@@ -503,7 +509,7 @@ const Navbar = () => {
               <span>Top Picks</span>
             </button>
 
-            <button onClick={() => handleMobileNavigation((user?.vipTier === 'vip' || user?.vipTier === 'vvip') ? "/predictions/vip" : "/vip")} className="navbar-mobile-link navbar-mobile-vip">
+            <button onClick={() => handleMobileNavigation("/vip")} className="navbar-mobile-link navbar-mobile-vip">
               <span className="navbar-mobile-link-icon">👑</span>
               <span>VIP - 99% Sure Games</span>
             </button>
@@ -549,6 +555,13 @@ const Navbar = () => {
               <span className="navbar-mobile-link-icon">📈</span>
               <span>Outcomes</span>
             </button>
+
+            {user && user.vipTier === 'none' && (
+              <button onClick={() => handleMobileNavigation("/upgrade-vip")} className="navbar-mobile-link navbar-mobile-vip">
+                <span className="navbar-mobile-link-icon">💎</span>
+                <span>Upgrade to VIP</span>
+              </button>
+            )}
 
             {user && (
               <>

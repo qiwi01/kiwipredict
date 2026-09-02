@@ -2,9 +2,92 @@ const express = require('express');
 const axios = require('axios');
 const VIPPayment = require('../models/VIPPayment');
 const User = require('../models/User');
+const Match = require('../models/Match');
+const BookingCode = require('../models/BookingCode');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
+
+const isVipActive = (user) => Boolean(user && user.vipTier !== 'none' && (!user.vipExpiry || user.vipExpiry >= new Date()));
+const startOfToday = () => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+const redactVipPrediction = (prediction = {}) => ({
+  ...(prediction.toObject?.() || prediction),
+  prediction: '████████',
+  confidence: null,
+  odds: {},
+  locked: true
+});
+const isVipPrediction = (prediction = {}, gameTier = 'none') => ['vip', 'vvip', 'both'].includes(prediction.visibility) || ['vip', 'vvip'].includes(gameTier);
+const bookmakerLabels = { sportybet: 'SportyBet', bet9ja: 'Bet9ja', footballcom: 'Football.com' };
+
+router.get('/booking-codes', authenticateToken, async (req, res) => {
+  try {
+    const { bookmaker } = req.query;
+    const query = {
+      isActive: true,
+      $or: [{ validUntil: null }, { validUntil: { $exists: false } }, { validUntil: { $gte: new Date() } }]
+    };
+    if (bookmaker && bookmaker !== 'all') query.bookmaker = bookmaker;
+
+    const [user, codes] = await Promise.all([
+      User.findById(req.user.id).select('vipTier vipExpiry'),
+      BookingCode.find(query).sort({ createdAt: -1 }).lean()
+    ]);
+
+    res.json({
+      success: true,
+      isVIP: isVipActive(user),
+      data: codes.map(code => ({ ...code, bookmakerName: bookmakerLabels[code.bookmaker] || code.bookmaker }))
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to load booking codes' });
+  }
+});
+
+router.get('/games', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('vipTier vipExpiry');
+    const vip = isVipActive(user);
+    const matches = await Match.find({
+      date: { $gte: startOfToday() },
+      predictionStatus: { $in: ['manual', 'approved'] },
+      $or: [{ gameTier: { $in: ['vip', 'vvip'] } }, { 'predictions.visibility': { $in: ['vip', 'vvip', 'both'] } }]
+    }).sort({ date: 1 }).select('homeTeam awayTeam date league predictions gameTier bookmakerOdds').lean();
+
+    const data = matches.map(match => ({
+      ...match,
+      predictions: (match.predictions || [])
+        .filter(prediction => isVipPrediction(prediction, match.gameTier))
+        .map(prediction => vip ? prediction : redactVipPrediction(prediction))
+    })).filter(match => match.predictions.length > 0);
+
+    res.json({ success: true, isVIP: vip, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to load VIP games' });
+  }
+});
+
+router.get('/outcomes', authenticateToken, async (req, res) => {
+  try {
+    const matches = await Match.find({
+      date: { $lt: startOfToday() },
+      $or: [{ gameTier: { $in: ['vip', 'vvip'] } }, { 'predictions.visibility': { $in: ['vip', 'vvip', 'both'] } }]
+    }).sort({ date: -1 }).select('homeTeam awayTeam date league predictions outcomes gameTier homeGoals awayGoals').lean();
+
+    const data = matches.map(match => ({
+      ...match,
+      outcomes: (match.outcomes || []).filter(outcome => outcome.actualResult !== 'pending')
+    })).filter(match => match.outcomes.length > 0);
+
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to load VIP outcomes' });
+  }
+});
 
 // Initialize Paystack payment
 router.post('/initialize-payment', authenticateToken, async (req, res) => {
@@ -340,6 +423,53 @@ router.get('/bookmakers', authenticateToken, async (req, res) => {
       success: false,
       error: 'Failed to get bookmakers'
     });
+  }
+});
+
+router.get('/admin/booking-codes', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const codes = await BookingCode.find({}).sort({ createdAt: -1 });
+    res.json(codes);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load booking codes' });
+  }
+});
+
+router.post('/admin/booking-codes', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { bookmaker, code, odds, title, description, isActive, validUntil } = req.body;
+    const bookingCode = await BookingCode.create({
+      bookmaker,
+      code,
+      odds,
+      title,
+      description,
+      isActive,
+      validUntil: validUntil || null,
+      createdBy: req.user.id
+    });
+    res.status(201).json({ success: true, data: bookingCode });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message || 'Failed to create booking code' });
+  }
+});
+
+router.put('/admin/booking-codes/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const bookingCode = await BookingCode.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!bookingCode) return res.status(404).json({ error: 'Booking code not found' });
+    res.json({ success: true, data: bookingCode });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message || 'Failed to update booking code' });
+  }
+});
+
+router.delete('/admin/booking-codes/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    await BookingCode.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete booking code' });
   }
 });
 

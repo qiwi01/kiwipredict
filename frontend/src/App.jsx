@@ -13,6 +13,7 @@ import Home from './pages/Home';
 import Predictions from './pages/Predictions';
 import Profile from './pages/Profile';
 import VIP from './pages/VIP';
+import UpgradeVIP from './pages/UpgradeVIP';
 import VIPSuccess from './pages/VIPSuccess';
 import BetConverter from './pages/BetConverter';
 import Admin from './pages/Admin';
@@ -328,6 +329,11 @@ function AppContent() {
             <Route path="/vip" element={
               <ProtectedRoute>
                 <VIP />
+              </ProtectedRoute>
+            } />
+            <Route path="/upgrade-vip" element={
+              <ProtectedRoute>
+                <UpgradeVIP />
               </ProtectedRoute>
             } />
             <Route path="/vip/success" element={
