@@ -1253,9 +1253,14 @@ body {
 
 @media (max-width: 480px) {
   .smartsupp-fab {
-    right: 0.9rem;
-    bottom: 0.9rem;
-    width: 3.15rem;
-    height: 3.15rem;
+    right: 0.7rem;
+    bottom: 0.7rem;
+    width: 2.7rem;
+    height: 2.7rem;
+  }
+
+  .smartsupp-fab svg {
+    width: 1.15rem;
+    height: 1.15rem;
   }
 }

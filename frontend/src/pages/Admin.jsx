@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
-import { Users, UserCheck, Shield, BarChart3, Settings, Plus, Calendar, Trophy, Target, Gamepad2, Star, LogOut, CheckCircle, Mail } from 'lucide-react';
+import { Users, UserCheck, Shield, BarChart3, Settings, Plus, Calendar, Trophy, Target, Gamepad2, Star, LogOut, CheckCircle, Mail, Crown, Zap } from 'lucide-react';
 import api from '../utils/api';
 import Modal from '../components/Modal';
+import ThemeToggle from '../components/ThemeToggle';
 import '../css/Admin.css';
 
 const Admin = () => {
@@ -697,10 +698,13 @@ const Admin = () => {
               Manage users, predictions, and system statistics
             </p>
           </div>
-          <button onClick={logout} className="admin-logout-btn">
-            <LogOut className="admin-logout-icon" />
-            Logout
-          </button>
+          <div className="admin-header-actions">
+            <ThemeToggle />
+            <button onClick={logout} className="admin-logout-btn">
+              <LogOut className="admin-logout-icon" />
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
@@ -2742,20 +2746,53 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                       </td>
                       <td>{user.vipExpiry ? new Date(user.vipExpiry).toLocaleDateString() : 'N/A'}</td>
                       <td>
-                        <button
-                          onClick={async () => {
-                            try {
-                              await api.put(`/api/vip/toggle-vip/${user._id}`);
-                              toast.success(`VIP status ${user.isVIP ? 'removed' : 'granted'} successfully!`);
-                              fetchData(); // Refresh data
-                            } catch (error) {
-                              toast.error('Failed to toggle VIP status');
-                            }
-                          }}
-                          className="admin-action-btn primary"
-                        >
-                          {user.isVIP ? 'Remove VIP' : 'Grant VIP'}
-                        </button>
+                        <div className="admin-bet-actions">
+                          <button
+                            onClick={async () => {
+                              try {
+                                await api.put(`/api/vip/admin/set-tier/${user._id}`, { tier: 'vip' });
+                                toast.success(`Upgraded ${user.username} to VIP`);
+                                fetchData();
+                              } catch (error) {
+                                toast.error('Failed to set VIP');
+                              }
+                            }}
+                            className="admin-action-btn success"
+                            disabled={user.vipTier === 'vip'}
+                          >
+                            <Crown size={14} /> VIP
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await api.put(`/api/vip/admin/set-tier/${user._id}`, { tier: 'vvip' });
+                                toast.success(`Upgraded ${user.username} to VVIP`);
+                                fetchData();
+                              } catch (error) {
+                                toast.error('Failed to set VVIP');
+                              }
+                            }}
+                            className="admin-action-btn primary"
+                            disabled={user.vipTier === 'vvip'}
+                          >
+                            <Zap size={14} /> VVIP
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await api.put(`/api/vip/admin/set-tier/${user._id}`, { tier: 'none' });
+                                toast.success(`Removed VIP from ${user.username}`);
+                                fetchData();
+                              } catch (error) {
+                                toast.error('Failed to remove VIP');
+                              }
+                            }}
+                            className="admin-action-btn danger"
+                            disabled={user.vipTier === 'none' || !user.vipTier}
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

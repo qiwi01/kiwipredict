@@ -3,6 +3,12 @@
 /* Import our main CSS file */
 @import './css/App.css';
 
+/* Remove box shadows across the entire website for every section,
+   text element, and background — light and dark modes. */
+*, *::before, *::after {
+  box-shadow: none !important;
+}
+
 /* ===== GLOBAL RESETS ===== */
 * {
   margin: 0;

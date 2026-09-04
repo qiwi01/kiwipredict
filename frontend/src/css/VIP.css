@@ -969,18 +969,16 @@
   padding: 0.95rem 1.25rem;
   border: none;
   border-radius: var(--radius-xl);
-  background: var(--kiwi-gradient);
-  color: #fff;
+  background: linear-gradient(135deg, #d4af37, #f6d365);
+  color: #111827;
   font-weight: 900;
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.28);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
 .upgrade-pay-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.36);
 }
 
 .upgrade-pay-btn:disabled {
@@ -988,10 +986,9 @@
   cursor: not-allowed;
 }
 
-.upgrade-tier-card.featured .upgrade-pay-btn {
-  background: linear-gradient(135deg, #d4af37, #f6d365);
-  color: #111827;
-  box-shadow: 0 14px 32px rgba(212, 175, 55, 0.34);
+.dark .upgrade-pay-btn {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e);
+  color: #f6d365;
 }
 
 .upgrade-spin {
@@ -1262,6 +1259,29 @@
     padding-left: 0.9rem;
     padding-right: 0.9rem;
   }
+
+/* Dark-mode: convert every gold surface to dark gold across the
+   upgrade and VIP pages. */
+.dark .vip-hero-icon,
+.dark .vip-section-tabs button.active,
+.dark .vip-bookmaker-tab.active,
+.dark .vip-inline-upgrade button,
+.dark .vip-generate-btn,
+.dark .vip-hero-upgrade,
+.dark .upgrade-plan-toggle button.active,
+.dark .upgrade-tier-ribbon,
+.dark .upgrade-tier-icon.vvip,
+.dark .vip-action-btn.secondary {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e);
+  color: #f6d365;
+  border-color: rgba(246, 211, 101, 0.3);
+}
+
+.dark .vip-inline-upgrade button:hover,
+.dark .vip-generate-btn:hover,
+.dark .vip-hero-upgrade:hover {
+  background: linear-gradient(135deg, #4a3710, #7a5a14);
+}
 
   .vip-hero-card {
     flex-direction: column;

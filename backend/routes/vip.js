@@ -314,6 +314,40 @@ router.get('/pending-payments', authenticateToken, requireAdmin, async (req, res
   }
 });
 
+// Admin: Set a user to a specific tier (vip / vvip / none)
+router.put('/admin/set-tier/:userId', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { tier } = req.body;
+    if (!['none', 'vip', 'vvip'].includes(tier)) {
+      return res.status(400).json({ error: 'Invalid tier. Must be none, vip or vvip' });
+    }
+
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.vipTier = tier;
+    if (tier === 'none') {
+      user.vipExpiry = null;
+    } else {
+      const expiry = new Date();
+      expiry.setFullYear(expiry.getFullYear() + 1);
+      user.vipExpiry = expiry;
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      vipTier: user.vipTier,
+      vipExpiry: user.vipExpiry
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to set user tier' });
+  }
+});
+
 // Admin: Toggle user VIP status
 router.put('/toggle-vip/:userId', authenticateToken, requireAdmin, async (req, res) => {
   try {
