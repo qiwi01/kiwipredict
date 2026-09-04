@@ -1980,3 +1980,111 @@
     justify-content: center;
   }
 }
+
+/* ============================================================
+   DARK-MODE READABILITY PASS (Member Console)
+   Scoped to .dark only — light mode remains unchanged.
+   ============================================================ */
+.dark .profile-dashboard-side-top span,
+.dark .profile-dashboard-side-grid span,
+.dark .profile-summary-label,
+.dark .profile-summary-top p,
+.dark .profile-overview-kicker,
+.dark .profile-bet-date,
+.dark .profile-bet-label {
+  color: #94a3b8 !important;
+}
+
+.dark .profile-dashboard-side-top strong,
+.dark .profile-dashboard-side-grid strong,
+.dark .profile-summary-value,
+.dark .profile-overview-value,
+.dark .profile-bet-id,
+.dark .profile-bet-value,
+.dark .profile-name,
+.dark .profile-email {
+  color: #f1f5f9 !important;
+}
+
+.dark .profile-section-title,
+.dark .profile-stats-title,
+.dark .profile-stat-value,
+.dark .profile-action-card strong,
+.dark .profile-summary-top h2,
+.dark .profile-favorite-name {
+  color: #f8fafc !important;
+}
+
+.dark .profile-section-subtitle,
+.dark .profile-section-eyebrow,
+.dark .profile-stat-label,
+.dark .profile-action-card span,
+.dark .profile-empty-text,
+.dark .profile-loading-text {
+  color: #cbd5e1 !important;
+}
+
+.dark .profile-section-icon,
+.dark .profile-action-icon,
+.dark .profile-stat-icon {
+  color: #60a5fa !important;
+}
+
+.dark .profile-summary-row,
+.dark .profile-summary-top {
+  border-bottom-color: rgba(148, 163, 184, 0.14) !important;
+}
+
+.dark .profile-dashboard-side-grid > div,
+.dark .profile-favorite-item,
+.dark .profile-empty-panel,
+.dark .profile-bet-item {
+  background: rgba(30, 41, 59, 0.66) !important;
+  border-color: rgba(148, 163, 184, 0.14) !important;
+}
+
+.dark .profile-favorite-item:hover,
+.dark .profile-bet-item:hover {
+  background: rgba(51, 65, 85, 0.72) !important;
+}
+
+.dark .profile-stat-item:nth-child(1),
+.dark .profile-stat-item:nth-child(2),
+.dark .profile-stat-item:nth-child(3),
+.dark .profile-stat-item:nth-child(4) {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.88)) !important;
+  border-color: rgba(148, 163, 184, 0.14) !important;
+}
+
+.dark .profile-stat-item:nth-child(1) .profile-stat-icon,
+.dark .profile-stat-item:nth-child(2) .profile-stat-icon,
+.dark .profile-stat-item:nth-child(3) .profile-stat-icon,
+.dark .profile-stat-item:nth-child(4) .profile-stat-icon {
+  color: #7dd3fc !important;
+}
+
+.dark .profile-status-pill.active {
+  color: #34d399 !important;
+}
+
+.dark .profile-status-pill.inactive {
+  color: #f87171 !important;
+}
+
+.dark .profile-dashboard-insights span {
+  color: #cbd5e1 !important;
+}
+
+.dark .profile-dashboard-insights span svg {
+  color: #7dd3fc !important;
+}
+
+.dark .profile-announcement-label,
+.dark .profile-announcement-label strong {
+  color: #f1f5f9 !important;
+}
+
+.dark .profile-announcement-message,
+.dark .profile-announcement-marquee-item {
+  color: #cbd5e1 !important;
+}

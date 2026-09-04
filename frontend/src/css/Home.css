@@ -1226,6 +1226,41 @@
   color: var(--gray-400);
 }
 
+/* Dark-mode readability for overview/workflow/feature sections */
+.dark .home-overview-eyebrow {
+  color: #a5b4fc !important;
+}
+
+.dark .home-workflow-card span {
+  color: #93b9ff !important;
+}
+
+.dark .home-workflow-card h3 {
+  color: #f1f5f9 !important;
+}
+
+.dark .home-workflow-card p {
+  color: #cbd5e1 !important;
+}
+
+.dark .home-feature-card {
+  background: rgba(15, 23, 42, 0.92) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.42) !important;
+}
+
+.dark .home-feature-icon-svg {
+  color: #60a5fa !important;
+}
+
+.dark .home-feature-title {
+  color: #f8fafc !important;
+}
+
+.dark .home-feature-description {
+  color: #cbd5e1 !important;
+}
+
 /* ===== MATCHES SECTION ===== */
 .home-matches-section {
   margin: var(--space-20) var(--space-8);

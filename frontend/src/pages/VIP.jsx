@@ -2,7 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import toast from 'react-hot-toast';
-import { CheckCircle, Crown, Lock, ReceiptText, Trophy } from 'lucide-react';
+import {
+  CheckCircle,
+  Crown,
+  Lock,
+  ReceiptText,
+  Trophy,
+  ShieldCheck,
+  Zap,
+  TrendingUp
+} from 'lucide-react';
 import api from '../utils/api';
 import '../css/VIP.css';
 
@@ -74,9 +83,21 @@ const VIP = () => {
 
   const renderBookingCodes = () => (
     <div className="vip-panel">
+      <div className="vip-panel-head">
+        <div>
+          <h2 className="vip-panel-title"><ReceiptText size={20} /> Booking Codes</h2>
+          <p className="vip-panel-sub">Exclusive codes with odds for your favourite bookmaker.</p>
+        </div>
+      </div>
+
       <div className="vip-bookmaker-tabs">
         {bookmakers.map(bookmaker => (
-          <button key={bookmaker.id} className={`vip-bookmaker-tab ${selectedBookmaker === bookmaker.id ? 'active' : ''}`} onClick={() => setSelectedBookmaker(bookmaker.id)}>
+          <button
+            key={bookmaker.id}
+            type="button"
+            className={`vip-bookmaker-tab ${selectedBookmaker === bookmaker.id ? 'active' : ''}`}
+            onClick={() => setSelectedBookmaker(bookmaker.id)}
+          >
             {bookmaker.name}
           </button>
         ))}
@@ -84,30 +105,45 @@ const VIP = () => {
 
       {!isVIP && (
         <div className="vip-inline-upgrade">
-          <Lock size={18} /> Non-VIP users can preview bookmakers, but generating codes requires VIP access.
+          <Lock size={18} />
+          <span>Non-VIP users can preview bookmakers, but generating codes requires VIP access.</span>
+          <button type="button" onClick={() => navigate('/upgrade-vip')}>Upgrade</button>
         </div>
       )}
 
       <div className="vip-code-grid">
         {selectedCodes.length ? selectedCodes.map(code => (
           <div key={code._id} className="vip-code-card">
-            <div>
-              <h3>{code.title || 'VIP Booking Code'}</h3>
-              <p>{code.description || 'High confidence VIP booking selection.'}</p>
+            <div className="vip-code-top">
+              <span className="vip-code-bookmaker">{code.bookmakerName || code.bookmaker}</span>
+              <span className="vip-code-odds">Odds {Number(code.odds).toFixed(2)}</span>
             </div>
-            <div className="vip-code-meta">
-              <span>Odds</span>
-              <strong>{Number(code.odds).toFixed(2)}</strong>
-            </div>
-            {isVIP ? <div className="vip-code-value">{code.code}</div> : <button className="vip-generate-btn" onClick={requireVIP}>Generate Code</button>}
+            <h3>{code.title || 'VIP Booking Code'}</h3>
+            <p>{code.description || 'High confidence VIP booking selection.'}</p>
+            {isVIP ? (
+              <div className="vip-code-value">{code.code}</div>
+            ) : (
+              <button type="button" className="vip-generate-btn" onClick={requireVIP}>
+                <Lock size={16} /> Generate Code
+              </button>
+            )}
           </div>
-        )) : <div className="vip-empty-state">No booking codes for this bookmaker yet.</div>}
+        )) : (
+          <div className="vip-empty-state">No booking codes for this bookmaker yet.</div>
+        )}
       </div>
     </div>
   );
 
   const renderPredictions = () => (
     <div className="vip-panel">
+      <div className="vip-panel-head">
+        <div>
+          <h2 className="vip-panel-title"><Trophy size={20} /> VIP Predictions</h2>
+          <p className="vip-panel-sub">Today&apos;s exclusive VIP selections.</p>
+        </div>
+      </div>
+
       <div className="vip-card-grid">
         {vipGames.length ? vipGames.map(match => (
           <div key={match._id} className="vip-game-card">
@@ -119,21 +155,34 @@ const VIP = () => {
             <div className="vip-selection-list">
               {(match.predictions || []).map((prediction, index) => (
                 <div key={index} className="vip-selection-row">
-                  <span>{prediction.locked ? '████████' : getPredictionTypeLabel(prediction.type)}</span>
+                  <span>{prediction.locked ? 'Selection' : getPredictionTypeLabel(prediction.type)}</span>
                   <strong className={prediction.locked ? 'vip-hashed' : ''}>{prediction.prediction}</strong>
                   {prediction.confidence && <em>{prediction.confidence}%</em>}
                 </div>
               ))}
             </div>
-            {!isVIP && <button className="vip-card-upgrade" onClick={() => navigate('/upgrade-vip')}>Upgrade to reveal selections</button>}
+            {!isVIP && (
+              <button type="button" className="vip-card-upgrade" onClick={() => navigate('/upgrade-vip')}>
+                <Lock size={16} /> Upgrade to reveal selections
+              </button>
+            )}
           </div>
-        )) : <div className="vip-empty-state">No VIP games available yet.</div>}
+        )) : (
+          <div className="vip-empty-state">No VIP games available yet.</div>
+        )}
       </div>
     </div>
   );
 
   const renderOutcomes = () => (
     <div className="vip-panel">
+      <div className="vip-panel-head">
+        <div>
+          <h2 className="vip-panel-title"><TrendingUp size={20} /> VIP Outcomes</h2>
+          <p className="vip-panel-sub">Results from previous VIP games.</p>
+        </div>
+      </div>
+
       <div className="vip-card-grid">
         {vipOutcomes.length ? vipOutcomes.map(match => (
           <div key={match._id} className="vip-game-card">
@@ -152,27 +201,64 @@ const VIP = () => {
               ))}
             </div>
           </div>
-        )) : <div className="vip-empty-state">No VIP outcomes available yet.</div>}
+        )) : (
+          <div className="vip-empty-state">No VIP outcomes available yet.</div>
+        )}
       </div>
     </div>
   );
 
-  if (loading) return <div className="vip-container"><div className="vip-empty-state">Loading VIP - 99% Sure Games...</div></div>;
+  if (loading) {
+    return (
+      <div className="vip-container vip-games-page">
+        <div className="vip-empty-state">Loading VIP - 99% Sure Games...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="vip-container vip-games-page">
       <div className="vip-hero-card">
-        <Crown className="vip-header-icon" />
+        <span className="vip-hero-icon"><Crown size={30} /></span>
         <div>
           <h1 className="vip-title">VIP - 99% Sure Games</h1>
-          <p className="vip-subtitle">Booking codes, VIP predictions and previous VIP outcomes in one clean place.</p>
+          <p className="vip-subtitle">
+            Booking codes, VIP predictions and previous VIP outcomes in one clean place.
+          </p>
+          {isVIP ? (
+            <span className="vip-active-pill"><ShieldCheck size={14} /> Active {user?.vipTier === 'vvip' ? 'VVIP' : 'VIP'} member</span>
+          ) : (
+            <button type="button" className="vip-hero-upgrade" onClick={() => navigate('/upgrade-vip')}>
+              <Zap size={16} /> Upgrade to VIP
+            </button>
+          )}
         </div>
       </div>
+
       <div className="vip-section-tabs">
-        <button className={activeSection === 'booking' ? 'active' : ''} onClick={() => setActiveSection('booking')}><ReceiptText size={18} /> Booking Codes</button>
-        <button className={activeSection === 'predictions' ? 'active' : ''} onClick={() => setActiveSection('predictions')}><Trophy size={18} /> Predictions</button>
-        <button className={activeSection === 'outcomes' ? 'active' : ''} onClick={() => setActiveSection('outcomes')}><CheckCircle size={18} /> Outcomes</button>
+        <button
+          type="button"
+          className={activeSection === 'booking' ? 'active' : ''}
+          onClick={() => setActiveSection('booking')}
+        >
+          <ReceiptText size={18} /> Booking Codes
+        </button>
+        <button
+          type="button"
+          className={activeSection === 'predictions' ? 'active' : ''}
+          onClick={() => setActiveSection('predictions')}
+        >
+          <Trophy size={18} /> Predictions
+        </button>
+        <button
+          type="button"
+          className={activeSection === 'outcomes' ? 'active' : ''}
+          onClick={() => setActiveSection('outcomes')}
+        >
+          <CheckCircle size={18} /> Outcomes
+        </button>
       </div>
+
       {activeSection === 'booking' && renderBookingCodes()}
       {activeSection === 'predictions' && renderPredictions()}
       {activeSection === 'outcomes' && renderOutcomes()}

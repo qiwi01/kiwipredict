@@ -9,6 +9,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 
 // Components
 import Navbar from './components/Navbar';
+import SmartsuppChat from './components/SmartsuppChat';
 import Home from './pages/Home';
 import Predictions from './pages/Predictions';
 import Profile from './pages/Profile';
@@ -359,6 +360,7 @@ function AppContent() {
             className: 'kiwi-toast',
           }}
         />
+        <SmartsuppChat />
       </div>
     </AuthContext.Provider>
   );
