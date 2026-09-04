@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../App';
-import { TrendingUp, Target, Zap, Star, Calendar, ArrowRight, Shuffle, Crown, AlertCircle, ShieldCheck, Sparkles, LayoutDashboard, MessageSquareMore } from 'lucide-react';
+import { TrendingUp, Target, Zap, Calendar, ArrowRight, Shuffle, Crown, AlertCircle, ShieldCheck, Sparkles, LayoutDashboard, MessageSquareMore } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import '../css/Home.css';
@@ -17,7 +17,7 @@ const formatLocalDate = (date) => {
 const getMatchLocalDate = (utcDate) => formatLocalDate(new Date(utcDate));
 
 const Home = () => {
-  const [featuredMatches, setFeaturedMatches] = useState([]);
+  const [vipMatches, setVipMatches] = useState([]);
   const [todaysMatches, setTodaysMatches] = useState([]);
   const [outcomes, setOutcomes] = useState([]);
   const [siteSettings, setSiteSettings] = useState(null);
@@ -39,6 +39,7 @@ const Home = () => {
   const [converting, setConverting] = useState(false);
 
   const { user } = useAuth();
+  const isVipUser = Boolean(user && (user.vipTier === 'vip' || user.vipTier === 'vvip'));
 
   useEffect(() => {
     // Load data for all users (authenticated and non-authenticated)
@@ -50,7 +51,13 @@ const Home = () => {
 
     api.get(`/api/matches?from=${today}&to=${formatLocalDate(sevenDaysFromToday)}`, { _skipAuthRedirect: true })
       .then(res => {
-        setFeaturedMatches(res.data.slice(0, 6));
+        // VIP predictions section: VIP-tier games only. Non-VIP and logged-out
+        // users see the cards with hashed/locked selections plus an upgrade CTA.
+        const vipGames = res.data.filter(match =>
+          match.gameTier === 'vip' ||
+          (match.predictions || []).some(pred => pred.visibility === 'vip' || pred.visibility === 'both')
+        );
+        setVipMatches(vipGames.slice(0, 6));
         const todayMatches = res.data.filter(match => getMatchLocalDate(match.utcDate) === today);
         setTodaysMatches(todayMatches);
       })
@@ -255,8 +262,8 @@ const Home = () => {
                   <small>Today</small>
                 </div>
                 <div className="hero-preview-mini-card">
-                  <span>{featuredMatches.length}</span>
-                  <small>Featured</small>
+                  <span>{vipMatches.length}</span>
+                  <small>VIP Picks</small>
                 </div>
                 <div className="hero-preview-mini-card accent">
                   <span>VIP</span>
@@ -327,8 +334,8 @@ const Home = () => {
               <span className="home-metric-label">Today&apos;s matches</span>
             </div>
             <div className="home-metric-card">
-              <span className="home-metric-value">{featuredMatches.length}</span>
-              <span className="home-metric-label">Featured games</span>
+              <span className="home-metric-value">{vipMatches.length}</span>
+              <span className="home-metric-label">VIP games</span>
             </div>
             <div className="home-metric-card">
               <span className="home-metric-value">{outcomes?.all?.length || 0}</span>
@@ -479,9 +486,9 @@ const Home = () => {
             <div className="home-feature-icon">
               <Zap className="home-feature-icon-svg" />
             </div>
-            <h3 className="home-feature-title">Value Detection</h3>
+            <h3 className="home-feature-title">VIP Selections</h3>
             <p className="home-feature-description">
-              Identify overvalued odds and find profitable betting opportunities
+              Premium VIP and VVIP picks with booking codes across your favourite bookmakers
             </p>
           </div>
         </section>
@@ -510,7 +517,7 @@ const Home = () => {
             {todaysMatches.slice(0, 3).map((match, index) => (
               <div
                 key={index}
-                className={`home-match-card ${match.valueBet ? 'home-match-value' : ''} ${isWorldCupMatch(match) ? 'wc-match-card' : ''} ${isWorldCupMatch(match) ? 'wc-match' : ''}`}
+                className={`home-match-card ${isWorldCupMatch(match) ? 'wc-match-card' : ''} ${isWorldCupMatch(match) ? 'wc-match' : ''}`}
               >
                 {isWorldCupMatch(match) && (
                   <div className="home-value-badge" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
@@ -529,12 +536,6 @@ const Home = () => {
                     </div>
                   </div>
 
-                  {match.valueBet && (
-                    <div className="home-value-badge">
-                      <Star className="home-value-icon" />
-                      <span>VALUE</span>
-                    </div>
-                  )}
                 </div>
 
                 <div className="home-match-info">
@@ -546,7 +547,7 @@ const Home = () => {
                 <div className="home-predictions-list">
                   {match.predictions && match.predictions.length > 0 ? (
                     match.predictions.map((pred, predIndex) => (
-                      <div key={predIndex} className={`home-prediction-item-display ${pred.valueBet ? 'home-match-value' : ''}`}>
+                      <div key={predIndex} className="home-prediction-item-display">
                         <div className="home-prediction-type">
                         <span className="home-prediction-type-label">
                           {pred.type === 'win' ? 'WIN/DRAW' :
@@ -664,11 +665,11 @@ const Home = () => {
         )}
       </section>
 
-      {/* Featured Matches */}
+      {/* VIP Predictions */}
       <section className="home-matches-section">
         <div className="home-matches-header">
-          <h2 className="home-matches-title">Featured Predictions</h2>
-          <Link to="/predictions" className="home-view-all">
+          <h2 className="home-matches-title"><Crown className="home-matches-title-icon" /> VIP Predictions</h2>
+          <Link to="/vip" className="home-view-all">
             <span>More</span>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M4.5 9L7.5 6L4.5 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -676,82 +677,95 @@ const Home = () => {
           </Link>
         </div>
 
-        <div className="home-matches-grid">
-          {Array.isArray(featuredMatches) && featuredMatches.map((match, index) => (
-            <div
-              key={index}
-              className={`home-match-card ${match.valueBet ? 'home-match-value' : ''} ${isWorldCupMatch(match) ? 'wc-match-card' : ''}`}
-            >
-              {isWorldCupMatch(match) && (
-                <div className="home-value-badge" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
-                  <span className="wc-card-badge-icon">🏆</span>
-                  <span>WC</span>
-                </div>
-              )}
-              <div className="home-match-header">
-                <div className="home-match-meta">
-                  <div className="home-match-meta-item">
-                    <Calendar className="home-match-icon" />
-                    <span>{new Date(match.utcDate).toLocaleDateString()}</span>
-                  </div>
-                  <div className="home-match-meta-item">
-                    <span>{match.competition?.name || 'Premier League'}</span>
-                  </div>
-                </div>
-
-                {match.valueBet && (
-                  <div className="home-value-badge">
-                    <Star className="home-value-icon" />
-                    <span>VALUE</span>
+        {vipMatches.length === 0 ? (
+          <div className="home-empty-state">
+            <div className="home-empty-icon">👑</div>
+            <h3 className="home-empty-title">No VIP games yet</h3>
+            <p className="home-empty-description">Check back soon for fresh VIP selections</p>
+          </div>
+        ) : (
+          <div className="home-matches-grid">
+            {vipMatches.map((match, index) => (
+              <div
+                key={index}
+                className={`home-match-card home-vip-shadow ${isWorldCupMatch(match) ? 'wc-match-card' : ''}`}
+              >
+                {isWorldCupMatch(match) && (
+                  <div className="home-value-badge" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
+                    <span className="wc-card-badge-icon">🏆</span>
+                    <span>WC</span>
                   </div>
                 )}
-              </div>
-
-              <div className="home-match-info">
-                <h3 className="home-match-teams">
-                  {match.homeTeam.name} vs {match.awayTeam.name}
-                </h3>
-              </div>
-
-              <div className="home-predictions-list">
-                {match.predictions && match.predictions.length > 0 ? (
-                  match.predictions.map((pred, predIndex) => (
-                    <div key={predIndex} className={`home-prediction-item-display ${pred.valueBet ? 'home-match-value' : ''}`}>
-                      <div className="home-prediction-type">
-                        <span className="home-prediction-type-label">
-                          {pred.type === 'win' ? 'WIN/DRAW' :
-                           pred.type === 'over15' ? 'OVER/UNDER 1.5' :
-                           pred.type === 'over25' ? 'OVER/UNDER 2.5' :
-                           pred.type === 'corners' ? 'CORNERS' :
-                           pred.type === 'ggng' ? 'GG/NG' :
-                           pred.type === 'others' ? 'OTHERS' :
-                           pred.type === 'player' ? 'PLAYER' : 'PREDICTION'}
-                        </span>
-                        {(pred.visibility === 'vip' || pred.visibility === 'vvip' || pred.visibility === 'both') && (
-                          <div className={`home-vip-badge-small ${pred.visibility === 'vvip' ? 'vvip' : 'vip'}`}>
-                            <Crown className="home-vip-icon-small" />
-                            <span>{pred.visibility === 'vvip' ? 'VVIP' : 'VIP'}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="home-prediction-details">
-                        <div className="home-prediction-value">{pred.prediction}</div>
-                        <div className="home-prediction-confidence">{pred.confidence}% confidence</div>
-                      </div>
+                <div className="home-match-header">
+                  <div className="home-match-meta">
+                    <div className="home-match-meta-item">
+                      <Calendar className="home-match-icon" />
+                      <span>{new Date(match.utcDate).toLocaleDateString()}</span>
                     </div>
-                  ))
-                ) : (
-                  <div className="home-no-predictions">
-                    <span>No predictions available</span>
+                    <div className="home-match-meta-item">
+                      <span>{match.competition?.name || 'Premier League'}</span>
+                    </div>
                   </div>
+
+                  <div className="home-vip-badge-small">
+                    <Crown className="home-vip-icon-small" />
+                    <span>VIP</span>
+                  </div>
+                </div>
+
+                <div className="home-match-info">
+                  <h3 className="home-match-teams">
+                    {match.homeTeam.name} vs {match.awayTeam.name}
+                  </h3>
+                </div>
+
+                <div className="home-predictions-list">
+                  {match.predictions && match.predictions.length > 0 ? (
+                    match.predictions.map((pred, predIndex) => (
+                      <div key={predIndex} className="home-prediction-item-display">
+                        <div className="home-prediction-type">
+                          <span className="home-prediction-type-label">
+                            {pred.locked ? 'VIP SELECTION' :
+                             pred.type === 'win' ? 'WIN/DRAW' :
+                             pred.type === 'over15' ? 'OVER/UNDER 1.5' :
+                             pred.type === 'over25' ? 'OVER/UNDER 2.5' :
+                             pred.type === 'corners' ? 'CORNERS' :
+                             pred.type === 'ggng' ? 'GG/NG' :
+                             pred.type === 'others' ? 'OTHERS' :
+                             pred.type === 'player' ? 'PLAYER' : 'PREDICTION'}
+                          </span>
+                          {!pred.locked && (
+                            <div className="home-vip-badge-small">
+                              <Crown className="home-vip-icon-small" />
+                              <span>VIP</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="home-prediction-details">
+                          <div className="home-prediction-value">{pred.locked ? '████████' : pred.prediction}</div>
+                          <div className="home-prediction-confidence">
+                            {pred.locked ? 'VIP members only' : `${pred.confidence}% confidence`}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="home-no-predictions">
+                      <span>No VIP selections available</span>
+                    </div>
+                  )}
+                </div>
+
+                {!isVipUser && (
+                  <Link to="/upgrade-vip" className="home-vip-upgrade-btn">
+                    <Crown className="home-vip-upgrade-icon" /> Upgrade to VIP
+                  </Link>
                 )}
               </div>
-
-
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

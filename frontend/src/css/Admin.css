@@ -297,6 +297,41 @@
   color: var(--error-700);
 }
 
+.admin-game-tier-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.admin-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-tier-badge.free {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--gray-600);
+}
+
+.admin-tier-badge.vip {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--warning-700);
+}
+
+.admin-tier-badge.vvip {
+  background: rgba(139, 92, 246, 0.16);
+  color: var(--secondary-700);
+}
+
 .admin-ai-meta {
   margin: var(--space-2) 0 0;
   color: var(--gray-500);

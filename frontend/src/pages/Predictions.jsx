@@ -178,10 +178,13 @@ const Predictions = () => {
         matchesData = matchesData.filter(match =>
           match.predictions && match.predictions.some(pred => pred.type === 'player')
         );
-      } else if (predictionType === 'top-picks') {
-        // For top-picks, show only matches that have value bets
+      }
+
+      // Top Picks are exclusively VVIP games and selections.
+      if (predictionType.startsWith('top-picks')) {
         matchesData = matchesData.filter(match =>
-          match.predictions && match.predictions.some(pred => pred.valueBet === true)
+          match.gameTier === 'vvip' ||
+          (match.predictions && match.predictions.some(pred => pred.visibility === 'vvip'))
         );
       }
       // For 'all' and other general pages, show all matches that have predictions
@@ -267,7 +270,7 @@ const Predictions = () => {
       case 'top-picks':
         return {
           title: "Top Picks",
-          subtitle: "Matches with our highest confidence value bets"
+          subtitle: "Exclusive VVIP selections with our highest confidence predictions"
         };
       case 'top-picks-win':
         return {
@@ -441,7 +444,7 @@ const Predictions = () => {
           filteredMatches.map((match, index) => (
             <div
               key={index}
-              className={`admin-match-card ${match.valueBet ? 'admin-match-value' : ''}`}
+              className="admin-match-card"
             >
               <div className="admin-match-header">
                 <div className="admin-match-meta">
@@ -471,7 +474,7 @@ const Predictions = () => {
               <div className="admin-predictions-list">
                 {match.predictions && match.predictions.length > 0 ? (
                   (predictionTypeFilter ? match.predictions.filter(pred => pred.type === predictionTypeFilter || pred.originalType === predictionTypeFilter) : match.predictions).map((prediction, predIndex) => (
-                    <div key={predIndex} className={`admin-prediction-item-display ${prediction.valueBet ? 'admin-match-value' : ''} ${prediction.type === predictionTypeFilter ? 'selected-prediction' : ''} ${prediction.locked ? 'locked' : ''}`}>
+                    <div key={predIndex} className={`admin-prediction-item-display ${prediction.type === predictionTypeFilter ? 'selected-prediction' : ''} ${prediction.locked ? 'locked' : ''}`}>
                       <div className="admin-prediction-type">
                         <span className="admin-prediction-type-label">
                           {prediction.locked ? '████████' :

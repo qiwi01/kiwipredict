@@ -26,6 +26,7 @@ const Admin = () => {
     league: '',
     date: '',
     time: '',
+    gameTier: 'none',
     predictions: []
   });
   const [selectedOutcomes, setSelectedOutcomes] = useState({});
@@ -1404,6 +1405,18 @@ Arsenal FC
                 </select>
               </div>
               <div className="admin-form-group">
+                <label className="admin-form-label">Game Tier</label>
+                <select
+                  value={newGame.gameTier}
+                  onChange={(e) => setNewGame({ ...newGame, gameTier: e.target.value })}
+                  className="admin-form-select"
+                >
+                  <option value="none">Free / All Users</option>
+                  <option value="vip">VIP Only</option>
+                  <option value="vvip">VVIP Only</option>
+                </select>
+              </div>
+              <div className="admin-form-group">
                 <label className="admin-form-label">Matches List</label>
                 <textarea
                   value={newGame.homeTeam} // Using homeTeam field temporarily for bulk input
@@ -1560,7 +1573,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                                 confidence: parseInt(newGame.time) || 50,
                                 visibility: 'all'
                               }],
-                              gameTier: 'none'
+                              gameTier: newGame.gameTier || 'none'
                             });
                             successCount++;
                           }
@@ -1586,6 +1599,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                       league: '',
                       date: '',
                       time: '',
+                      gameTier: 'none',
                       predictions: []
                     });
                     fetchData(); // Refresh games list
@@ -1691,7 +1705,18 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                     className="admin-form-input"
                   />
                 </div>
-                {/* VIP checkbox removed from match level - now per prediction */}
+                <div className="admin-form-group">
+                  <label className="admin-form-label">Game Tier</label>
+                  <select
+                    value={newGame.gameTier}
+                    onChange={(e) => setNewGame({ ...newGame, gameTier: e.target.value })}
+                    className="admin-form-select"
+                  >
+                    <option value="none">Free / All Users</option>
+                    <option value="vip">VIP Only</option>
+                    <option value="vvip">VVIP Only</option>
+                  </select>
+                </div>
               </div>
 
               {/* Predictions */}
@@ -1708,8 +1733,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                       predictions: [...newGame.predictions, {
                         type: 'win',
                         prediction: 'home',
-                        confidence: 50,
-                        valueBet: false
+                        confidence: 50
                       }]
                     })}
                     className="admin-btn-add-prediction"
@@ -1864,6 +1888,7 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                       league: '',
                       date: '',
                       time: '',
+                      gameTier: 'none',
                       predictions: []
                     });
                   } catch (err) {
@@ -1920,8 +1945,13 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                         {game.homeTeam.name} vs {game.awayTeam.name}
                       </h3>
                       <p className="admin-match-league">{game.competition?.name || game.league}</p>
-                      <div className={`admin-review-status ${game.predictionStatus || 'manual'}`}>
-                        {getPredictionStatusLabel(game.predictionStatus)}
+                      <div className="admin-game-tier-row">
+                        <div className={`admin-review-status ${game.predictionStatus || 'manual'}`}>
+                          {getPredictionStatusLabel(game.predictionStatus)}
+                        </div>
+                        <span className={`admin-tier-badge ${game.gameTier === 'none' || !game.gameTier ? 'free' : game.gameTier}`}>
+                          {game.gameTier === 'vvip' ? 'VVIP' : game.gameTier === 'vip' ? 'VIP' : 'Free'}
+                        </span>
                       </div>
                       {game.predictionsGeneratedBy && (
                         <p className="admin-ai-meta">
@@ -1934,17 +1964,11 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                     <div className="admin-predictions-list">
                       {game.predictions && game.predictions.length > 0 ? (
                         game.predictions.map((pred, predIndex) => (
-                          <div key={predIndex} className={`admin-prediction-item-display ${pred.valueBet ? 'admin-match-value' : ''}`}>
+                          <div key={predIndex} className="admin-prediction-item-display">
                             <div className="admin-prediction-type">
                               <span className="admin-prediction-type-label">
                                 {getPredictionTypeLabel(pred.type)}
                               </span>
-                              {pred.valueBet && (
-                                <div className="admin-value-badge-small">
-                                  <Star className="admin-value-icon-small" />
-                                  <span>VALUE</span>
-                                </div>
-                              )}
                             </div>
 
                             <div className="admin-prediction-details">
@@ -2089,8 +2113,26 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                                 awayTeam: game.awayTeam.name,
                                 league: game.competition?.name || game.league,
                                 date: currentDate.toISOString().split('T')[0],
-                                time: currentDate.toTimeString().slice(0, 5)
+                                time: currentDate.toTimeString().slice(0, 5),
+                                gameTier: game.gameTier || 'none'
                               },
+                              formFields: [
+                                { name: 'homeTeam', label: 'Home Team', type: 'text' },
+                                { name: 'awayTeam', label: 'Away Team', type: 'text' },
+                                { name: 'league', label: 'League', type: 'text' },
+                                { name: 'date', label: 'Match Date', type: 'date' },
+                                { name: 'time', label: 'Match Time', type: 'time' },
+                                {
+                                  name: 'gameTier',
+                                  label: 'Game Tier',
+                                  type: 'select',
+                                  options: [
+                                    { value: 'none', label: 'Free / All Users' },
+                                    { value: 'vip', label: 'VIP Only' },
+                                    { value: 'vvip', label: 'VVIP Only' }
+                                  ]
+                                }
+                              ],
                               onConfirm: async (formData) => {
                                 try {
                                   const response = await api.put(`/api/matches/${game.id}`, {
@@ -2098,7 +2140,8 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                                     awayTeam: formData.awayTeam,
                                     league: formData.league,
                                     date: formData.date,
-                                    time: formData.time
+                                    time: formData.time,
+                                    gameTier: formData.gameTier || 'none'
                                   });
 
                                   if (response.data.message) {
