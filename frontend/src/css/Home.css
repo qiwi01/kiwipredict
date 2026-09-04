@@ -127,24 +127,24 @@
 
 /* Announcement gold theme */
 .home-announcement-bar {
-  background: linear-gradient(135deg, #d4af37 0%, #f6d365 48%, #b8860b 100%) !important;
-  border-bottom-color: rgba(120, 72, 0, 0.32) !important;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.16) 0%, rgba(246, 211, 101, 0.12) 50%, rgba(184, 134, 11, 0.10) 100%) !important;
+  border-bottom-color: rgba(120, 72, 0, 0.18) !important;
 }
 
 .home-announcement-label,
 .home-announcement-message {
-  color: #1f2937 !important;
+  color: #92400e !important;
   font-weight: 900;
 }
 
 .dark .home-announcement-bar {
-  background: linear-gradient(135deg, #3f2f08 0%, #6b4e0e 52%, #2b2109 100%) !important;
-  border-bottom-color: rgba(246, 211, 101, 0.22) !important;
+  background: linear-gradient(135deg, rgba(60, 40, 5, 0.55) 0%, rgba(80, 55, 10, 0.5) 50%, rgba(40, 28, 5, 0.55) 100%) !important;
+  border-bottom-color: rgba(246, 211, 101, 0.18) !important;
 }
 
 .dark .home-announcement-label,
 .dark .home-announcement-message {
-  color: #fff7d6 !important;
+  color: #f6d365 !important;
 }
 
 /* ===== HERO SECTION - REDESIGNED ===== */
@@ -553,6 +553,13 @@
 }
 
 .hero-headline-accent {
+  background: linear-gradient(135deg, var(--primary-400), var(--secondary-400), var(--accent-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-accent-text {
   background: linear-gradient(135deg, var(--primary-400), var(--secondary-400), var(--accent-400));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1889,17 +1896,19 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0.55rem;
   border-radius: 999px;
-  background: rgba(245, 158, 11, 0.14);
-  color: var(--warning-700);
+  background: linear-gradient(135deg, #d4af37, #f6d365);
+  color: #111827;
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.home-vip-badge-small.vvip {
-  background: rgba(139, 92, 246, 0.14);
-  color: var(--secondary-700);
+.dark .home-vip-badge-small {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e);
+  color: #f6d365;
 }
 
 .home-vip-icon-small {
@@ -2124,9 +2133,9 @@
 
 /* ===== COMPACT CARDS, GOLD ANNOUNCEMENTS, CONVERTER REDESIGN, DARK MODE OVERHAUL ===== */
 .home-announcement-bar {
-  background: linear-gradient(135deg, #d4af37 0%, #f6d365 48%, #b8860b 100%);
-  border-bottom-color: rgba(120, 72, 0, 0.3);
-  box-shadow: 0 10px 30px rgba(180, 120, 0, 0.18);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.16) 0%, rgba(246, 211, 101, 0.12) 50%, rgba(184, 134, 11, 0.10) 100%);
+  border-bottom-color: rgba(120, 72, 0, 0.18);
+  box-shadow: 0 6px 20px rgba(180, 120, 0, 0.08);
 }
 
 .home-announcement-label,

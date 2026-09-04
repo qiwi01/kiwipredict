@@ -403,7 +403,7 @@ const Navbar = () => {
               Contact
             </Link>
 
-            {user && user.vipTier === 'none' && (
+            {user && user.vipTier !== 'vip' && user.vipTier !== 'vvip' && (
               <button onClick={() => handleProtectedNavigation('/upgrade-vip')} className="navbar-link navbar-link-upgrade">
                 Upgrade to VIP
               </button>
@@ -556,7 +556,7 @@ const Navbar = () => {
               <span>Outcomes</span>
             </button>
 
-            {user && user.vipTier === 'none' && (
+            {user && user.vipTier !== 'vip' && user.vipTier !== 'vvip' && (
               <button onClick={() => handleMobileNavigation("/upgrade-vip")} className="navbar-mobile-link navbar-mobile-vip">
                 <span className="navbar-mobile-link-icon">💎</span>
                 <span>Upgrade to VIP</span>

@@ -16,12 +16,17 @@ const startOfToday = () => {
 };
 const redactVipPrediction = (prediction = {}) => ({
   ...(prediction.toObject?.() || prediction),
-  prediction: '████████',
+  prediction: '••••••••',
   confidence: null,
   odds: {},
   locked: true
 });
-const isVipPrediction = (prediction = {}, gameTier = 'none') => ['vip', 'vvip', 'both'].includes(prediction.visibility) || ['vip', 'vvip'].includes(gameTier);
+const isVipPrediction = (prediction = {}, gameTier = 'none') => {
+  const visibility = prediction.visibility || 'all';
+  if (visibility === 'vip' || visibility === 'both') return true;
+  // A game-tier 'vip' match upgrades its 'all' predictions to VIP picks.
+  return visibility === 'all' && gameTier === 'vip';
+};
 const bookmakerLabels = { sportybet: 'SportyBet', bet9ja: 'Bet9ja', footballcom: 'Football.com' };
 
 router.get('/booking-codes', authenticateToken, async (req, res) => {
@@ -55,7 +60,7 @@ router.get('/games', authenticateToken, async (req, res) => {
     const matches = await Match.find({
       date: { $gte: startOfToday() },
       predictionStatus: { $in: ['manual', 'approved'] },
-      $or: [{ gameTier: { $in: ['vip', 'vvip'] } }, { 'predictions.visibility': { $in: ['vip', 'vvip', 'both'] } }]
+      $or: [{ gameTier: 'vip' }, { 'predictions.visibility': { $in: ['vip', 'both'] } }]
     }).sort({ date: 1 }).select('homeTeam awayTeam date league predictions gameTier bookmakerOdds').lean();
 
     const data = matches.map(match => ({
@@ -75,7 +80,7 @@ router.get('/outcomes', authenticateToken, async (req, res) => {
   try {
     const matches = await Match.find({
       date: { $lt: startOfToday() },
-      $or: [{ gameTier: { $in: ['vip', 'vvip'] } }, { 'predictions.visibility': { $in: ['vip', 'vvip', 'both'] } }]
+      $or: [{ gameTier: 'vip' }, { 'predictions.visibility': { $in: ['vip', 'both'] } }]
     }).sort({ date: -1 }).select('homeTeam awayTeam date league predictions outcomes gameTier homeGoals awayGoals').lean();
 
     const data = matches.map(match => ({
@@ -129,7 +134,7 @@ router.post('/initialize-payment', authenticateToken, async (req, res) => {
     // Set amount based on tier and plan
     let amount;
     if (tier === 'vvip') {
-      amount = plan === 'yearly' ? 500000 : 50000; // 500k yearly, 50k monthly for VVIP
+      amount = plan === 'yearly' ? 300000 : 30000; // 300k yearly, 30k monthly for VVIP
     } else {
       amount = plan === 'yearly' ? 100000 : 10000; // 100k yearly, 10k monthly for VIP
     }

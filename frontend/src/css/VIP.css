@@ -147,7 +147,7 @@
 .dark .vip-section-tabs button {
   background: rgba(15, 23, 42, 0.85);
   border-color: rgba(148, 163, 184, 0.18);
-  color: var(--gray-200);
+  color: #e2e8f0;
 }
 
 .dark .vip-section-tabs button:hover {
@@ -245,7 +245,7 @@
 .dark .vip-bookmaker-tab {
   background: rgba(30, 41, 59, 0.7);
   border-color: rgba(148, 163, 184, 0.18);
-  color: var(--gray-300);
+  color: #cbd5e1;
 }
 
 .dark .vip-bookmaker-tab:hover {
@@ -548,9 +548,31 @@
   color: #94a3b8;
 }
 
-.vip-hashed {
-  filter: blur(4px);
-  user-select: none;
+.vip-selection-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.vip-row-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #d4af37, #f6d365);
+  color: #111827;
+}
+
+.dark .vip-row-badge {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e);
+  color: #f6d365;
 }
 
 .vip-win {
@@ -719,7 +741,7 @@
 }
 
 .dark .upgrade-plan-toggle button {
-  color: var(--gray-300);
+  color: #cbd5e1;
 }
 
 .upgrade-plan-save {
@@ -771,15 +793,19 @@
   flex-direction: column;
   padding: clamp(1.5rem, 3vw, 2rem);
   border-radius: 28px;
-  border: 1px solid var(--gray-200);
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.07);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(212, 175, 55, 0.1), transparent 40%),
+    linear-gradient(180deg, rgba(255, 253, 245, 0.98), rgba(255, 255, 255, 0.94));
+  box-shadow: 0 18px 46px rgba(212, 175, 55, 0.13);
   overflow: hidden;
 }
 
 .dark .upgrade-tier-card {
-  background: rgba(15, 23, 42, 0.9);
-  border-color: rgba(148, 163, 184, 0.16);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(212, 175, 55, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(30, 27, 14, 0.5), rgba(15, 23, 42, 0.94));
+  border-color: rgba(212, 175, 55, 0.32);
   box-shadow: 0 20px 50px rgba(2, 6, 23, 0.36);
 }
 
@@ -827,13 +853,8 @@
 }
 
 .upgrade-tier-icon.vip {
-  background: rgba(54, 104, 245, 0.12);
-  color: var(--primary-600);
-}
-
-.dark .upgrade-tier-icon.vip {
-  background: rgba(96, 165, 250, 0.16);
-  color: #93c5fd;
+  background: linear-gradient(135deg, #d4af37, #f6d365);
+  color: #111827;
 }
 
 .upgrade-tier-icon.vvip {
@@ -928,7 +949,7 @@
 }
 
 .dark .upgrade-feature {
-  color: var(--gray-200);
+  color: #e2e8f0;
 }
 
 .upgrade-feature svg {
@@ -1006,7 +1027,7 @@
 .dark .upgrade-include-item {
   background: rgba(15, 23, 42, 0.8);
   border-color: rgba(148, 163, 184, 0.16);
-  color: var(--gray-300);
+  color: #cbd5e1;
 }
 
 .upgrade-include-item svg {
@@ -1157,7 +1178,7 @@
 .dark .vip-feature-item {
   background: rgba(30, 41, 59, 0.55);
   border-color: rgba(148, 163, 184, 0.12);
-  color: var(--gray-200);
+  color: #e2e8f0;
 }
 
 .vip-feature-item svg {
@@ -1201,7 +1222,7 @@
 
 .dark .vip-action-btn.outline {
   border-color: rgba(148, 163, 184, 0.24);
-  color: var(--gray-300);
+  color: #cbd5e1;
 }
 
 .vip-action-btn:hover {

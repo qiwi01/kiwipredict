@@ -155,17 +155,15 @@ const VIP = () => {
             <div className="vip-selection-list">
               {(match.predictions || []).map((prediction, index) => (
                 <div key={index} className="vip-selection-row">
-                  <span>{prediction.locked ? 'Selection' : getPredictionTypeLabel(prediction.type)}</span>
-                  <strong className={prediction.locked ? 'vip-hashed' : ''}>{prediction.prediction}</strong>
-                  {prediction.confidence && <em>{prediction.confidence}%</em>}
+                  <span>{getPredictionTypeLabel(prediction.type)}</span>
+                  <div className="vip-selection-right">
+                    <strong>{prediction.prediction}</strong>
+                    <span className="vip-row-badge vip"><Crown size={12} /> VIP</span>
+                    {prediction.confidence && !prediction.locked && <em>{prediction.confidence}%</em>}
+                  </div>
                 </div>
               ))}
             </div>
-            {!isVIP && (
-              <button type="button" className="vip-card-upgrade" onClick={() => navigate('/upgrade-vip')}>
-                <Lock size={16} /> Upgrade to reveal selections
-              </button>
-            )}
           </div>
         )) : (
           <div className="vip-empty-state">No VIP games available yet.</div>

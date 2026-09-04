@@ -16,6 +16,10 @@ const loadSmartsupp = () => {
   };
   window.smartsupp._ = [];
 
+  // Hide Smartsupp's own default chat bubble — the custom floating
+  // button below is the only chat launcher on the page.
+  window.smartsupp('chat:hide');
+
   const firstScript = document.getElementsByTagName('script')[0];
   const script = document.createElement('script');
   script.id = 'smartsupp-live-chat-script';

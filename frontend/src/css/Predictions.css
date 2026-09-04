@@ -421,9 +421,7 @@
 }
 
 .dark .predictions-outcome-badge.correct,
-.dark .predictions-outcome-badge.incorrect,
-.dark .predictions-vip-badge,
-.dark .predictions-vip-badge span {
+.dark .predictions-outcome-badge.incorrect {
   color: #ffffff !important;
 }
 
@@ -1654,6 +1652,55 @@ padding: var(--space-3);
   color: var(--primary-500);
 }
 
+/* ===== VIP / VVIP PREDICTION BADGES (gold) ===== */
+.admin-vip-badge-small {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d4af37, #f6d365);
+  color: #111827;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dark .admin-vip-badge-small {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e);
+  color: #f6d365;
+}
+
+.admin-vip-icon-small {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.predictions-vip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d4af37, #f6d365);
+  color: #111827;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dark .predictions-vip-badge {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e);
+  color: #f6d365;
+}
+
+.predictions-vip-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 640px) {
   .predictions-container {
@@ -1920,25 +1967,6 @@ padding: var(--space-3);
   .admin-vip-icon-small {
     width: 0.625rem;
     height: 0.625rem;
-  }
-
-  /* VIP badge styles for outcomes page */
-  .predictions-vip-badge {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-1) var(--space-2);
-    background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
-    color: white;
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .predictions-vip-badge.vvip {
-    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-    border-color: var(--primary-500);
   }
 
   .predictions-vip-icon {

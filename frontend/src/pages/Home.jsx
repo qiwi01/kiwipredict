@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import api from '../utils/api';
 import '../css/Home.css';
 import footballImage from '../assets/brand-logo.jpeg';
+import ballImage from '../assets/ball-logo.jpeg';
 
 const formatLocalDate = (date) => {
   const year = date.getFullYear();
@@ -18,6 +19,8 @@ const getMatchLocalDate = (utcDate) => formatLocalDate(new Date(utcDate));
 
 const Home = () => {
   const [vipMatches, setVipMatches] = useState([]);
+  const [vipPicksToday, setVipPicksToday] = useState(0);
+  const [vvipPicksToday, setVvipPicksToday] = useState(0);
   const [todaysMatches, setTodaysMatches] = useState([]);
   const [outcomes, setOutcomes] = useState([]);
   const [siteSettings, setSiteSettings] = useState(null);
@@ -39,7 +42,6 @@ const Home = () => {
   const [converting, setConverting] = useState(false);
 
   const { user } = useAuth();
-  const isVipUser = Boolean(user && (user.vipTier === 'vip' || user.vipTier === 'vvip'));
 
   useEffect(() => {
     // Load data for all users (authenticated and non-authenticated)
@@ -51,15 +53,25 @@ const Home = () => {
 
     api.get(`/api/matches?from=${today}&to=${formatLocalDate(sevenDaysFromToday)}`, { _skipAuthRedirect: true })
       .then(res => {
-        // VIP predictions section: VIP-tier games only. Non-VIP and logged-out
-        // users see the cards with hashed/locked selections plus an upgrade CTA.
-        const vipGames = res.data.filter(match =>
-          match.gameTier === 'vip' ||
-          (match.predictions || []).some(pred => pred.visibility === 'vip' || pred.visibility === 'both')
-        );
+        // VIP predictions section: show only the VIP selections of each match.
+        // Non-VIP and logged-out users see hashed (dot) values from the API.
+        const vipGames = res.data
+          .map(match => ({
+            ...match,
+            predictions: (match.predictions || []).filter(pred => pred.visibility === 'vip' || pred.visibility === 'both')
+          }))
+          .filter(match => match.predictions.length > 0);
         setVipMatches(vipGames.slice(0, 6));
         const todayMatches = res.data.filter(match => getMatchLocalDate(match.utcDate) === today);
         setTodaysMatches(todayMatches);
+
+        // Count today's VIP / VVIP predictions for the workspace overview.
+        const countPicks = (visibilities) => todayMatches.reduce(
+          (sum, match) => sum + (match.predictions || []).filter(pred => visibilities.includes(pred.visibility)).length,
+          0
+        );
+        setVipPicksToday(countPicks(['vip', 'both']));
+        setVvipPicksToday(countPicks(['vvip', 'both']));
       })
       .catch(err => {
         // Handle 401 (unauthorized) gracefully - don't show error
@@ -177,7 +189,7 @@ const Home = () => {
             {user ? (
               <div className="hero-copy-panel hero-copy-panel-standard home-member-welcome-card">
                 <span className="hero-standard-eyebrow">
-                  <LayoutDashboard size={16} /> Member dashboard
+                  <LayoutDashboard size={16} /> <span className="hero-accent-text">Member dashboard</span>
                 </span>
                 <div className="hero-text-block">
                   <h1 className="hero-headline">
@@ -241,7 +253,7 @@ const Home = () => {
               <div className="hero-preview-top">
                 <div className="hero-preview-brand">
                   <img
-                    src={footballImage}
+                    src={ballImage}
                     alt="Kiwi Predict"
                     className="hero-preview-logo"
                     onError={(e) => {
@@ -249,7 +261,7 @@ const Home = () => {
                     }}
                   />
                   <div>
-                    <span className="hero-preview-kicker">Today&apos;s workspace</span>
+                    <span className="hero-preview-kicker"><span className="hero-accent-text">Today&apos;s workspace</span></span>
                     <strong>Prediction Overview</strong>
                   </div>
                 </div>
@@ -262,12 +274,12 @@ const Home = () => {
                   <small>Today</small>
                 </div>
                 <div className="hero-preview-mini-card">
-                  <span>{vipMatches.length}</span>
+                  <span>{vipPicksToday}</span>
                   <small>VIP Picks</small>
                 </div>
-                <div className="hero-preview-mini-card accent">
-                  <span>VIP</span>
-                  <small>Markets</small>
+                <div className="hero-preview-mini-card">
+                  <span>{vvipPicksToday}</span>
+                  <small>VVIP Picks</small>
                 </div>
               </div>
 
@@ -706,11 +718,6 @@ const Home = () => {
                       <span>{match.competition?.name || 'Premier League'}</span>
                     </div>
                   </div>
-
-                  <div className="home-vip-badge-small">
-                    <Crown className="home-vip-icon-small" />
-                    <span>VIP</span>
-                  </div>
                 </div>
 
                 <div className="home-match-info">
@@ -725,8 +732,7 @@ const Home = () => {
                       <div key={predIndex} className="home-prediction-item-display">
                         <div className="home-prediction-type">
                           <span className="home-prediction-type-label">
-                            {pred.locked ? 'VIP SELECTION' :
-                             pred.type === 'win' ? 'WIN/DRAW' :
+                            {pred.type === 'win' ? 'WIN/DRAW' :
                              pred.type === 'over15' ? 'OVER/UNDER 1.5' :
                              pred.type === 'over25' ? 'OVER/UNDER 2.5' :
                              pred.type === 'corners' ? 'CORNERS' :
@@ -734,16 +740,14 @@ const Home = () => {
                              pred.type === 'others' ? 'OTHERS' :
                              pred.type === 'player' ? 'PLAYER' : 'PREDICTION'}
                           </span>
-                          {!pred.locked && (
-                            <div className="home-vip-badge-small">
-                              <Crown className="home-vip-icon-small" />
-                              <span>VIP</span>
-                            </div>
-                          )}
+                          <div className="home-vip-badge-small">
+                            <Crown className="home-vip-icon-small" />
+                            <span>VIP</span>
+                          </div>
                         </div>
 
                         <div className="home-prediction-details">
-                          <div className="home-prediction-value">{pred.locked ? '████████' : pred.prediction}</div>
+                          <div className="home-prediction-value">{pred.prediction}</div>
                           <div className="home-prediction-confidence">
                             {pred.locked ? 'VIP members only' : `${pred.confidence}% confidence`}
                           </div>
@@ -756,12 +760,6 @@ const Home = () => {
                     </div>
                   )}
                 </div>
-
-                {!isVipUser && (
-                  <Link to="/upgrade-vip" className="home-vip-upgrade-btn">
-                    <Crown className="home-vip-upgrade-icon" /> Upgrade to VIP
-                  </Link>
-                )}
               </div>
             ))}
           </div>

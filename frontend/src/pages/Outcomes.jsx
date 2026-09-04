@@ -361,19 +361,6 @@ const Outcomes = () => {
                       <span>{match.league}</span>
                     </div>
                   </div>
-
-                  {match.gameTier === 'vip' && (
-                    <div className="predictions-value-badge">
-                      <Crown className="predictions-value-icon" />
-                      <span>VIP</span>
-                    </div>
-                  )}
-                  {match.gameTier === 'vvip' && (
-                    <div className="predictions-value-badge vvip">
-                      <Crown className="predictions-value-icon" />
-                      <span>VVIP</span>
-                    </div>
-                  )}
                 </div>
 
                 <div className="predictions-match-teams">

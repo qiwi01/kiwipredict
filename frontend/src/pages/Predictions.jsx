@@ -456,13 +456,6 @@ const Predictions = () => {
                     <span>{match.competition?.name || 'Premier League'}</span>
                   </div>
                 </div>
-
-                {match.predictions && match.predictions.some(pred => pred.visibility === 'vip' || pred.visibility === 'vvip' || pred.visibility === 'both') && (
-                  <div className={`admin-vip-badge-small ${match.predictions.some(pred => pred.visibility === 'vvip') ? 'vvip' : 'vip'}`}>
-                    <Crown className="admin-vip-icon-small" />
-                    <span>{match.predictions.some(pred => pred.visibility === 'vvip') ? 'VVIP' : 'VIP'}</span>
-                  </div>
-                )}
               </div>
 
               <div className="admin-match-info">
@@ -477,8 +470,7 @@ const Predictions = () => {
                     <div key={predIndex} className={`admin-prediction-item-display ${prediction.type === predictionTypeFilter ? 'selected-prediction' : ''} ${prediction.locked ? 'locked' : ''}`}>
                       <div className="admin-prediction-type">
                         <span className="admin-prediction-type-label">
-                          {prediction.locked ? '████████' :
-                           prediction.type === 'win' ? 'WIN/DRAW' :
+                          {prediction.type === 'win' ? 'WIN/DRAW' :
                            prediction.type === 'over15' ? 'OVER/UNDER 1.5' :
                            prediction.type === 'over25' ? 'OVER/UNDER 2.5' :
                            prediction.type === 'corners' ? 'CORNERS' :
@@ -495,7 +487,7 @@ const Predictions = () => {
                       </div>
 
                       <div className="admin-prediction-details">
-                        <div className="admin-prediction-value">{prediction.locked ? '████████' : prediction.prediction}</div>
+                        <div className="admin-prediction-value">{prediction.prediction}</div>
                         <div className="admin-prediction-confidence">
                           {prediction.locked ? 'VIP members only' : `${prediction.confidence}% confidence`}
                         </div>
