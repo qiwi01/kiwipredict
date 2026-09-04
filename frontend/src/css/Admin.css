@@ -815,6 +815,77 @@
   transform: translateY(-1px);
 }
 
+.admin-user-action-btn.vip {
+  background: linear-gradient(135deg, #d4af37, #f6d365);
+  color: #111827;
+}
+
+.admin-user-action-btn.vip:hover {
+  background: linear-gradient(135deg, #c9a22c, #eac54a);
+}
+
+.admin-user-action-btn.vip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-user-action-btn.vvip {
+  background: linear-gradient(135deg, #b8860b, #d4af37);
+  color: #111827;
+}
+
+.admin-user-action-btn.vvip:hover {
+  background: linear-gradient(135deg, #9c7209, #c9a22c);
+}
+
+.admin-user-action-btn.vvip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-user-action-btn.remove-vip {
+  background: var(--gray-200);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.admin-user-action-btn.remove-vip:hover {
+  background: var(--gray-300);
+}
+
+.admin-user-action-btn.remove-vip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dark .admin-user-action-btn.vip {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e);
+  color: #f6d365;
+}
+
+.dark .admin-user-action-btn.vip:hover {
+  background: linear-gradient(135deg, #4a3710, #7a5a14);
+}
+
+.dark .admin-user-action-btn.vvip {
+  background: linear-gradient(135deg, #2b2109, #4a3710);
+  color: #f6d365;
+}
+
+.dark .admin-user-action-btn.vvip:hover {
+  background: linear-gradient(135deg, #3f2f08, #6b4e0e);
+}
+
+.dark .admin-user-action-btn.remove-vip {
+  background: rgba(30, 41, 59, 0.7);
+  color: var(--gray-300);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.dark .admin-user-action-btn.remove-vip:hover {
+  background: rgba(51, 65, 85, 0.8);
+}
+
 /* Bet result badges */
 .admin-bet-result {
   display: inline-flex;

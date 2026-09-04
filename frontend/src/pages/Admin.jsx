@@ -2495,6 +2495,51 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                       <td>
                         <div className="admin-user-actions">
                           <button
+                            onClick={async () => {
+                              try {
+                                await api.put(`/api/vip/admin/set-tier/${user._id}`, { tier: 'vip' });
+                                toast.success(`Upgraded ${user.username} to VIP`);
+                                fetchData();
+                              } catch (error) {
+                                toast.error('Failed to set VIP');
+                              }
+                            }}
+                            className="admin-user-action-btn vip"
+                            disabled={user.vipTier === 'vip'}
+                          >
+                            <Crown size={13} /> VIP
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await api.put(`/api/vip/admin/set-tier/${user._id}`, { tier: 'vvip' });
+                                toast.success(`Upgraded ${user.username} to VVIP`);
+                                fetchData();
+                              } catch (error) {
+                                toast.error('Failed to set VVIP');
+                              }
+                            }}
+                            className="admin-user-action-btn vvip"
+                            disabled={user.vipTier === 'vvip'}
+                          >
+                            <Zap size={13} /> VVIP
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await api.put(`/api/vip/admin/set-tier/${user._id}`, { tier: 'none' });
+                                toast.success(`Removed VIP from ${user.username}`);
+                                fetchData();
+                              } catch (error) {
+                                toast.error('Failed to remove VIP');
+                              }
+                            }}
+                            className="admin-user-action-btn remove-vip"
+                            disabled={user.vipTier === 'none' || !user.vipTier}
+                          >
+                            Remove
+                          </button>
+                          <button
                             onClick={() => toggleUserStatus(user._id, !user.isActive)}
                             className={`admin-user-action-btn ${user.isActive ? 'deactivate' : 'activate'}`}
                           >
