@@ -43,10 +43,20 @@ const wakeUpServer = async () => {
   return wakeUpPromise;
 };
 
-// Request interceptor - add any pre-request logic here
+// Request interceptor - attach auth token from localStorage as a fallback.
+// Safari's ITP can block/drop the httpOnly cookie, so sending the token via
+// the Authorization header keeps users logged in reliably across browsers.
 api.interceptors.request.use(
   (config) => {
-    // You can add loading indicators here if needed
+    try {
+      const token = localStorage.getItem('kiwi_token');
+      if (token) {
+        config.headers = config.headers || {};
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+    } catch (e) {
+      // localStorage unavailable — cookie fallback still applies
+    }
     return config;
   },
   (error) => {
@@ -98,19 +108,44 @@ api.interceptors.response.use(
     if (error.response) {
       const status = error.response.status;
 
-      // Handle 401 Unauthorized - redirect to login if needed
+      // Handle 401 Unauthorized - try token refresh before redirecting
       if (status === 401) {
         if (originalRequest?._skipAuthRedirect) {
           return Promise.reject(error);
         }
 
         // Don't redirect for login/register requests
-        if (!originalRequest.url?.includes('/auth/login') && 
-            !originalRequest.url?.includes('/auth/register')) {
-          // Clear any stored user data
+        if (!originalRequest.url?.includes('/auth/login') &&
+            !originalRequest.url?.includes('/auth/register') &&
+            !originalRequest.url?.includes('/auth/refresh')) {
+
+          // Try to refresh the token before forcing a logout.
+          // This keeps Safari/iPhone users logged in when the cookie
+          // gets dropped but the localStorage token is still valid.
+          if (!originalRequest?._retryAuth) {
+            originalRequest._retryAuth = true;
+            try {
+              const stored = localStorage.getItem('kiwi_token');
+              if (stored) {
+                const refreshRes = await rawApi.post('/api/auth/refresh', {}, {
+                  headers: { Authorization: `Bearer ${stored}` }
+                });
+                if (refreshRes.data?.token) {
+                  localStorage.setItem('kiwi_token', refreshRes.data.token);
+                  originalRequest.headers = originalRequest.headers || {};
+                  originalRequest.headers['Authorization'] = `Bearer ${refreshRes.data.token}`;
+                  return api(originalRequest);
+                }
+              }
+            } catch (refreshError) {
+              // fall through to logout
+            }
+          }
+
+          // Clear stored data and redirect only after refresh failed
+          localStorage.removeItem('kiwi_token');
           localStorage.removeItem('user');
-          // Only redirect if not already on login/register pages
-          if (!window.location.pathname.includes('/login') && 
+          if (!window.location.pathname.includes('/login') &&
               !window.location.pathname.includes('/register')) {
             window.location.href = '/login';
           }

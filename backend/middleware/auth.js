@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
 const authenticateToken = (req, res, next) => {
   // Try to get token from httpOnly cookie first (secure method)
@@ -25,6 +26,27 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+// Enforce VIP expiry on every authenticated request: if a user's
+// vipExpiry date has passed, downgrade them to 'none' immediately.
+const enforceVipExpiry = async (req, res, next) => {
+  try {
+    if (!req.user?.id) return next();
+
+    const user = await User.findById(req.user.id).select('vipTier vipExpiry');
+    if (!user) return next();
+
+    if (user.vipTier && user.vipTier !== 'none' && user.vipExpiry && new Date(user.vipExpiry) < new Date()) {
+      user.vipTier = 'none';
+      user.vipExpiry = null;
+      await user.save();
+    }
+
+    next();
+  } catch (error) {
+    next();
+  }
+};
+
 const requireAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({ error: 'Admin access required' });
@@ -32,4 +54,4 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { authenticateToken, requireAdmin };
+module.exports = { authenticateToken, enforceVipExpiry, requireAdmin };

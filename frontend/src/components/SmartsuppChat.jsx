@@ -42,7 +42,28 @@ const SmartsuppChat = () => {
 
   useEffect(() => {
     loadSmartsupp();
-  }, []);
+
+    // Re-hide the Smartsupp default widget shortly after the script
+    // loads (and on an interval as a safety net) so ONLY our custom
+    // floating button is ever visible. CSS hiding is the primary net;
+    // this handles anything Smartsupp injects after load.
+    const hideTimer = setTimeout(() => {
+      if (window.smartsupp) {
+        window.smartsupp('chat:hide');
+      }
+    }, 2500);
+
+    const interval = setInterval(() => {
+      if (window.smartsupp && !open) {
+        window.smartsupp('chat:hide');
+      }
+    }, 8000);
+
+    return () => {
+      clearTimeout(hideTimer);
+      clearInterval(interval);
+    };
+  }, [open]);
 
   const toggleChat = () => {
     if (window.smartsupp) {

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, enforceVipExpiry } = require('../middleware/auth');
 const { sendWelcomeEmail } = require('../services/emailNotifications');
 
 // Validation middleware
@@ -93,11 +93,15 @@ router.post('/register', validateRegister, handleValidationErrors, async (req, r
       { expiresIn: '7d' }
     );
 
-    // Set httpOnly cookie - allow cross-origin for frontend/backend separation
+    // Set httpOnly cookie.
+    // Safari ITP strips sameSite:'none' cross-site cookies aggressively,
+    // so we use 'lax' and also return the token so the frontend can keep
+    // it in localStorage and send it via the Authorization header as a
+    // resilient fallback on browsers that block the cookie.
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true, // Always require HTTPS for cross-origin cookies
-      sameSite: 'none', // Allow cross-origin requests
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
@@ -106,8 +110,13 @@ router.post('/register', validateRegister, handleValidationErrors, async (req, r
         id: user._id,
         username,
         email,
-        favoriteTeams: []
-      }
+        favoriteTeams: [],
+        role: user.role,
+        vipTier: user.vipTier || 'none',
+        vipExpiry: user.vipExpiry || null,
+        isActive: user.isActive
+      },
+      token
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -138,11 +147,16 @@ router.post('/login', validateLogin, handleValidationErrors, async (req, res) =>
       { expiresIn: '7d' }
     );
 
-    // Set httpOnly cookie - allow cross-origin for frontend/backend separation
+    // Set httpOnly cookie.
+    // Safari ITP aggressively strips sameSite:'none' cross-site cookies,
+    // so we use 'lax' (works for top-level navigations like page loads)
+    // and also return the token so the frontend can keep it in
+    // localStorage and send it via the Authorization header as a
+    // resilient fallback on browsers that block the cookie.
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true, // Always require HTTPS for cross-origin cookies
-      sameSite: 'none', // Allow cross-origin requests
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
@@ -152,8 +166,12 @@ router.post('/login', validateLogin, handleValidationErrors, async (req, res) =>
         username: user.username,
         email,
         favoriteTeams: user.favoriteTeams,
-        role: user.role
-      }
+        role: user.role,
+        vipTier: user.vipTier || 'none',
+        vipExpiry: user.vipExpiry || null,
+        isActive: user.isActive
+      },
+      token
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -161,7 +179,7 @@ router.post('/login', validateLogin, handleValidationErrors, async (req, res) =>
 });
 
 // Profile route
-router.get('/profile', authenticateToken, async (req, res) => {
+router.get('/profile', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
@@ -203,8 +221,48 @@ router.delete('/user/favorites/:teamName', authenticateToken, async (req, res) =
 
 // Logout route
 router.post('/logout', (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  });
   res.json({ message: 'Logged out successfully' });
+});
+
+// Refresh endpoint — returns a fresh token if the current one is still valid,
+// so logged-in users stay logged in (Safari-safe even when cookies are blocked).
+router.post('/refresh', (req, res) => {
+  // Try cookie first, then Authorization header
+  let token = req.cookies?.token;
+  if (!token) {
+    const authHeader = req.headers['authorization'];
+    token = authHeader && authHeader.split(' ')[1];
+  }
+
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+
+    const refreshedToken = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.cookie('token', refreshedToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
+    res.json({ token: refreshedToken, user: user });
+  });
 });
 
 module.exports = router;

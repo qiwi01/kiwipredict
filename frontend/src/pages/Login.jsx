@@ -46,7 +46,7 @@ const Login = () => {
       console.log('Login response received:', res.data);
 
       if (res.data.user) {
-        login(res.data.user); // Token is handled via httpOnly cookie
+        login(res.data.user, res.data.token);
         navigate('/');
       } else {
         throw new Error('Invalid response from server');

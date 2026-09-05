@@ -1207,6 +1207,48 @@ body {
   }
 }
 
+/* ===== SMARTSUPP — HIDE DEFAULT WIDGET, KEEP ONLY CUSTOM FAB ===== */
+#smartsupp-widget-container,
+div[data-smartsupp], 
+div[class*="smartsupp-widget"],
+div[class*="smartsupp-chat-container"],
+iframe[id*="smartsupp"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ===== MOBILE SAFARI / IOS WEBKIT FIXES ===== */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: visible;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+body,
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px; /* prevents iOS zoom-on-focus */
+}
+
+button {
+  touch-action: manipulation;
+}
+
 /* ===== SMARTSUPP FLOATING CHAT BUTTON ===== */
 .smartsupp-fab {
   position: fixed;

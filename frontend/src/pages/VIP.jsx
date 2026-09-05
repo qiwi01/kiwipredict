@@ -49,16 +49,18 @@ const VIP = () => {
     const loadVIPPage = async () => {
       try {
         setLoading(true);
-        const [statusRes, codesRes, gamesRes, outcomesRes] = await Promise.all([
+        // Use allSettled so a single endpoint failure (e.g. transient
+        // network hiccup on Safari) does not blank the whole VIP page.
+        const [statusRes, codesRes, gamesRes, outcomesRes] = await Promise.allSettled([
           api.get('/api/vip/status'),
           api.get('/api/vip/booking-codes'),
           api.get('/api/vip/games'),
           api.get('/api/vip/outcomes')
         ]);
-        setVipStatus(statusRes.data);
-        setBookingCodes(codesRes.data.data || []);
-        setVipGames(gamesRes.data.data || []);
-        setVipOutcomes(outcomesRes.data.data || []);
+        setVipStatus(statusRes.status === 'fulfilled' ? statusRes.value.data : { isVIP: user?.vipTier === 'vip' || user?.vipTier === 'vvip' });
+        setBookingCodes(codesRes.status === 'fulfilled' ? (codesRes.value.data.data || []) : []);
+        setVipGames(gamesRes.status === 'fulfilled' ? (gamesRes.value.data.data || []) : []);
+        setVipOutcomes(outcomesRes.status === 'fulfilled' ? (outcomesRes.value.data.data || []) : []);
       } catch (error) {
         toast.error('Failed to load VIP page');
       } finally {
@@ -67,6 +69,7 @@ const VIP = () => {
     };
 
     loadVIPPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectedCodes = useMemo(

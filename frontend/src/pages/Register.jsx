@@ -63,7 +63,7 @@ const Register = () => {
         email: formData.email,
         password: formData.password
       });
-      register(res.data.user);
+      register(res.data.user, res.data.token);
       toast.success('Account created successfully! Welcome to Kiwi Predict!');
       navigate('/');
     } catch (err) {

@@ -126,6 +126,13 @@ const mockFixtures = [
 router.get('/', optionalAuth, async (req, res) => {
   try {
     const user = req.user?.id ? await User.findById(req.user.id) : null;
+
+    // Immediately downgrade users whose VIP/VVIP subscription has expired.
+    if (user && user.vipTier && user.vipTier !== 'none' && user.vipExpiry && new Date(user.vipExpiry) < new Date()) {
+      user.vipTier = 'none';
+      user.vipExpiry = null;
+      await user.save();
+    }
     const userTier = user ? user.vipTier : 'none';
 
     const today = toDateString(new Date());

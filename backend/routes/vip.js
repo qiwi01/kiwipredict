@@ -4,7 +4,7 @@ const VIPPayment = require('../models/VIPPayment');
 const User = require('../models/User');
 const Match = require('../models/Match');
 const BookingCode = require('../models/BookingCode');
-const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const { authenticateToken, requireAdmin, enforceVipExpiry } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ const isVipPrediction = (prediction = {}, gameTier = 'none') => {
 };
 const bookmakerLabels = { sportybet: 'SportyBet', bet9ja: 'Bet9ja', footballcom: 'Football.com' };
 
-router.get('/booking-codes', authenticateToken, async (req, res) => {
+router.get('/booking-codes', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
     const { bookmaker } = req.query;
     const query = {
@@ -53,7 +53,7 @@ router.get('/booking-codes', authenticateToken, async (req, res) => {
   }
 });
 
-router.get('/games', authenticateToken, async (req, res) => {
+router.get('/games', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('vipTier vipExpiry');
     const vip = isVipActive(user);
@@ -76,7 +76,7 @@ router.get('/games', authenticateToken, async (req, res) => {
   }
 });
 
-router.get('/outcomes', authenticateToken, async (req, res) => {
+router.get('/outcomes', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
     const matches = await Match.find({
       date: { $lt: startOfToday() },
@@ -241,7 +241,7 @@ router.post('/verify-payment', async (req, res) => {
 });
 
 // Get VIP status
-router.get('/status', authenticateToken, async (req, res) => {
+router.get('/status', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('vipTier vipExpiry isPublicProfile');
     res.json({
@@ -379,7 +379,7 @@ router.put('/toggle-vip/:userId', authenticateToken, requireAdmin, async (req, r
 });
 
 // Bet Converter - VIP Only
-router.post('/convert-booking-code', authenticateToken, async (req, res) => {
+router.post('/convert-booking-code', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
     // Check if user is VIP or VVIP
     const user = await User.findById(req.user.id).select('vipTier vipExpiry');
@@ -430,7 +430,7 @@ router.post('/convert-booking-code', authenticateToken, async (req, res) => {
 });
 
 // Get available bookmakers for conversion
-router.get('/bookmakers', authenticateToken, async (req, res) => {
+router.get('/bookmakers', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
     // Check if user is VIP or VVIP
     const user = await User.findById(req.user.id).select('vipTier vipExpiry');

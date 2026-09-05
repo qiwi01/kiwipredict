@@ -74,22 +74,30 @@ function AppContent() {
     }
 
     // Check if user is logged in by making a request to profile endpoint
-    // The backend will use httpOnly cookies to authenticate
+    // The backend will use httpOnly cookies + Authorization header
+    // (localStorage token) to authenticate. Timeout is generous to cover
+    // server cold-starts so users are not logged out prematurely.
     const authTimeout = setTimeout(() => {
       setUser(null);
       setLoading(false);
-    }, 5000);
+    }, 20000);
 
     api.get('/api/auth/profile', {
-      timeout: 5000,
+      timeout: 20000,
       _skipRetry: true
     })
       .then(res => {
         setUser(res.data);
       })
       .catch(() => {
-        // User is not authenticated
-        setUser(null);
+        // If there is a stored token but the profile call failed with a
+        // network error (server cold start), do not log the user out —
+        // let the retry/wakeup logic handle it. Only treat a definitive
+        // 401 as logged-out.
+        const isDefinitiveAuthFail = !localStorage.getItem('kiwi_token');
+        if (isDefinitiveAuthFail) {
+          setUser(null);
+        }
       })
       .finally(() => {
         clearTimeout(authTimeout);
@@ -99,26 +107,43 @@ function AppContent() {
     return () => clearTimeout(authTimeout);
   }, [previewMode]);
 
-  const login = (userData) => {
+  const login = (userData, token) => {
     setUser(userData);
+    if (token) {
+      try {
+        localStorage.setItem('kiwi_token', token);
+      } catch (e) {
+        // ignore storage errors
+      }
+    }
     toast.success('Logged in successfully!');
   };
 
   const logout = async () => {
     try {
       await api.post('/api/auth/logout');
-      setUser(null);
-      toast.success('Logged out successfully!');
     } catch (error) {
       console.error('Logout error:', error);
-      // Clear user state even if logout request fails
+    } finally {
+      try {
+        localStorage.removeItem('kiwi_token');
+      } catch (e) {
+        // ignore storage errors
+      }
       setUser(null);
       toast.success('Logged out successfully!');
     }
   };
 
-  const register = (userData) => {
+  const register = (userData, token) => {
     setUser(userData);
+    if (token) {
+      try {
+        localStorage.setItem('kiwi_token', token);
+      } catch (e) {
+        // ignore storage errors
+      }
+    }
     toast.success('Account created successfully!');
   };
 

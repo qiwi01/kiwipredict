@@ -2785,8 +2785,8 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
                       <td className="admin-user-name">{user.username}</td>
                       <td className="admin-user-email">{user.email}</td>
                       <td>
-                        <span className={`admin-status-badge ${user.isVIP ? 'vip' : 'inactive'}`}>
-                          {user.isVIP ? 'VIP' : 'Not VIP'}
+                        <span className={`admin-status-badge ${user.vipTier === 'none' || !user.vipTier ? 'inactive' : user.vipTier === 'vvip' ? 'vvip' : 'vip'}`}>
+                          {user.vipTier === 'vvip' ? 'VVIP' : user.vipTier === 'vip' ? 'VIP' : 'Not VIP'}
                         </span>
                       </td>
                       <td>{user.vipExpiry ? new Date(user.vipExpiry).toLocaleDateString() : 'N/A'}</td>
