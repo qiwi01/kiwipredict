@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SMARTSUPP_KEY = 'f91dfd08f8b4027c5bbebed0818316eb217413de';
+const SMARTSUPP_KEY = '1dbe32c20acd3227c9079428427dd63807c377df';
 
 const loadSmartsupp = () => {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
