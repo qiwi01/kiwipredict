@@ -108,10 +108,10 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Stricter rate limiting for auth routes
+// Stricter rate limiting for auth credential-submitting routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs for auth routes
+  max: 20, // limit login/register to 20 requests per windowMs per IP
   message: {
     error: 'Too many authentication attempts, please try again later.'
   },
@@ -120,7 +120,14 @@ const authLimiter = rateLimit({
 });
 
 app.use(limiter);
-app.use('/api/auth', authLimiter);
+// Apply the strict limiter only to credential-submitting endpoints (brute-force
+// protection). Profile/refresh session checks use the general limiter only, so
+// normal page loads and token refreshes don't burn the auth budget and block
+// legitimate logins. Legacy mounts are covered too.
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/login', authLimiter);
+app.use('/api/register', authLimiter);
 
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
