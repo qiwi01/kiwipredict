@@ -1739,12 +1739,24 @@ padding: var(--space-3);
     display: none;
   }
 
-  .predictions-league-select,
+.predictions-league-select,
   .predictions-date-select {
     font-size: var(--font-size-xs);
     padding: var(--space-2) var(--space-3);
     min-width: 120px;
     max-width: 140px;
+  }
+
+  /* Prediction type selector — a bit bigger on mobile for easier tapping.
+     Search input — a bit smaller on mobile to leave room for the selector. */
+  .predictions-league-select {
+    min-width: 160px;
+    max-width: 200px;
+  }
+
+  .predictions-search-input {
+    min-width: 140px;
+    max-width: 180px;
   }
 
   .predictions-filter-btn {

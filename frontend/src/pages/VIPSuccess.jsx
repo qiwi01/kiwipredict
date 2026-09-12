@@ -136,8 +136,12 @@ const VIPSuccess = () => {
               <span>{isVVIP ? 'VVIP' : 'VIP'}-only predictions</span>
             </div>
             <div className="vip-feature-item">
-              <Star size={16} />
-              <span>Advanced bet code converter</span>
+              {!isVVIP && (
+                <>
+                  <Star size={16} />
+                  <span>Advanced bet code converter</span>
+                </>
+              )}
             </div>
             <div className="vip-feature-item">
               <Star size={16} />
@@ -172,10 +176,12 @@ const VIPSuccess = () => {
             View {isVVIP ? 'VVIP' : 'VIP'} Predictions
             <ArrowRight size={18} />
           </Link>
+          {!isVVIP && (
           <Link to="/vip/converter" className="vip-action-btn secondary">
             <Star size={18} />
             Bet Code Converter
           </Link>
+        )}
           {isVVIP && (
             <Link to={`/profile/${user?.username}`} className="vip-action-btn secondary">
               <Trophy size={18} />

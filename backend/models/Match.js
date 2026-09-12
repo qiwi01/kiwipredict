@@ -17,6 +17,33 @@ const MatchSchema = new mongoose.Schema({
     type: Number,
     default: null
   },
+  halfTimeHome: {
+    type: Number,
+    default: null
+  },
+  halfTimeAway: {
+    type: Number,
+    default: null
+  },
+  status: {
+    type: String,
+    default: 'SCHEDULED'
+  },
+  minute: {
+    type: Number,
+    default: null
+  },
+  venue: String,
+  homeTeamId: {
+    type: Number,
+    default: null
+  },
+  awayTeamId: {
+    type: Number,
+    default: null
+  },
+  homeCrest: String,
+  awayCrest: String,
   externalFixtureId: {
     type: Number,
     index: true

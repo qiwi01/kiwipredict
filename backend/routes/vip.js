@@ -8,6 +8,19 @@ const { authenticateToken, requireAdmin, enforceVipExpiry } = require('../middle
 
 const router = express.Router();
 
+// Compute VIP expiry date based on tier and plan.
+// Monthly → 30 days, Yearly → 1 year. Applies to both VIP and VVIP.
+const computeVipExpiry = (plan) => {
+  const expiry = new Date();
+  if (plan === 'yearly') {
+    expiry.setFullYear(expiry.getFullYear() + 1); // 1 year
+  } else {
+    expiry.setDate(expiry.getDate() + 30); // exactly 30 days
+  }
+  return expiry;
+};
+
+
 const isVipActive = (user) => Boolean(user && user.vipTier !== 'none' && (!user.vipExpiry || user.vipExpiry >= new Date()));
 const startOfToday = () => {
   const date = new Date();
@@ -172,7 +185,8 @@ router.post('/initialize-payment', authenticateToken, async (req, res) => {
       amount,
       reference,
       paystackReference: paystackResponse.data.data.reference,
-      tier: tier
+      tier: tier,
+      plan: plan
     });
 
     await vipPayment.save();
@@ -214,20 +228,34 @@ router.post('/verify-payment', async (req, res) => {
       }
     );
 
-    const { status, metadata } = paystackResponse.data.data;
+    const { status } = paystackResponse.data.data;
 
     if (status === 'success') {
-      // Update payment status
-      await VIPPayment.findOneAndUpdate(
+      // Update payment status and auto-activate the user's VIP tier
+      // immediately so they don't have to wait for manual admin confirmation.
+      const updatedPayment = await VIPPayment.findOneAndUpdate(
         { paystackReference: reference },
         {
           status: 'completed',
-          paymentDate: new Date()
-        }
-      );
+          paymentDate: new Date(),
+          confirmedAt: new Date()
+        },
+        { new: true, runValidators: false }
+      ).populate('user');
 
-      // TODO: Send notification to admin
-      // For now, we'll mark as completed and admin can confirm later
+      // Auto-activate user VIP status with the correct expiry
+      if (updatedPayment && updatedPayment.user && updatedPayment.user._id) {
+        const vipExpiry = computeVipExpiry(updatedPayment.plan);
+        const updateData = {
+          vipTier: updatedPayment.tier,
+          vipExpiry
+        };
+        // If VVIP, enable public profile
+        if (updatedPayment.tier === 'vvip') {
+          updateData.isPublicProfile = true;
+        }
+        await User.findByIdAndUpdate(updatedPayment.user._id, updateData);
+      }
     }
 
     res.json({ success: true, status });
@@ -269,14 +297,9 @@ router.put('/confirm-payment/:paymentId', authenticateToken, requireAdmin, async
       return res.status(400).json({ error: 'Payment not completed' });
     }
 
-    // Update user VIP status based on tier and plan
-    const vipExpiry = new Date();
-    if (payment.paystackReference.includes('yearly') ||
-        payment.amount === 100000 || payment.amount === 500000) {
-      vipExpiry.setFullYear(vipExpiry.getFullYear() + 1); // 1 year
-    } else {
-      vipExpiry.setMonth(vipExpiry.getMonth() + 1); // 1 month
-    }
+    // Update user VIP status based on tier and plan.
+    // Monthly plans get 30 days; yearly plans get 1 year.
+    const vipExpiry = computeVipExpiry(payment.plan);
 
     const updateData = {
       vipTier: payment.tier,
@@ -381,12 +404,13 @@ router.put('/toggle-vip/:userId', authenticateToken, requireAdmin, async (req, r
 // Bet Converter - VIP Only
 router.post('/convert-booking-code', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
-    // Check if user is VIP or VVIP
+    // Bet code converter is VIP-only — VVIP members do NOT have access.
     const user = await User.findById(req.user.id).select('vipTier vipExpiry');
-    if (!user.vipTier || user.vipTier === 'none' || (user.vipExpiry && user.vipExpiry < new Date())) {
+    if (!user.vipTier || user.vipTier === 'none' || user.vipTier === 'vvip' ||
+        (user.vipExpiry && user.vipExpiry < new Date())) {
       return res.status(403).json({
         success: false,
-        error: 'VIP access required for bet converter'
+        error: 'Bet code converter is only available for VIP members (not VVIP). Upgrade to VIP to access this feature.'
       });
     }
 
@@ -432,12 +456,13 @@ router.post('/convert-booking-code', authenticateToken, enforceVipExpiry, async 
 // Get available bookmakers for conversion
 router.get('/bookmakers', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
-    // Check if user is VIP or VVIP
+    // Bet code converter is VIP-only — VVIP members do NOT have access.
     const user = await User.findById(req.user.id).select('vipTier vipExpiry');
-    if (!user.vipTier || user.vipTier === 'none' || (user.vipExpiry && user.vipExpiry < new Date())) {
+    if (!user.vipTier || user.vipTier === 'none' || user.vipTier === 'vvip' ||
+        (user.vipExpiry && user.vipExpiry < new Date())) {
       return res.status(403).json({
         success: false,
-        error: 'VIP access required'
+        error: 'Bet code converter is only available for VIP members (not VVIP). Upgrade to VIP to access this feature.'
       });
     }
 

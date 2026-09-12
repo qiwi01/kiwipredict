@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../App';
-import { LogOut, LogIn, UserPlus, Menu, X, ChevronDown, Trophy, Users, Crown } from 'lucide-react';
+import { LogOut, LogIn, UserPlus, Menu, X, ChevronDown, Trophy, Users, Crown, Activity } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ThemeToggle from './ThemeToggle';
 import '../css/Navbar.css';
@@ -147,6 +147,11 @@ const Navbar = () => {
           <div className="navbar-links">
             <Link to="/" className="navbar-link">
               Home
+            </Link>
+
+            <Link to="/livescore" className="navbar-link navbar-link-livescore">
+              <Activity className="navbar-btn-icon" />
+              <span>Live Score</span>
             </Link>
 
             {/* Predictions Main Dropdown */}
@@ -465,6 +470,11 @@ const Navbar = () => {
             <Link to="/" className="navbar-mobile-link" onClick={closeMobileMenu}>
               <span className="navbar-mobile-link-icon">🏠</span>
               <span>Home</span>
+            </Link>
+
+            <Link to="/livescore" className="navbar-mobile-link" onClick={closeMobileMenu}>
+              <span className="navbar-mobile-link-icon">📡</span>
+              <span>Live Score</span>
             </Link>
 
             {/* Today's Predictions Submenu */}

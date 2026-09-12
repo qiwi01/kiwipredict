@@ -1,4 +1,4 @@
-const MODEL_VERSION = 'kiwi-semi-ai-v1.0';
+const MODEL_VERSION = 'kiwi-ai-v2.0';
 const MIN_CONFIDENCE = Number(process.env.AI_MIN_CONFIDENCE || 50);
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -49,22 +49,56 @@ const pickWinPrediction = ({ homeWin, draw, awayWin }) => {
   return options.sort((a, b) => b.probability - a.probability)[0];
 };
 
-const generateExplanation = ({ homeTeam, awayTeam, homeExpectedGoals, awayExpectedGoals, strongestMarket }) => (
-  `Semi-AI model projects ${homeTeam} around ${homeExpectedGoals.toFixed(2)} expected goals and ${awayTeam} around ${awayExpectedGoals.toFixed(2)}. ` +
+const generateExplanation = ({ homeTeam, awayTeam, homeExpectedGoals, awayExpectedGoals, strongestMarket, source = 'AI' }) => (
+  `${source} model projects ${homeTeam} around ${homeExpectedGoals.toFixed(2)} expected goals and ${awayTeam} around ${awayExpectedGoals.toFixed(2)}. ` +
   `The strongest generated market is ${strongestMarket.prediction} at ${percentage(strongestMarket.probability)}%.`
 );
 
-const generatePredictionsForFixture = (fixture) => {
-  const homeTeam = fixture.homeTeam || fixture.homeTeam?.name || 'Home Team';
-  const awayTeam = fixture.awayTeam || fixture.awayTeam?.name || 'Away Team';
-  const competition = fixture.competition || fixture.competitionCode || 'Unknown League';
-  const homeStats = estimateTeamStrength(homeTeam, competition);
-  const awayStats = estimateTeamStrength(awayTeam, competition);
+const resolveBookmakerOdds = (market, odds) => {
+  if (!odds || market.type !== 'win') return null;
+  if (market.prediction === 'home' && odds.homeWin) return Number(odds.homeWin);
+  if (market.prediction === 'draw' && odds.draw) return Number(odds.draw);
+  if (market.prediction === 'away' && odds.awayWin) return Number(odds.awayWin);
+  return null;
+};
 
-  const leagueGoalBase = 1.35;
-  const homeAdvantage = 1.12;
-  const homeExpectedGoals = clamp(leagueGoalBase * homeStats.attack * awayStats.defense * homeStats.form * homeAdvantage, 0.35, 3.4);
-  const awayExpectedGoals = clamp(leagueGoalBase * awayStats.attack * homeStats.defense * awayStats.form, 0.25, 3.1);
+const generatePredictionsForFixture = (fixture, stats = null) => {
+  const homeTeam = fixture.homeTeam?.name || fixture.homeTeam || 'Home Team';
+  const awayTeam = fixture.awayTeam?.name || fixture.awayTeam || 'Away Team';
+  const competition = fixture.competition?.name || fixture.competition || fixture.competitionCode || 'Unknown League';
+
+  let homeStrength;
+  let awayStrength;
+  let leagueGoalBase;
+  let source = 'kiwi-ai-v2';
+
+  if (stats && stats.home && stats.away) {
+    homeStrength = stats.home;
+    awayStrength = stats.away;
+    leagueGoalBase = stats.leagueAvgTeamGoals || 1.25;
+    source = 'kiwi-ai-v2 (form + head-to-head)';
+  } else {
+    homeStrength = estimateTeamStrength(homeTeam, competition);
+    awayStrength = estimateTeamStrength(awayTeam, competition);
+    leagueGoalBase = 1.25;
+    source = 'kiwi-ai-v2 (fallback heuristic)';
+  }
+
+  const HOME_ADVANTAGE = 1.12;
+
+  let homeExpectedGoals = leagueGoalBase * homeStrength.attack * awayStrength.defense * (homeStrength.form || 1) * HOME_ADVANTAGE;
+  let awayExpectedGoals = leagueGoalBase * awayStrength.attack * homeStrength.defense * (awayStrength.form || 1);
+
+  const h2h = stats?.headToHead;
+  if (h2h && h2h.played >= 2 && h2h.homeGoalsAvg != null && h2h.awayGoalsAvg != null) {
+    const weight = Math.min(0.25, h2h.played * 0.05);
+    homeExpectedGoals = homeExpectedGoals * (1 - weight) + h2h.homeGoalsAvg * weight;
+    awayExpectedGoals = awayExpectedGoals * (1 - weight) + h2h.awayGoalsAvg * weight;
+  }
+
+  homeExpectedGoals = clamp(homeExpectedGoals, 0.2, 4.5);
+  awayExpectedGoals = clamp(awayExpectedGoals, 0.15, 4.0);
+
   const matrix = calculateGoalMatrix(homeExpectedGoals, awayExpectedGoals);
 
   const probabilities = matrix.reduce((acc, score) => {
@@ -107,28 +141,32 @@ const generatePredictionsForFixture = (fixture) => {
 
   const generatedAt = new Date();
   const strongestMarket = candidateMarkets[0];
-  const explanation = generateExplanation({ homeTeam, awayTeam, homeExpectedGoals, awayExpectedGoals, strongestMarket });
+  const explanation = generateExplanation({ homeTeam, awayTeam, homeExpectedGoals, awayExpectedGoals, strongestMarket, source });
 
   const predictions = candidateMarkets
     .filter(market => percentage(market.probability) >= MIN_CONFIDENCE)
-    .map((market, index) => ({
-      type: market.type,
-      prediction: market.prediction,
-      confidence: percentage(market.probability),
-      probability: Number(market.probability.toFixed(4)),
-      fairOdds: fairOdds(market.probability),
-      valueBet: market.probability >= 0.62,
-      odds: {},
-      visibility: index >= 3 ? 'vip' : 'all',
-      modelVersion: MODEL_VERSION,
-      generatedBy: 'semi-ai-weekly-job',
-      generatedAt,
-      explanation
-    }));
+    .map((market, index) => {
+      const bookmakerOdds = resolveBookmakerOdds(market, fixture.odds);
+      return {
+        type: market.type,
+        prediction: market.prediction,
+        confidence: percentage(market.probability),
+        probability: Number(market.probability.toFixed(4)),
+        fairOdds: fairOdds(market.probability),
+        valueBet: market.probability >= 0.62 || (bookmakerOdds ? market.probability * bookmakerOdds > 1 : false),
+        odds: {},
+        visibility: index >= 3 ? 'vip' : 'all',
+        modelVersion: MODEL_VERSION,
+        generatedBy: 'ai-v2',
+        generatedAt,
+        explanation
+      };
+    });
 
   return {
     modelVersion: MODEL_VERSION,
     generatedAt,
+    source,
     homeExpectedGoals: Number(homeExpectedGoals.toFixed(2)),
     awayExpectedGoals: Number(awayExpectedGoals.toFixed(2)),
     probabilities: Object.fromEntries(Object.entries(probabilities).map(([key, value]) => [key, Number(value.toFixed(4))])),

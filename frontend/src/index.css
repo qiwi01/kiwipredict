@@ -43,3 +43,12 @@ body {
   white-space: nowrap;
   border: 0;
 }
+
+/* ===== NAVBAR LIVE SCORE ACCENT ===== */
+.navbar-link-livescore {
+  color: #ef4444 !important;
+}
+
+.navbar-link-livescore .navbar-btn-icon {
+  color: #ef4444;
+}

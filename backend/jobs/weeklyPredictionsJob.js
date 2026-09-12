@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const Match = require('../models/Match');
 const { fetchMatchesByDateRange } = require('../services/footballApi');
 const { generatePredictionsForFixture, MIN_CONFIDENCE } = require('../services/predictionEngine');
+const { gatherTeamStats } = require('../services/teamFormService');
 
 const formatDate = (date) => date.toISOString().split('T')[0];
 
@@ -14,13 +15,17 @@ const getWeekRange = (startDate = new Date()) => {
 };
 
 const normalizeFixture = (fixture) => ({
+  id: fixture.id,
   externalFixtureId: fixture.id,
   homeTeam: fixture.homeTeam?.name || fixture.homeTeam,
   awayTeam: fixture.awayTeam?.name || fixture.awayTeam,
+  homeTeamId: fixture.homeTeamId ?? null,
+  awayTeamId: fixture.awayTeamId ?? null,
   league: fixture.competition?.name || fixture.competition || 'Unknown League',
   competitionCode: fixture.competition?.code || fixture.competitionCode || '',
   date: new Date(fixture.utcDate),
-  status: fixture.status || 'SCHEDULED'
+  status: fixture.status || 'SCHEDULED',
+  odds: fixture.odds || null
 });
 
 const findExistingMatch = async (fixture) => {
@@ -69,10 +74,11 @@ const generateWeeklyPredictions = async ({ from, to, overwrite = false } = {}) =
         continue;
       }
 
+      const stats = await gatherTeamStats(fixture);
       const generated = generatePredictionsForFixture({
         ...fixture,
         competition: fixture.league
-      });
+      }, stats);
 
       if (!generated.predictions.length) {
         summary.skipped += 1;

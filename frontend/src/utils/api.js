@@ -208,4 +208,18 @@ export const preWarmServer = async () => {
   }
 };
 
+// Decode a JWT token on the client side (no external library needed).
+// Used as a fallback to keep users logged in when the server is unreachable.
+export const decodeJwt = (token) => {
+  try {
+    const payload = token.split('.')[1];
+    const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(decoded);
+  } catch (e) {
+    return null;
+  }
+};
+
+export { rawApi };
+
 export default api;

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { useState, useEffect, createContext, useContext } from 'react';
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
-import api from './utils/api';
+import api, { rawApi, decodeJwt } from './utils/api';
 
 // Contexts
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -22,6 +22,9 @@ import AdminLogin from './pages/AdminLogin';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Outcomes from './pages/Outcomes';
+import Livescore from './pages/Livescore';
+import MatchDetails from './pages/MatchDetails';
+import MatchHistory from './pages/MatchHistory';
 import Contact from './pages/Contact';
 
 // Protected Route Component
@@ -73,30 +76,101 @@ function AppContent() {
       return;
     }
 
-    // Check if user is logged in by making a request to profile endpoint
+        // Check if user is logged in by making a request to profile endpoint
     // The backend will use httpOnly cookies + Authorization header
     // (localStorage token) to authenticate. Timeout is generous to cover
     // server cold-starts so users are not logged out prematurely.
+    //
+    // On Safari (and other ITP browsers) the httpOnly cookie can be blocked,
+    // so we rely on the Authorization header from localStorage. If the server
+    // is slow to respond (cold start) or the cookie is missing we fall back
+    // to decoding the JWT token so the user stays logged in on refresh.
     const authTimeout = setTimeout(() => {
-      setUser(null);
+      const storedToken = localStorage.getItem('kiwi_token');
+      if (storedToken) {
+        const decoded = decodeJwt(storedToken);
+        if (decoded && decoded.id) {
+          setUser({
+            id: decoded.id,
+            username: decoded.username,
+            role: decoded.role
+          });
+          console.log('[Auth] Recovered user from token (timeout fallback)');
+        } else {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
       setLoading(false);
-    }, 20000);
+    }, 25000);
 
     api.get('/api/auth/profile', {
-      timeout: 20000,
-      _skipRetry: true
+      timeout: 25000
     })
       .then(res => {
         setUser(res.data);
       })
-      .catch(() => {
-        // If there is a stored token but the profile call failed with a
-        // network error (server cold start), do not log the user out —
-        // let the retry/wakeup logic handle it. Only treat a definitive
-        // 401 as logged-out.
-        const isDefinitiveAuthFail = !localStorage.getItem('kiwi_token');
-        if (isDefinitiveAuthFail) {
+      .catch(async (error) => {
+        const storedToken = localStorage.getItem('kiwi_token');
+
+        if (!storedToken) {
+          // No stored token — definitive logout
           setUser(null);
+          return;
+        }
+
+        // We have a stored token. Only clear it if the server explicitly
+        // rejected it (401/403). For network errors (cold start, etc.)
+        // keep the user logged in from the token.
+        const isAuthError = error?.response?.status === 401 ||
+                            error?.response?.status === 403;
+
+        if (isAuthError) {
+          // Token is invalid/expired — try one refresh before logging out
+          try {
+            const refreshRes = await rawApi.post('/api/auth/refresh', {}, {
+              timeout: 15000,
+              _skipRetry: true,
+              headers: { Authorization: `Bearer ${storedToken}` }
+            });
+            if (refreshRes.data?.token) {
+              localStorage.setItem('kiwi_token', refreshRes.data.token);
+              const decoded = decodeJwt(refreshRes.data.token);
+              if (decoded && decoded.id) {
+                setUser(decoded);
+                return;
+              }
+            }
+          } catch (refreshError) {
+            // refresh failed — fall through to logout
+          }
+          localStorage.removeItem('kiwi_token');
+          setUser(null);
+        } else {
+          // Network error (server sleeping, timeout, etc.) with a valid token.
+          // Decode the JWT and keep the user logged in. The profile will be
+          // refreshed later when the server responds.
+          const decoded = decodeJwt(storedToken);
+          if (decoded && decoded.id) {
+            setUser({
+              id: decoded.id,
+              username: decoded.username,
+              role: decoded.role
+            });
+            console.log('[Auth] Kept user logged in via token (network error)');
+
+            // Best-effort: try to fetch full profile in the background
+            setTimeout(() => {
+              api.get('/api/auth/profile', { timeout: 15000, _skipRetry: true })
+                .then(res => {
+                  setUser(prev => ({ ...prev, ...res.data }));
+                })
+                .catch(() => {});
+            }, 5000);
+          } else {
+            setUser(null);
+          }
         }
       })
       .finally(() => {
@@ -172,6 +246,9 @@ function AppContent() {
             {/* Home page - accessible without authentication */}
             <Route path="/" element={<Home />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/livescore" element={<Livescore />} />
+            <Route path="/match/:id" element={<MatchDetails />} />
+            <Route path="/match/:id/history" element={<MatchHistory />} />
 
             {/* All other routes require authentication */}
             <Route path="/predictions" element={

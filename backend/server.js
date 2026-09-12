@@ -17,6 +17,8 @@ const vipRoutes = require('./routes/vip');
 const leagueRoutes = require('./routes/leagues');
 const fixtureRoutes = require('./routes/fixtures');
 const siteSettingsRoutes = require('./routes/siteSettings');
+const livescoreRoutes = require('./routes/livescore');
+const matchDetailsRoutes = require('./routes/matchDetails');
 const User = require('./models/User');
 const { authenticateToken } = require('./middleware/auth');
 const { requireAdmin } = require('./middleware/admin');
@@ -34,6 +36,7 @@ const {
 // Import keep-alive mechanism
 const { startKeepAlive, wakeUpHandler } = require('./keepalive');
 const { startWeeklyPredictionCron } = require('./jobs/weeklyPredictionsJob');
+const { startResultSyncCron } = require('./jobs/resultSyncJob');
 
 const app = express();
 
@@ -174,12 +177,14 @@ app.post('/api/admin/broadcast-email', authenticateToken, requireAdmin, directBr
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/matches', matchRoutes);
+app.use('/api/matches', matchDetailsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/outcomes', outcomeRoutes);
 app.use('/api/vip', vipRoutes);
 app.use('/api/leagues', leagueRoutes);
 app.use('/api/fixtures', fixtureRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
+app.use('/api/livescore', livescoreRoutes);
 
 // Legacy routes for backward compatibility
 app.use('/api', authRoutes);
@@ -223,4 +228,5 @@ app.listen(PORT, () => {
   // Start keep-alive mechanism for Render free tier
   startKeepAlive();
   startWeeklyPredictionCron();
+  startResultSyncCron();
 });

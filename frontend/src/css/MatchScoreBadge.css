@@ -1,0 +1,57 @@
+/* ===== LIVE SCORE BADGE (match cards) ===== */
+.match-score-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  margin: 0.4rem auto;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  width: fit-content;
+}
+
+.match-score-live {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.dark .match-score-live {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.match-score-final {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+.dark .match-score-final {
+  background: var(--gray-800);
+  color: var(--gray-200);
+}
+
+.match-score-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: match-score-blink 1s ease-in-out infinite;
+}
+
+.match-score-minute {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+@keyframes match-score-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.home-match-card-clickable,
+.admin-match-card-clickable {
+  cursor: pointer;
+}

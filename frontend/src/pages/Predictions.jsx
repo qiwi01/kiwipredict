@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Calendar, Crown } from 'lucide-react';
 import api from '../utils/api';
+import MatchScoreBadge from '../components/MatchScoreBadge';
+import { getMatchLink } from '../components/matchUtils';
 import '../css/Predictions.css';
 
 const formatLocalDate = (date) => {
@@ -23,6 +25,12 @@ const Predictions = () => {
   // Set default date to today
   const [selectedDate, setSelectedDate] = useState(formatLocalDate(new Date()));
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const openMatch = (match) => {
+    const link = getMatchLink(match);
+    if (link) navigate(link);
+  };
 
   // Determine prediction type from URL
   const getPredictionType = () => {
@@ -444,8 +452,10 @@ const Predictions = () => {
           filteredMatches.map((match, index) => (
             <div
               key={index}
-              className="admin-match-card"
+              onClick={() => openMatch(match)}
+              className="admin-match-card admin-match-card-clickable"
             >
+              <MatchScoreBadge match={match} />
               <div className="admin-match-header">
                 <div className="admin-match-meta">
                   <div className="admin-match-meta-item">

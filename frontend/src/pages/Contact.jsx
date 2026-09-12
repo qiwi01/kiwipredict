@@ -56,7 +56,7 @@ const faqs = [
   { q: 'How do I access VIP predictions after paying?', a: 'Once your payment is confirmed, your account is upgraded right away. Open the VIP - 99% Sure Games page from the navigation to see booking codes and selections.' },
   { q: 'Which payment methods do you accept?', a: 'Payments are processed securely through Paystack using cards or bank transfer. A payment reference is generated for every transaction.' },
   { q: 'What should I include when emailing support?', a: 'Your registered username, the email used to sign up, and the payment reference for payment-related questions. This helps us resolve issues faster.' },
-  { q: 'Is my booking code shared across bookmakers?', a: 'VIP booking codes are provided per bookmaker (SportyBet, Bet9ja, Football.com). The bet converter lets VVIP members convert codes between supported sportsbooks.' }
+  { q: 'Is my booking code shared across bookmakers?', a: 'VIP booking codes are provided per bookmaker (SportyBet, Bet9ja, Football.com). The bet converter lets VIP members convert codes between supported sportsbooks.' }
 ];
 
 const Contact = () => (

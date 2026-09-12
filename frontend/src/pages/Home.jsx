@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import { TrendingUp, Target, Zap, Calendar, ArrowRight, Shuffle, Crown, AlertCircle, ShieldCheck, Sparkles, LayoutDashboard, MessageSquareMore } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import MatchScoreBadge from '../components/MatchScoreBadge';
+import { getMatchLink } from '../components/matchUtils';
 import '../css/Home.css';
 import footballImage from '../assets/brand-logo.jpeg';
 import ballImage from '../assets/ball-logo.jpeg';
@@ -42,6 +44,12 @@ const Home = () => {
   const [converting, setConverting] = useState(false);
 
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const openMatch = (match) => {
+    const link = getMatchLink(match);
+    if (link) navigate(link);
+  };
 
   useEffect(() => {
     // Load data for all users (authenticated and non-authenticated)
@@ -389,8 +397,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Mini Bet Converter - Show for logged-in users */}
-      {user && (
+            {/* Mini Bet Converter - Show for logged-in users (VIP-only, not VVIP) */}
+      {user && user.vipTier !== 'vvip' && (
         <section className="home-converter-section">
           <div className="home-converter-container">
             <div className="home-converter-header">
@@ -529,8 +537,10 @@ const Home = () => {
             {todaysMatches.slice(0, 3).map((match, index) => (
               <div
                 key={index}
-                className={`home-match-card ${isWorldCupMatch(match) ? 'wc-match-card' : ''} ${isWorldCupMatch(match) ? 'wc-match' : ''}`}
+                onClick={() => openMatch(match)}
+                className={`home-match-card home-match-card-clickable ${isWorldCupMatch(match) ? 'wc-match-card' : ''} ${isWorldCupMatch(match) ? 'wc-match' : ''}`}
               >
+                <MatchScoreBadge match={match} />
                 {isWorldCupMatch(match) && (
                   <div className="home-value-badge" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
                     <span className="wc-card-badge-icon">🏆</span>
@@ -700,8 +710,10 @@ const Home = () => {
             {vipMatches.map((match, index) => (
               <div
                 key={index}
-                className={`home-match-card home-vip-shadow ${isWorldCupMatch(match) ? 'wc-match-card' : ''}`}
+                onClick={() => openMatch(match)}
+                className={`home-match-card home-match-card-clickable home-vip-shadow ${isWorldCupMatch(match) ? 'wc-match-card' : ''}`}
               >
+                <MatchScoreBadge match={match} />
                 {isWorldCupMatch(match) && (
                   <div className="home-value-badge" style={{background: 'linear-gradient(135deg, #d4af37, #e6c35c)', color: '#1a1a2e', position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', zIndex: 2}}>
                     <span className="wc-card-badge-icon">🏆</span>

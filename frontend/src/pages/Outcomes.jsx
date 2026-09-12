@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Calendar, TrendingUp, Target, Star, CheckCircle, XCircle, ChevronLeft, ChevronRight, Crown } from 'lucide-react';
 import api from '../utils/api';
 import '../css/Predictions.css';
@@ -14,6 +14,7 @@ const Outcomes = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [activeSection, setActiveSection] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLeague, setSelectedLeague] = useState('all');
   const calendarInputRef = useRef(null);
 
   useEffect(() => {
@@ -169,7 +170,23 @@ const Outcomes = () => {
     { id: 'vip', label: 'VIP Predictions', icon: Crown }
   ];
 
+  // Compute available leagues from outcomes data for the filter dropdown
+  const availableLeagues = useMemo(() => {
+    const leagues = new Set();
+    Object.values(outcomesData).forEach(section => {
+      if (Array.isArray(section)) {
+        section.forEach(match => {
+          if (match.league) leagues.add(match.league);
+        });
+      }
+    });
+    return Array.from(leagues).sort();
+  }, [outcomesData]);
+
   const currentData = getCurrentDisplayData().filter(match => {
+    // League filter — hide matches from non-selected leagues
+    if (selectedLeague !== 'all' && match.league !== selectedLeague) return false;
+    // Search filter
     if (!searchTerm.trim()) return true;
     const term = searchTerm.trim().toLowerCase();
     return String(match.homeTeam || '').toLowerCase().includes(term) ||
@@ -253,6 +270,17 @@ const Outcomes = () => {
       </div>
 
       <div className="predictions-filters">
+        <select
+          value={selectedLeague}
+          onChange={(e) => setSelectedLeague(e.target.value)}
+          className="predictions-league-select outcomes-league-select"
+        >
+          <option value="all">All Leagues</option>
+          {availableLeagues.map(league => (
+            <option key={league} value={league}>{league}</option>
+          ))}
+        </select>
+
         <input
           type="search"
           value={searchTerm}

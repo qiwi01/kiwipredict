@@ -163,7 +163,7 @@ router.get('/', optionalAuth, async (req, res) => {
 
     const adminMatches = await Match.find(query)
       .sort({ date: 1 })
-      .select('homeTeam awayTeam date league predictions bookmakerOdds gameTier predictionStatus');
+      .select('homeTeam awayTeam date league predictions bookmakerOdds gameTier predictionStatus homeGoals awayGoals status minute venue homeTeamId awayTeamId homeCrest awayCrest');
 
     const liveFixtures = await fetchMatchesByDateRange(fromDate, toDate);
     const adminByKey = new Map();
@@ -192,10 +192,26 @@ router.get('/', optionalAuth, async (req, res) => {
         awayTeam: {
           name: fixture.awayTeam
         },
+        homeTeamId: fixture.homeTeamId,
+        awayTeamId: fixture.awayTeamId,
+        homeCrest: fixture.homeCrest,
+        awayCrest: fixture.awayCrest,
         competition: {
           name: fixture.competition
         },
+        competitionCode: fixture.competitionCode,
         status: fixture.status,
+        minute: fixture.minute,
+        venue: fixture.venue,
+        score: fixture.score
+          ? {
+              fullTime: fixture.score.fullTime,
+              halfTime: fixture.score.halfTime,
+              winner: fixture.score.winner
+            }
+          : (adminMatch && (adminMatch.homeGoals !== null || adminMatch.awayGoals !== null)
+              ? { fullTime: { home: adminMatch.homeGoals, away: adminMatch.awayGoals } }
+              : null),
         source: adminMatch ? 'admin-live' : 'live',
         predictions: visiblePredictions,
         bookmakerOdds: adminMatch?.bookmakerOdds,
@@ -209,6 +225,16 @@ router.get('/', optionalAuth, async (req, res) => {
       homeTeam: { name: match.homeTeam },
       awayTeam: { name: match.awayTeam },
       competition: { name: match.league },
+      homeTeamId: match.homeTeamId,
+      awayTeamId: match.awayTeamId,
+      homeCrest: match.homeCrest,
+      awayCrest: match.awayCrest,
+      status: match.status || 'SCHEDULED',
+      minute: match.minute,
+      venue: match.venue,
+      score: (match.homeGoals !== null && match.homeGoals !== undefined)
+        ? { fullTime: { home: match.homeGoals, away: match.awayGoals } }
+        : null,
       source: 'admin',
       predictions: formatPredictionsForTier(match.predictions || [], userTier, match.gameTier),
       bookmakerOdds: match.bookmakerOdds,

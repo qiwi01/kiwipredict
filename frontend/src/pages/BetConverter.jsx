@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import { ArrowRight, Shuffle, Crown, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -7,6 +8,7 @@ import '../css/Predictions.css';
 
 const BetConverter = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [bookmakers, setBookmakers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [converting, setConverting] = useState(false);
@@ -18,6 +20,13 @@ const BetConverter = () => {
   });
 
   const [conversionResult, setConversionResult] = useState(null);
+
+  // Bet code converter is VIP-only — VVIP members do NOT have access.
+  if (user && user.vipTier === 'vvip') {
+    toast.error('Bet code converter is only available for VIP members (not VVIP).');
+    navigate('/vip', { replace: true });
+    return null;
+  }
 
   useEffect(() => {
     fetchBookmakers();

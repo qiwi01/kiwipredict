@@ -30,6 +30,11 @@ const VIPPaymentSchema = new mongoose.Schema({
     enum: ['vip', 'vvip'],
     default: 'vip'
   },
+  plan: {
+    type: String,
+    enum: ['monthly', 'yearly'],
+    default: 'monthly'
+  },
   paymentDate: {
     type: Date,
     default: Date.now

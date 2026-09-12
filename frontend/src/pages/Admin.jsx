@@ -32,6 +32,8 @@ const Admin = () => {
   });
   const [selectedOutcomes, setSelectedOutcomes] = useState({});
   const [outcomeSearchTerm, setOutcomeSearchTerm] = useState('');
+  const [outcomeLeagueFilter, setOutcomeLeagueFilter] = useState('all');
+  const [outcomeDateFilter, setOutcomeDateFilter] = useState('');
   const [broadcastEmail, setBroadcastEmail] = useState({ subject: '', message: '' });
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [vipPayments, setVipPayments] = useState([]);
@@ -334,6 +336,17 @@ const Admin = () => {
   };
 
   const filteredOutcomeGames = games.filter(game => {
+    // League filter
+    const gameLeague = game.competition?.name || game.league || '';
+    if (outcomeLeagueFilter !== 'all' && gameLeague !== outcomeLeagueFilter) return false;
+
+    // Date filter
+    if (outcomeDateFilter) {
+      const gameDate = new Date(game.utcDate).toISOString().split('T')[0];
+      if (gameDate !== outcomeDateFilter) return false;
+    }
+
+    // Search filter
     if (!outcomeSearchTerm.trim()) return true;
     const term = outcomeSearchTerm.trim().toLowerCase();
     return game.homeTeam?.name?.toLowerCase().includes(term) ||
@@ -2068,13 +2081,44 @@ Chelsea FC vs Arsenal FC | 2024-03-16 | 17:30
               Mark predictions as win or loss to update user outcomes and statistics
             </p>
 
-            <input
-              type="search"
-              value={outcomeSearchTerm}
-              onChange={(e) => setOutcomeSearchTerm(e.target.value)}
-              className="admin-search-input"
-              placeholder="Search outcomes by team or league..."
-            />
+            <div className="admin-outcomes-filters">
+              <select
+                value={outcomeLeagueFilter}
+                onChange={(e) => setOutcomeLeagueFilter(e.target.value)}
+                className="admin-search-input"
+              >
+                <option value="all">All Leagues</option>
+                {[...new Set(games.map(game => game.competition?.name || game.league).filter(Boolean))].sort().map(league => (
+                  <option key={league} value={league}>{league}</option>
+                ))}
+              </select>
+
+              <input
+                type="date"
+                value={outcomeDateFilter}
+                onChange={(e) => setOutcomeDateFilter(e.target.value)}
+                className="admin-search-input"
+                aria-label="Filter outcomes by date"
+              />
+
+              {outcomeDateFilter && (
+                <button
+                  type="button"
+                  onClick={() => setOutcomeDateFilter('')}
+                  className="admin-outcomes-filter-reset"
+                >
+                  Clear date
+                </button>
+              )}
+
+              <input
+                type="search"
+                value={outcomeSearchTerm}
+                onChange={(e) => setOutcomeSearchTerm(e.target.value)}
+                className="admin-search-input"
+                placeholder="Search outcomes by team or league..."
+              />
+            </div>
 
             {loading ? (
               <div className="predictions-loading">

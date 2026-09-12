@@ -1,0 +1,213 @@
+/* ===== LIVE SCORE PAGE ===== */
+.livescore-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-12);
+}
+
+.livescore-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.livescore-title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--gray-900);
+  margin-bottom: var(--space-2);
+}
+
+.dark .livescore-title {
+  color: var(--gray-100);
+}
+
+.livescore-subtitle {
+  color: var(--gray-600);
+  font-size: var(--font-size-base);
+}
+
+.dark .livescore-subtitle {
+  color: var(--gray-400);
+}
+
+.livescore-live-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  margin-right: 0.4rem;
+  animation: match-score-blink 1s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+.livescore-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-bottom: var(--space-6);
+}
+
+.livescore-tab {
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--gray-300);
+  background: var(--gray-50);
+  color: var(--gray-700);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.livescore-tab:hover {
+  border-color: var(--primary-500);
+}
+
+.livescore-tab.active {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  border-color: var(--primary-500);
+  color: #fff;
+}
+
+.livescore-search {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--gray-300);
+  background: var(--gray-50);
+  color: var(--gray-900);
+  min-width: 220px;
+}
+
+.dark .livescore-search {
+  background: var(--gray-900);
+  color: var(--gray-100);
+  border-color: var(--gray-700);
+}
+
+.livescore-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ls-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  color: var(--gray-900);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.ls-card:hover {
+  border-color: var(--primary-500);
+  transform: translateY(-1px);
+}
+
+.dark .ls-card {
+  background: var(--gray-900);
+  border-color: var(--gray-800);
+  color: var(--gray-100);
+}
+
+.ls-league {
+  font-size: 0.8rem;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dark .ls-league {
+  color: var(--gray-400);
+}
+
+.ls-teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ls-team {
+  font-weight: var(--font-weight-semibold);
+}
+
+.ls-home {
+  text-align: right;
+}
+
+.ls-away {
+  text-align: left;
+}
+
+.ls-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+}
+
+.ls-score {
+  font-weight: var(--font-weight-bold);
+  font-size: 1.25rem;
+}
+
+.ls-score.ls-live {
+  color: #ef4444;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.ls-score small {
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.ls-time {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+.dark .ls-time {
+  color: var(--gray-400);
+}
+
+.livescore-empty {
+  text-align: center;
+  padding: var(--space-10);
+  color: var(--gray-500);
+}
+
+.livescore-error {
+  text-align: center;
+  padding: var(--space-6);
+  color: #ef4444;
+}
+
+.livescore-updated {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 560px) {
+  .ls-team {
+    font-size: 0.9rem;
+  }
+  .ls-center {
+    min-width: 70px;
+  }
+}

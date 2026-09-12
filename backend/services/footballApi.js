@@ -3,76 +3,125 @@ const axios = require('axios');
 // Football-data.org API v4
 const API_BASE_URL = 'https://api.football-data.org/v4';
 const API_KEY = process.env.FOOTBALL_API_KEY || '';
-const PRIORITY_COMPETITIONS = (process.env.FOOTBALL_PRIORITY_COMPETITIONS || 'PL,DED,PD,SA,BL1,FL1,ELC,CL')
-  .split(',')
-  .map(code => code.trim())
-  .filter(Boolean);
 
-// Cache for fetched fixtures to avoid repeated API calls
-let fixturesCache = {
-  data: null,
-  timestamp: null,
-  date: null
+// Paid tier allows ~30 calls/minute. We leave headroom below the limit so
+// concurrent or spiky traffic never trips a 429.
+const RATE_LIMIT_PER_MINUTE = Math.max(1, parseInt(process.env.FOOTBALL_RATE_LIMIT_PER_MINUTE || '26', 10));
+const MAX_CONCURRENT = 3;
+
+// In-memory cache keyed by endpoint+params. TTLs vary with how often data changes.
+const cache = new Map();
+const TTL = {
+  live: 30 * 1000,
+  fixtures: 5 * 60 * 1000,
+  finished: 15 * 60 * 1000,
+  stats: 6 * 60 * 60 * 1000
 };
 
-const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+// Sliding window for rate limiting plus a simple concurrency cap.
+let callWindow = [];
+let inFlight = 0;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const throttle = async () => {
+  const now = Date.now();
+  callWindow = callWindow.filter((ts) => now - ts < 60 * 1000);
+
+  while (callWindow.length >= RATE_LIMIT_PER_MINUTE) {
+    const waitMs = 60 * 1000 - (now - callWindow[0]) + 100;
+    await sleep(waitMs);
+    callWindow = callWindow.filter((ts) => Date.now() - ts < 60 * 1000);
+  }
+
+  while (inFlight >= MAX_CONCURRENT) {
+    await sleep(120);
+  }
+};
+
+const logRateLimit = (response) => {
+  const used = response?.headers?.['x-requestcounter-used'];
+  if (used !== undefined) console.log(`[FootballAPI] API call ${used}/${RATE_LIMIT_PER_MINUTE}`);
+};
+
+const handleApiError = (path, error) => {
+  const status = error.response?.status;
+  if (status === 429) console.warn('[FootballAPI] Rate limited (429).');
+  else if (status === 403) console.warn('[FootballAPI] Forbidden (403): key invalid or resource not in current plan.');
+  else if (status === 404) console.warn(`[FootballAPI] Not found (404): ${path}`);
+  else console.warn(`[FootballAPI] Request failed for ${path}:`, error.message);
+};
+
+// Core GET helper with cache + throttling. Returns null on failure.
+const apiGet = async (path, params = {}, { cacheKey, ttl, fallback } = {}) => {
+  const key = cacheKey || `${path}|${JSON.stringify(params)}`;
+
+  if (ttl && cache.has(key)) {
+    const entry = cache.get(key);
+    if (Date.now() - entry.timestamp < ttl) return entry.data;
+  }
+
+  if (!API_KEY) {
+    console.log('[FootballAPI] No API key configured. Returning empty results.');
+    return fallback !== undefined ? fallback : null;
+  }
+
+  await throttle();
+  inFlight += 1;
+  try {
+    const response = await axios.get(`${API_BASE_URL}${path}`, {
+      params,
+      headers: { 'X-Auth-Token': API_KEY },
+      timeout: 15000
+    });
+    callWindow.push(Date.now());
+    logRateLimit(response);
+    if (ttl) cache.set(key, { data: response.data, timestamp: Date.now() });
+    return response.data;
+  } catch (error) {
+    callWindow.push(Date.now());
+    handleApiError(path, error);
+    return fallback !== undefined ? fallback : null;
+  } finally {
+    inFlight -= 1;
+  }
+};
 
 const transformMatch = (match) => ({
   id: match.id,
   homeTeam: match.homeTeam?.name || 'Unknown Home',
   awayTeam: match.awayTeam?.name || 'Unknown Away',
+  homeTeamId: match.homeTeam?.id ?? null,
+  awayTeamId: match.awayTeam?.id ?? null,
+  homeCrest: match.homeTeam?.crest || '',
+  awayCrest: match.awayTeam?.crest || '',
   competition: match.competition?.name || 'Unknown League',
   competitionCode: match.competition?.code || '',
+  competitionId: match.competition?.id ?? null,
   area: match.area?.name || '',
   utcDate: match.utcDate,
   status: match.status,
   stage: match.stage,
   group: match.group,
-  homeCrest: match.homeTeam?.crest || '',
-  awayCrest: match.awayTeam?.crest || '',
+  matchday: match.matchday,
+  venue: match.venue,
+  minute: match.minute,
+  score: match.score
+    ? {
+        winner: match.score.winner || null,
+        duration: match.score.duration || null,
+        fullTime: {
+          home: match.score.fullTime?.home ?? null,
+          away: match.score.fullTime?.away ?? null
+        },
+        halfTime: {
+          home: match.score.halfTime?.home ?? null,
+          away: match.score.halfTime?.away ?? null
+        }
+      }
+    : null,
   lastUpdated: match.lastUpdated
 });
-
-const getFixtureKey = (fixture) => [
-  fixture.utcDate,
-  fixture.homeTeam,
-  fixture.awayTeam,
-  fixture.competitionCode || fixture.competition
-].map(value => String(value || '').trim().toLowerCase()).join('|');
-
-const mergeFixtures = (...fixtureGroups) => {
-  const fixturesByKey = new Map();
-
-  fixtureGroups.flat().forEach(fixture => {
-    const key = getFixtureKey(fixture);
-    if (!fixturesByKey.has(key)) fixturesByKey.set(key, fixture);
-  });
-
-  return Array.from(fixturesByKey.values())
-    .sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
-};
-
-const fetchCompetitionMatches = async (competitionCode, from, to) => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/competitions/${competitionCode}/matches`, {
-      params: {
-        dateFrom: from,
-        dateTo: to
-      },
-      headers: {
-        'X-Auth-Token': API_KEY
-      },
-      timeout: 10000
-    });
-
-    const transformed = (response.data.matches || []).map(transformMatch);
-    console.log(`[FootballAPI] Found ${transformed.length} ${competitionCode} matches from ${from} to ${to}`);
-    return transformed;
-  } catch (error) {
-    console.warn(`[FootballAPI] Could not fetch ${competitionCode} matches:`, error.response?.status || error.message);
-    return [];
-  }
-};
 
 /**
  * Fetch matches from football-data.org API for a specific date.
@@ -83,60 +132,14 @@ const fetchCompetitionMatches = async (competitionCode, from, to) => {
  */
 async function fetchMatchesByDate(date) {
   const targetDate = date || new Date().toISOString().split('T')[0];
-
-  // Check cache first
-  if (fixturesCache.data && fixturesCache.date === targetDate &&
-      fixturesCache.timestamp && (Date.now() - fixturesCache.timestamp < CACHE_DURATION_MS)) {
-    console.log(`[FootballAPI] Returning cached fixtures for ${targetDate}`);
-    return fixturesCache.data;
-  }
-
-  if (!API_KEY) {
-    console.log('[FootballAPI] No API key configured. Returning empty results.');
-    return [];
-  }
-
-  try {
-    console.log(`[FootballAPI] Fetching matches for ${targetDate}...`);
-
-    const response = await axios.get(`${API_BASE_URL}/matches`, {
-      params: {
-        dateFrom: targetDate,
-        dateTo: targetDate
-      },
-      headers: {
-        'X-Auth-Token': API_KEY
-      },
-      timeout: 10000
-    });
-
-    const generalMatches = (response.data.matches || []).map(transformMatch);
-    const competitionMatches = (await Promise.all(
-      PRIORITY_COMPETITIONS.map(code => fetchCompetitionMatches(code, targetDate, targetDate))
-    )).flat();
-    const transformed = mergeFixtures(generalMatches, competitionMatches);
-    console.log(`[FootballAPI] Found ${transformed.length} total matches for ${targetDate}`);
-
-    fixturesCache = {
-      data: transformed,
-      timestamp: Date.now(),
-      date: targetDate
-    };
-
-    return transformed;
-  } catch (error) {
-    console.error('[FootballAPI] Error fetching matches:', error.message);
-
-    if (error.response?.status === 429) {
-      console.warn('[FootballAPI] Rate limited. Returning empty results.');
-    } else if (error.response?.status === 403) {
-      console.warn('[FootballAPI] API key invalid or insufficient permissions.');
-    } else if (error.response?.status === 404) {
-      console.warn('[FootballAPI] Endpoint not found. Returning empty results.');
-    }
-
-    return [];
-  }
+  const data = await apiGet('/matches', { dateFrom: targetDate, dateTo: targetDate }, {
+    cacheKey: `matches:${targetDate}`,
+    ttl: TTL.fixtures,
+    fallback: { matches: [] }
+  });
+  const transformed = (data?.matches || []).map(transformMatch);
+  console.log(`[FootballAPI] Found ${transformed.length} total matches for ${targetDate}`);
+  return transformed;
 }
 
 /**
@@ -145,52 +148,99 @@ async function fetchMatchesByDate(date) {
 async function fetchMatchesByDateRange(fromDate, toDate) {
   const from = fromDate || new Date().toISOString().split('T')[0];
   const to = toDate || from;
+  const data = await apiGet('/matches', { dateFrom: from, dateTo: to }, {
+    cacheKey: `matches:${from}:${to}`,
+    ttl: TTL.fixtures,
+    fallback: { matches: [] }
+  });
+  const transformed = (data?.matches || []).map(transformMatch);
+  console.log(`[FootballAPI] Found ${transformed.length} total matches from ${from} to ${to}`);
+  return transformed;
+}
 
-  if (!API_KEY) {
-    console.log('[FootballAPI] No API key configured. Returning empty results.');
-    return [];
-  }
+/**
+ * Fetch currently live matches (IN_PLAY + PAUSED).
+ */
+async function fetchLiveMatches() {
+  const data = await apiGet('/matches', { status: 'LIVE' }, {
+    cacheKey: 'matches:live',
+    ttl: TTL.live,
+    fallback: { matches: [] }
+  });
+  return (data?.matches || []).map(transformMatch);
+}
 
-  try {
-    console.log(`[FootballAPI] Fetching matches from ${from} to ${to}...`);
+/**
+ * Fetch the full detail of a single match (lineups, goals, bookings, subs, odds...).
+ */
+async function fetchMatchById(id) {
+  return apiGet(`/matches/${id}`, {}, {
+    cacheKey: `match:${id}`,
+    ttl: TTL.live,
+    fallback: null
+  });
+}
 
-    const response = await axios.get(`${API_BASE_URL}/matches`, {
-      params: {
-        dateFrom: from,
-        dateTo: to
-      },
-      headers: {
-        'X-Auth-Token': API_KEY
-      },
-      timeout: 10000
-    });
+/**
+ * Fetch head-to-head history for a fixture.
+ */
+async function fetchHeadToHead(id, limit = 10) {
+  return apiGet(`/matches/${id}/head2head`, { limit }, {
+    cacheKey: `h2h:${id}:${limit}`,
+    ttl: TTL.stats,
+    fallback: { matches: [], aggregates: {} }
+  });
+}
 
-    const generalMatches = (response.data.matches || []).map(transformMatch);
-    const competitionMatches = (await Promise.all(
-      PRIORITY_COMPETITIONS.map(code => fetchCompetitionMatches(code, from, to))
-    )).flat();
-    const transformed = mergeFixtures(generalMatches, competitionMatches);
-    console.log(`[FootballAPI] Found ${transformed.length} total matches from ${from} to ${to}`);
+/**
+ * Fetch a team's most recent finished matches (used for form + history).
+ */
+async function fetchTeamRecent(teamId, limit = 5) {
+  return apiGet(`/teams/${teamId}/matches`, { status: 'FINISHED', limit }, {
+    cacheKey: `team:${teamId}:finished:${limit}`,
+    ttl: TTL.finished,
+    fallback: { matches: [] }
+  });
+}
 
-    return transformed;
-  } catch (error) {
-    console.error('[FootballAPI] Error fetching matches by range:', error.message);
+/**
+ * Fetch a team profile including its squad.
+ */
+async function fetchTeamSquad(teamId) {
+  return apiGet(`/teams/${teamId}`, {}, {
+    cacheKey: `team:${teamId}:squad`,
+    ttl: TTL.stats,
+    fallback: null
+  });
+}
 
-    if (error.response?.status === 429) {
-      console.warn('[FootballAPI] Rate limited. Returning empty results.');
-    } else if (error.response?.status === 403) {
-      console.warn('[FootballAPI] API key invalid. Returning empty results.');
-    }
+/**
+ * Fetch league standings for a competition code.
+ */
+async function fetchStandings(code) {
+  return apiGet(`/competitions/${code}/standings`, {}, {
+    cacheKey: `standings:${code}`,
+    ttl: TTL.stats,
+    fallback: null
+  });
+}
 
-    return [];
-  }
+/**
+ * Fetch top scorers for a competition.
+ */
+async function fetchScorers(code, limit = 10) {
+  return apiGet(`/competitions/${code}/scorers`, { limit }, {
+    cacheKey: `scorers:${code}:${limit}`,
+    ttl: TTL.stats,
+    fallback: null
+  });
 }
 
 /**
  * Clear the fixtures cache
  */
 function clearFixturesCache() {
-  fixturesCache = { data: null, timestamp: null, date: null };
+  cache.clear();
   console.log('[FootballAPI] Cache cleared');
 }
 
@@ -204,6 +254,13 @@ function isApiConfigured() {
 module.exports = {
   fetchMatchesByDate,
   fetchMatchesByDateRange,
+  fetchLiveMatches,
+  fetchMatchById,
+  fetchHeadToHead,
+  fetchTeamRecent,
+  fetchTeamSquad,
+  fetchStandings,
+  fetchScorers,
   clearFixturesCache,
   isApiConfigured
 };

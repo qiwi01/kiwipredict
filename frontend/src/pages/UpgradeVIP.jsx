@@ -41,11 +41,10 @@ const tiers = [
     tagline: 'The complete premium experience',
     prices: { monthly: '30,000', yearly: '300,000' },
     icon: Trophy,
-    featured: true,
+        featured: true,
     features: [
       '3, 5, 10 & 20 odds selections daily',
       'Top picks predictions (exclusive)',
-      'Bet code converter access',
       'All VIP predictions & booking codes',
       'Priority customer support'
     ]

@@ -5,6 +5,7 @@ const { authenticateToken } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/admin');
 const { sendBroadcastEmail } = require('../services/emailNotifications');
 const { generateWeeklyPredictions, getWeekRange } = require('../jobs/weeklyPredictionsJob');
+const { syncFinishedResults } = require('../jobs/resultSyncJob');
 
 const router = express.Router();
 
@@ -150,6 +151,23 @@ router.post('/generate-weekly-predictions', authenticateToken, requireAdmin, asy
     });
   } catch (err) {
     console.error('Manual weekly prediction generation error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Manually sync finished match results + outcomes from football-data.org
+router.post('/sync-results', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { overwrite = false, limit } = req.body || {};
+    const summary = await syncFinishedResults({ overwrite, limit: limit ? parseInt(limit, 10) : 100 });
+
+    res.json({
+      success: true,
+      message: `Synced ${summary.synced} matches (${summary.noResult} without result, ${summary.errors} errors)`,
+      summary
+    });
+  } catch (err) {
+    console.error('Manual result sync error:', err);
     res.status(500).json({ error: err.message });
   }
 });
