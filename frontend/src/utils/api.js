@@ -142,11 +142,14 @@ api.interceptors.response.use(
             }
           }
 
-          // Clear stored data and redirect only after refresh failed
+          // Clear stored data and redirect only after refresh failed.
+          // Skip the hard redirect on /admin — the router shows the dedicated
+          // AdminLogin page there instead of the regular user login.
           localStorage.removeItem('kiwi_token');
           localStorage.removeItem('user');
           if (!window.location.pathname.includes('/login') &&
-              !window.location.pathname.includes('/register')) {
+              !window.location.pathname.includes('/register') &&
+              !window.location.pathname.startsWith('/admin')) {
             window.location.href = '/login';
           }
         }
