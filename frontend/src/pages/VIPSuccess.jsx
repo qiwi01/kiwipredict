@@ -176,7 +176,7 @@ const VIPSuccess = () => {
             View {isVVIP ? 'VVIP' : 'VIP'} Predictions
             <ArrowRight size={18} />
           </Link>
-          {!isVVIP && (
+          {isVVIP && (
           <Link to="/vip/converter" className="vip-action-btn secondary">
             <Star size={18} />
             Bet Code Converter

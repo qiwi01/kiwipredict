@@ -27,7 +27,7 @@
 .dark .profile-announcement-card {
   background: linear-gradient(135deg, #3f2f08 0%, #6b4e0e 52%, #2b2109 100%) !important;
   border-color: rgba(246, 211, 101, 0.24) !important;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+  box-shadow: none !important;
 }
 
 .dark .profile-announcement-label,

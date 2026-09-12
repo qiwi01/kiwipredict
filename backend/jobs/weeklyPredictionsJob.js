@@ -160,7 +160,7 @@ const generateWeeklyPredictions = async ({ from, to, days, overwrite = false } =
           competitionCode: fixture.competitionCode,
           apiSource: 'football-data.org',
           gameTier: 'none',
-          predictionStatus: 'pending_review'
+          predictionStatus: 'approved'
         });
         summary.created += 1;
       } else {
@@ -174,7 +174,7 @@ const generateWeeklyPredictions = async ({ from, to, days, overwrite = false } =
       match.predictionBatchId = batchId;
       match.predictionsGeneratedAt = generated.generatedAt;
       match.predictionsGeneratedBy = generated.modelVersion;
-      match.predictionStatus = 'pending_review';
+      match.predictionStatus = 'approved';
       match.predictionsApprovedAt = null;
       match.predictionsApprovedBy = null;
       match.homeStrength = Math.round(generated.homeExpectedGoals * 30);

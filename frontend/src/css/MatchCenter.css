@@ -301,3 +301,18 @@
   padding: var(--space-10);
   color: var(--gray-500);
 }
+
+/* Dark-mode contrast fixes for badges/status owned by the match pages */
+.dark .mc-status.final {
+  background: var(--gray-800);
+  color: var(--gray-300);
+}
+
+.dark .mc-badge.draw {
+  background: var(--gray-800);
+  color: var(--gray-300);
+}
+
+.dark .mc-event-min {
+  color: var(--primary-400);
+}

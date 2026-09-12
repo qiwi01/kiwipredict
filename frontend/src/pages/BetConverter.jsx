@@ -21,9 +21,9 @@ const BetConverter = () => {
 
   const [conversionResult, setConversionResult] = useState(null);
 
-  // Bet code converter is VIP-only — VVIP members do NOT have access.
-  if (user && user.vipTier === 'vvip') {
-    toast.error('Bet code converter is only available for VIP members (not VVIP).');
+  // Bet code converter is VVIP-only.
+  if (!user || user.vipTier !== 'vvip') {
+    toast.error('Bet code converter is only available for VVIP members. Upgrade to VVIP to access this feature.');
     navigate('/vip', { replace: true });
     return null;
   }

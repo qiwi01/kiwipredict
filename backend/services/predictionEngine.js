@@ -1,7 +1,7 @@
 const { probabilitiesFromRatings, formToRating } = require('./eloService');
 
 const MODEL_VERSION = 'kiwi-ai-v3.0';
-const MIN_CONFIDENCE = Number(process.env.AI_MIN_CONFIDENCE || 50);
+const MIN_CONFIDENCE = Number(process.env.AI_MIN_CONFIDENCE || 65);
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 

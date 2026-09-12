@@ -404,13 +404,12 @@ router.put('/toggle-vip/:userId', authenticateToken, requireAdmin, async (req, r
 // Bet Converter - VIP Only
 router.post('/convert-booking-code', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
-    // Bet code converter is VIP-only — VVIP members do NOT have access.
+    // Bet code converter is VVIP-only.
     const user = await User.findById(req.user.id).select('vipTier vipExpiry');
-    if (!user.vipTier || user.vipTier === 'none' || user.vipTier === 'vvip' ||
-        (user.vipExpiry && user.vipExpiry < new Date())) {
+    if (user.vipTier !== 'vvip' || (user.vipExpiry && user.vipExpiry < new Date())) {
       return res.status(403).json({
         success: false,
-        error: 'Bet code converter is only available for VIP members (not VVIP). Upgrade to VIP to access this feature.'
+        error: 'Bet code converter is only available for VVIP members. Upgrade to VVIP to access this feature.'
       });
     }
 
@@ -456,13 +455,12 @@ router.post('/convert-booking-code', authenticateToken, enforceVipExpiry, async 
 // Get available bookmakers for conversion
 router.get('/bookmakers', authenticateToken, enforceVipExpiry, async (req, res) => {
   try {
-    // Bet code converter is VIP-only — VVIP members do NOT have access.
+    // Bet code converter is VVIP-only.
     const user = await User.findById(req.user.id).select('vipTier vipExpiry');
-    if (!user.vipTier || user.vipTier === 'none' || user.vipTier === 'vvip' ||
-        (user.vipExpiry && user.vipExpiry < new Date())) {
+    if (user.vipTier !== 'vvip' || (user.vipExpiry && user.vipExpiry < new Date())) {
       return res.status(403).json({
         success: false,
-        error: 'Bet code converter is only available for VIP members (not VVIP). Upgrade to VIP to access this feature.'
+        error: 'Bet code converter is only available for VVIP members. Upgrade to VVIP to access this feature.'
       });
     }
 

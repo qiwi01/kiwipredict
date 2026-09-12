@@ -308,7 +308,7 @@ const Profile = () => {
           </div>
           <div className="profile-summary-mini-actions">
             <Link to="/outcomes">View outcomes</Link>
-            {user.vipTier !== 'vvip' && (
+            {user.vipTier === 'vvip' && (
               <Link to="/vip/converter">Bet converter</Link>
             )}
           </div>
