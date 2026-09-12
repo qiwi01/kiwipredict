@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import api from '../utils/api';
 import { isLive } from '../components/matchUtils';
+import Loading from '../components/Loading';
 import '../css/MatchCenter.css';
 
 const formatDate = (utc) => (utc ? new Date(utc).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' }) : '');
@@ -67,7 +68,7 @@ const MatchHistory = () => {
     fetchHistory();
   }, [fetchHistory]);
 
-  if (loading) return <div className="mc-container"><div className="mc-loading">Loading match data…</div></div>;
+  if (loading) return <div className="mc-container"><Loading label="Loading match data…" /></div>;
   if (error || !data) return <div className="mc-container"><div className="mc-error">{error || 'Match not found'}</div></div>;
 
   const { match, head2head, homeRecent, awayRecent, standings, scorers } = data;

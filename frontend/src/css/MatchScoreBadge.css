@@ -28,11 +28,6 @@
   color: var(--gray-700);
 }
 
-.dark .match-score-final {
-  background: var(--gray-800);
-  color: var(--gray-200);
-}
-
 .match-score-pulse {
   width: 8px;
   height: 8px;

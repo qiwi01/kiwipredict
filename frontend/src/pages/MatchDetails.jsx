@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, MapPin, Clock } from 'lucide-react';
 import api from '../utils/api';
 import { isLive } from '../components/matchUtils';
+import Loading from '../components/Loading';
 import '../css/MatchCenter.css';
 
 const formatDate = (utc) => (utc ? new Date(utc).toLocaleString([], {
@@ -35,6 +36,27 @@ const buildTimeline = (match) => {
     team: s.team?.name || ''
   }));
   return events.sort((a, b) => (a.minute ?? 0) - (b.minute ?? 0));
+};
+
+const isRedCard = (card) => String(card || '').toUpperCase().includes('RED');
+
+const countByTeam = (events, teamId) => (events || []).filter((e) => e.team?.id === teamId).length;
+
+const computeTeamStats = (match) => {
+  const homeId = match.homeTeam?.id;
+  const awayId = match.awayTeam?.id;
+  const fullTime = match.score?.fullTime;
+  const bookings = match.bookings || [];
+  const subs = match.substitutions || [];
+  const yellows = bookings.filter((b) => !isRedCard(b.card));
+  const reds = bookings.filter((b) => isRedCard(b.card));
+
+  return [
+    { label: 'Goals', home: fullTime?.home ?? null, away: fullTime?.away ?? null },
+    { label: 'Yellow cards', home: countByTeam(yellows, homeId), away: countByTeam(yellows, awayId) },
+    { label: 'Red cards', home: countByTeam(reds, homeId), away: countByTeam(reds, awayId) },
+    { label: 'Substitutions', home: countByTeam(subs, homeId), away: countByTeam(subs, awayId) }
+  ];
 };
 
 const LineupPanel = ({ team, side }) => {
@@ -97,7 +119,7 @@ const MatchDetails = () => {
     return () => clearInterval(interval);
   }, [fetchMatch]);
 
-  if (loading) return <div className="mc-container"><div className="mc-loading">Loading match…</div></div>;
+  if (loading) return <div className="mc-container"><Loading label="Loading live match…" /></div>;
   if (error || !match) return <div className="mc-container"><div className="mc-error">{error || 'Match not found'}</div></div>;
 
   const live = isLive(match.status);
@@ -105,6 +127,7 @@ const MatchDetails = () => {
   const halfTime = match.score?.halfTime;
   const timeline = buildTimeline(match);
   const hasLineups = (match.homeTeam?.lineup?.length || match.awayTeam?.lineup?.length) > 0;
+  const stats = computeTeamStats(match);
   return (
     <div className="mc-container">
       <button className="mc-back" onClick={() => navigate(-1)}>
@@ -146,6 +169,19 @@ const MatchDetails = () => {
               <Clock size={14} /> Ref: {match.referees.find((r) => r.type === 'REFEREE')?.name || match.referees[0].name}
             </span>
           )}
+        </div>
+      </div>
+
+      <div className="mc-section">
+        <h2 className="mc-section-title">Match statistics</h2>
+        <div className="mc-panel">
+          {stats.map((stat, index) => (
+            <div className="mc-stats-row" key={index}>
+              <span className="mc-stat-home">{stat.home ?? '—'}</span>
+              <span className="mc-stat-label">{stat.label}</span>
+              <span className="mc-stat-away">{stat.away ?? '—'}</span>
+            </div>
+          ))}
         </div>
       </div>
 

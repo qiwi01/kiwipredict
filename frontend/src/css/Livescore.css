@@ -17,17 +17,9 @@
   margin-bottom: var(--space-2);
 }
 
-.dark .livescore-title {
-  color: var(--gray-100);
-}
-
 .livescore-subtitle {
   color: var(--gray-600);
   font-size: var(--font-size-base);
-}
-
-.dark .livescore-subtitle {
-  color: var(--gray-400);
 }
 
 .livescore-live-dot {
@@ -70,12 +62,6 @@
   color: #fff;
 }
 
-.dark .livescore-tab {
-  background: var(--gray-800);
-  border-color: var(--gray-700);
-  color: var(--gray-200);
-}
-
 .livescore-search {
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-xl);
@@ -83,12 +69,6 @@
   background: var(--gray-50);
   color: var(--gray-900);
   min-width: 220px;
-}
-
-.dark .livescore-search {
-  background: var(--gray-900);
-  color: var(--gray-100);
-  border-color: var(--gray-700);
 }
 
 .livescore-list {
@@ -117,21 +97,11 @@
   transform: translateY(-1px);
 }
 
-.dark .ls-card {
-  background: var(--gray-900);
-  border-color: var(--gray-800);
-  color: var(--gray-100);
-}
-
 .ls-league {
   font-size: 0.8rem;
   color: var(--gray-600);
   text-transform: uppercase;
   letter-spacing: 0.03em;
-}
-
-.dark .ls-league {
-  color: var(--gray-400);
 }
 
 .ls-teams {
@@ -184,10 +154,6 @@
   gap: 0.25rem;
   color: var(--gray-600);
   font-size: 0.9rem;
-}
-
-.dark .ls-time {
-  color: var(--gray-400);
 }
 
 .livescore-empty {

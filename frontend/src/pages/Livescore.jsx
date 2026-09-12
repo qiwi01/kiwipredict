@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Clock } from 'lucide-react';
 import api from '../utils/api';
 import { isLive, getMatchScore } from '../components/matchUtils';
+import Loading from '../components/Loading';
 import '../css/Livescore.css';
 
 const formatKickoff = (utc) => {
@@ -88,7 +89,7 @@ const Livescore = () => {
       {!error && (
         <div className="livescore-list">
           {loading ? (
-            <div className="livescore-empty">Loading scores…</div>
+            <Loading label="Loading live scores…" />
           ) : current.length === 0 ? (
             <div className="livescore-empty">No matches to show for this section.</div>
           ) : (
