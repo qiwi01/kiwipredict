@@ -245,7 +245,7 @@ router.post('/refresh', (req, res) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json({ error: 'Invalid token' });
+      return res.status(401).json({ error: 'Invalid or expired token' });
     }
 
     const refreshedToken = jwt.sign(
