@@ -3,6 +3,18 @@ const { probabilitiesFromRatings, formToRating } = require('./eloService');
 const MODEL_VERSION = 'kiwi-ai-v3.0';
 const MIN_CONFIDENCE = Number(process.env.AI_MIN_CONFIDENCE || 65);
 
+// Per-market minimum confidence. The 1X2 "win" market is allowed to be looser
+// (football favourites rarely exceed ~55–60%), while the over/under goal lines
+// are gated higher so only confident totals get posted. Unknown types fall back
+// to MIN_CONFIDENCE.
+const CONFIDENCE_THRESHOLDS = {
+  win: Number(process.env.AI_MIN_WIN_CONFIDENCE || 55),
+  over15: Number(process.env.AI_MIN_OVER15_CONFIDENCE || 75),
+  over35: Number(process.env.AI_MIN_OVER35_CONFIDENCE || 75)
+};
+
+const thresholdFor = (type) => CONFIDENCE_THRESHOLDS[type] ?? MIN_CONFIDENCE;
+
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 const factorial = (n) => {
@@ -169,7 +181,7 @@ const generatePredictionsForFixture = (fixture, stats = null) => {
   const explanation = generateExplanation({ homeTeam, awayTeam, homeExpectedGoals: homeXg, awayExpectedGoals: awayXg, strongestMarket, source });
 
   const predictions = markets
-    .filter((market) => percentage(market.probability) >= MIN_CONFIDENCE)
+    .filter((market) => percentage(market.probability) >= thresholdFor(market.type))
     .map((market, index) => {
       const bookmakerOdds = resolveBookmakerOdds(market, fixture.odds);
       return {
@@ -225,5 +237,7 @@ const generatePredictionsForFixture = (fixture, stats = null) => {
 module.exports = {
   MODEL_VERSION,
   MIN_CONFIDENCE,
+  CONFIDENCE_THRESHOLDS,
+  thresholdFor,
   generatePredictionsForFixture
 };

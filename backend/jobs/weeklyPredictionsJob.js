@@ -5,7 +5,7 @@ const {
   fetchStandings,
   fetchTeamRecent
 } = require('../services/footballApi');
-const { generatePredictionsForFixture, MIN_CONFIDENCE } = require('../services/predictionEngine');
+const { generatePredictionsForFixture } = require('../services/predictionEngine');
 const { computeLeagueAverage, indicesForTeam } = require('../services/teamFormService');
 const { seedRatingsFromStandings } = require('../services/eloService');
 
@@ -138,7 +138,7 @@ const generateWeeklyPredictions = async ({ from, to, days, overwrite = false } =
 
       if (!generated.predictions.length) {
         summary.skipped += 1;
-        summary.details.push({ fixture: `${fixture.homeTeam} vs ${fixture.awayTeam}`, status: 'skipped', reason: `No generated prediction reached ${MIN_CONFIDENCE}% confidence` });
+        summary.details.push({ fixture: `${fixture.homeTeam} vs ${fixture.awayTeam}`, status: 'skipped', reason: 'No generated prediction reached the required confidence threshold' });
         continue;
       }
 
