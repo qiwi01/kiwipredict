@@ -4,7 +4,7 @@ const Match = require('../models/Match');
 const { authenticateToken } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/admin');
 const { sendBroadcastEmail } = require('../services/emailNotifications');
-const { generateWeeklyPredictions, getWeekRange } = require('../jobs/weeklyPredictionsJob');
+const { startBackgroundGeneration, getGenerationStatus, getWeekRange } = require('../jobs/weeklyPredictionsJob');
 const { syncFinishedResults } = require('../jobs/resultSyncJob');
 
 const router = express.Router();
@@ -137,22 +137,28 @@ router.get('/stats', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
-// Manually generate semi-AI predictions for the current/upcoming week
+// Manually trigger background prediction generation (next 3 days, all competitions)
 router.post('/generate-weekly-predictions', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { from, to, overwrite = false } = req.body || {};
-    const range = from && to ? { from, to } : getWeekRange();
-    const summary = await generateWeeklyPredictions({ ...range, overwrite });
+    const result = startBackgroundGeneration({ from, to, overwrite });
 
     res.json({
       success: true,
-      message: `Generated ${summary.predictionsGenerated} predictions from ${summary.fixturesFound} fixtures`,
-      summary
+      message: result.alreadyRunning
+        ? 'Prediction generation is already running in the background.'
+        : 'Prediction generation started. It runs in the background for the next 3 days across all competitions.',
+      ...result
     });
   } catch (err) {
-    console.error('Manual weekly prediction generation error:', err);
+    console.error('Prediction generation start error:', err);
     res.status(500).json({ error: err.message });
   }
+});
+
+// Poll the current background generation job state
+router.get('/generation-status', authenticateToken, requireAdmin, (req, res) => {
+  res.json(getGenerationStatus());
 });
 
 // Manually sync finished match results + outcomes from football-data.org

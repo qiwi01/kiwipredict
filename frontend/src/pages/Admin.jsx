@@ -7,6 +7,8 @@ import Modal from '../components/Modal';
 import ThemeToggle from '../components/ThemeToggle';
 import '../css/Admin.css';
 
+let generationPollTimer = null;
+
 const Admin = () => {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -68,6 +70,7 @@ const Admin = () => {
   const [importingAll, setImportingAll] = useState(false);
   const [generatingWeeklyPredictions, setGeneratingWeeklyPredictions] = useState(false);
   const [weeklyPredictionSummary, setWeeklyPredictionSummary] = useState(null);
+  const [generationStatus, setGenerationStatus] = useState(null);
 
   // Modal state
   const [modal, setModal] = useState({
@@ -417,16 +420,49 @@ const Admin = () => {
   const handleGenerateWeeklyPredictions = async (overwrite = false) => {
     setGeneratingWeeklyPredictions(true);
     setWeeklyPredictionSummary(null);
+    setGenerationStatus(null);
 
     try {
       const response = await api.post('/api/admin/generate-weekly-predictions', { overwrite });
-      setWeeklyPredictionSummary(response.data.summary);
-      toast.success(response.data.message || 'Weekly semi-AI predictions generated');
-      if (activeTab === 'games') fetchData();
+
+      if (response.data.alreadyRunning) {
+        toast('Prediction generation is already running in the background.');
+      } else {
+        toast.success('Prediction generation started — next 3 days, all competitions.');
+      }
+
+      if (generationPollTimer) clearInterval(generationPollTimer);
+      generationPollTimer = setInterval(async () => {
+        try {
+          const statusRes = await api.get('/api/admin/generation-status');
+          const statusData = statusRes.data || {};
+          setGenerationStatus(statusData);
+
+          if (!statusData.running && statusData.finishedAt) {
+            clearInterval(generationPollTimer);
+            generationPollTimer = null;
+            setGeneratingWeeklyPredictions(false);
+
+            if (statusData.error) {
+              toast.error(`Prediction generation failed: ${statusData.error}`);
+            } else {
+              setWeeklyPredictionSummary(statusData.summary || null);
+              toast.success(statusData.summary
+                ? `Generated ${statusData.summary.predictionsGenerated} predictions from ${statusData.summary.includedFixtures ?? statusData.summary.fixturesFound} fixtures`
+                : 'Predictions generated');
+              if (activeTab === 'games') fetchData();
+            }
+          }
+        } catch (pollErr) {
+          clearInterval(generationPollTimer);
+          generationPollTimer = null;
+          setGeneratingWeeklyPredictions(false);
+          toast.error('Failed to check generation status.');
+        }
+      }, 3000);
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to generate weekly predictions');
-    } finally {
       setGeneratingWeeklyPredictions(false);
+      toast.error(err.response?.data?.error || 'Failed to start prediction generation');
     }
   };
 
@@ -1211,8 +1247,19 @@ Arsenal FC
               Semi-AI Weekly Prediction Generator
             </h3>
             <p className="admin-section-description">
-              Fetch fixtures for the next 7 days from Football-data.org, generate Poisson-based semi-AI predictions, and save them for admin review.
+              Fetch fixtures for the next 3 days from Football-data.org (all competitions, or your configured list) and generate Dixon-Coles + Elo + form ensemble predictions for admin review.
             </p>
+            {generationStatus && (
+              <p className="admin-section-description" style={{ color: generationStatus.error ? '#ef4444' : 'var(--gray-600)' }}>
+                {generationStatus.running
+                  ? `Generating… ${generationStatus.progress?.processed ?? 0}/${generationStatus.progress?.total ?? '?'} processed`
+                  : generationStatus.error
+                    ? `Generation failed: ${generationStatus.error}`
+                    : generationStatus.summary
+                      ? `Done: ${generationStatus.summary.predictionsGenerated} predictions from ${generationStatus.summary.includedFixtures ?? generationStatus.summary.fixturesFound} fixtures`
+                      : ''}
+              </p>
+            )}
             <div className="admin-quick-actions">
               <button
                 type="button"

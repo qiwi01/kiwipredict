@@ -1,4 +1,6 @@
-const MODEL_VERSION = 'kiwi-ai-v2.0';
+const { probabilitiesFromRatings, formToRating } = require('./eloService');
+
+const MODEL_VERSION = 'kiwi-ai-v3.0';
 const MIN_CONFIDENCE = Number(process.env.AI_MIN_CONFIDENCE || 50);
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -23,30 +25,72 @@ const estimateTeamStrength = (teamName = '', competition = '') => {
   };
 };
 
-const calculateGoalMatrix = (homeExpectedGoals, awayExpectedGoals, maxGoals = 7) => {
-  const matrix = [];
-  for (let homeGoals = 0; homeGoals <= maxGoals; homeGoals += 1) {
-    for (let awayGoals = 0; awayGoals <= maxGoals; awayGoals += 1) {
-      matrix.push({
-        homeGoals,
-        awayGoals,
-        probability: poisson(homeExpectedGoals, homeGoals) * poisson(awayExpectedGoals, awayGoals)
-      });
+const tauCorrection = (x, y, lambda, mu, rho) => {
+  if (x === 0 && y === 0) return 1 - lambda * mu * rho;
+  if (x === 0 && y === 1) return 1 + lambda * rho;
+  if (x === 1 && y === 0) return 1 + mu * rho;
+  if (x === 1 && y === 1) return 1 - rho;
+  return 1;
+};
+
+const scoreMatrix = (homeLambda, awayLambda, rho = -0.06, maxGoals = 8) => {
+  const cells = [];
+  let total = 0;
+  for (let h = 0; h <= maxGoals; h += 1) {
+    for (let a = 0; a <= maxGoals; a += 1) {
+      const p = poisson(homeLambda, h) * poisson(awayLambda, a) * tauCorrection(h, a, homeLambda, awayLambda, rho);
+      cells.push({ homeGoals: h, awayGoals: a, probability: p });
+      total += p;
     }
   }
-  return matrix;
+  return cells.map((cell) => ({ ...cell, probability: cell.probability / total }));
+};
+
+const reduceMatrix = (cells) => {
+  const acc = { homeWin: 0, draw: 0, awayWin: 0, over15: 0, over25: 0, over35: 0, bttsYes: 0 };
+  for (const cell of cells) {
+    if (cell.homeGoals > cell.awayGoals) acc.homeWin += cell.probability;
+    else if (cell.homeGoals === cell.awayGoals) acc.draw += cell.probability;
+    else acc.awayWin += cell.probability;
+
+    const totalGoals = cell.homeGoals + cell.awayGoals;
+    if (totalGoals > 1.5) acc.over15 += cell.probability;
+    if (totalGoals > 2.5) acc.over25 += cell.probability;
+    if (totalGoals > 3.5) acc.over35 += cell.probability;
+    if (cell.homeGoals > 0 && cell.awayGoals > 0) acc.bttsYes += cell.probability;
+  }
+  acc.under15 = 1 - acc.over15;
+  acc.under25 = 1 - acc.over25;
+  acc.under35 = 1 - acc.over35;
+  acc.bttsNo = 1 - acc.bttsYes;
+  return acc;
+};
+
+const normalizeTrio = ({ home, draw, away }) => {
+  const total = home + draw + away || 1;
+  return { home: home / total, draw: draw / total, away: away / total };
 };
 
 const percentage = (probability) => Math.round(clamp(probability, 0, 1) * 100);
 const fairOdds = (probability) => probability > 0 ? Number((1 / probability).toFixed(2)) : null;
 
-const pickWinPrediction = ({ homeWin, draw, awayWin }) => {
+const pickWin = ({ home, draw, away }) => {
   const options = [
-    { prediction: 'home', probability: homeWin },
+    { prediction: 'home', probability: home },
     { prediction: 'draw', probability: draw },
-    { prediction: 'away', probability: awayWin }
+    { prediction: 'away', probability: away }
   ];
   return options.sort((a, b) => b.probability - a.probability)[0];
+};
+
+const winnerOf = (trio) => pickWin(trio).prediction;
+
+const confidenceGrade = (p) => {
+  if (p >= 0.60) return 'Very Strong';
+  if (p >= 0.50) return 'Strong';
+  if (p >= 0.42) return 'Moderate';
+  if (p >= 0.36) return 'Lean';
+  return 'Uncertain';
 };
 
 const generateExplanation = ({ homeTeam, awayTeam, homeExpectedGoals, awayExpectedGoals, strongestMarket, source = 'AI' }) => (
@@ -67,84 +111,65 @@ const generatePredictionsForFixture = (fixture, stats = null) => {
   const awayTeam = fixture.awayTeam?.name || fixture.awayTeam || 'Away Team';
   const competition = fixture.competition?.name || fixture.competition || fixture.competitionCode || 'Unknown League';
 
-  let homeStrength;
-  let awayStrength;
-  let leagueGoalBase;
-  let source = 'kiwi-ai-v2';
+  let home;
+  let away;
+  let leagueBase = 1.2;
+  let source = 'kiwi-ai-v3 (fallback heuristic)';
 
   if (stats && stats.home && stats.away) {
-    homeStrength = stats.home;
-    awayStrength = stats.away;
-    leagueGoalBase = stats.leagueAvgTeamGoals || 1.25;
-    source = 'kiwi-ai-v2 (form + head-to-head)';
+    home = stats.home;
+    away = stats.away;
+    leagueBase = stats.leagueAvgTeamGoals || 1.2;
+    source = 'kiwi-ai-v3 (Dixon-Coles + Elo + form ensemble)';
   } else {
-    homeStrength = estimateTeamStrength(homeTeam, competition);
-    awayStrength = estimateTeamStrength(awayTeam, competition);
-    leagueGoalBase = 1.25;
-    source = 'kiwi-ai-v2 (fallback heuristic)';
+    home = estimateTeamStrength(homeTeam, competition);
+    away = estimateTeamStrength(awayTeam, competition);
   }
 
   const HOME_ADVANTAGE = 1.12;
 
-  let homeExpectedGoals = leagueGoalBase * homeStrength.attack * awayStrength.defense * (homeStrength.form || 1) * HOME_ADVANTAGE;
-  let awayExpectedGoals = leagueGoalBase * awayStrength.attack * homeStrength.defense * (awayStrength.form || 1);
+  let homeXg = leagueBase * (home.attack || 1) * (away.defense || 1) * (home.form || 1) * HOME_ADVANTAGE;
+  let awayXg = leagueBase * (away.attack || 1) * (home.defense || 1) * (away.form || 1);
+  homeXg = clamp(homeXg, 0.2, 4.5);
+  awayXg = clamp(awayXg, 0.15, 4.0);
 
-  const h2h = stats?.headToHead;
-  if (h2h && h2h.played >= 2 && h2h.homeGoalsAvg != null && h2h.awayGoalsAvg != null) {
-    const weight = Math.min(0.25, h2h.played * 0.05);
-    homeExpectedGoals = homeExpectedGoals * (1 - weight) + h2h.homeGoalsAvg * weight;
-    awayExpectedGoals = awayExpectedGoals * (1 - weight) + h2h.awayGoalsAvg * weight;
-  }
+  const matrix = scoreMatrix(homeXg, awayXg);
+  const dc = reduceMatrix(matrix);
 
-  homeExpectedGoals = clamp(homeExpectedGoals, 0.2, 4.5);
-  awayExpectedGoals = clamp(awayExpectedGoals, 0.15, 4.0);
+  const homeRating = Number(home.rating) > 0 ? Number(home.rating) : formToRating(home.form || 1);
+  const awayRating = Number(away.rating) > 0 ? Number(away.rating) : formToRating(away.form || 1);
+  const elo = probabilitiesFromRatings(homeRating, awayRating);
+  const form = probabilitiesFromRatings(formToRating(home.form || 1), formToRating(away.form || 1), 40);
 
-  const matrix = calculateGoalMatrix(homeExpectedGoals, awayExpectedGoals);
+  const W_DC = 0.45;
+  const W_ELO = 0.30;
+  const W_FORM = 0.25;
+  const blended = normalizeTrio({
+    home: W_DC * dc.homeWin + W_ELO * elo.home + W_FORM * form.home,
+    draw: W_DC * dc.draw + W_ELO * elo.draw + W_FORM * form.draw,
+    away: W_DC * dc.awayWin + W_ELO * elo.away + W_FORM * form.away
+  });
 
-  const probabilities = matrix.reduce((acc, score) => {
-    if (score.homeGoals > score.awayGoals) acc.homeWin += score.probability;
-    if (score.homeGoals === score.awayGoals) acc.draw += score.probability;
-    if (score.homeGoals < score.awayGoals) acc.awayWin += score.probability;
-    if (score.homeGoals + score.awayGoals > 1.5) acc.over15 += score.probability;
-    if (score.homeGoals + score.awayGoals > 2.5) acc.over25 += score.probability;
-    if (score.homeGoals + score.awayGoals > 3.5) acc.over35 += score.probability;
-    if (score.homeGoals > 0 && score.awayGoals > 0) acc.bttsYes += score.probability;
-    return acc;
-  }, { homeWin: 0, draw: 0, awayWin: 0, over15: 0, over25: 0, over35: 0, bttsYes: 0 });
+  const picks = [winnerOf(dc), winnerOf(elo), winnerOf(form)];
+  const agreeCount = picks.filter((p) => p === picks[0]).length;
+  const modelAgreement = Math.round((agreeCount / picks.length) * 100);
 
-  probabilities.under15 = 1 - probabilities.over15;
-  probabilities.under25 = 1 - probabilities.over25;
-  probabilities.under35 = 1 - probabilities.over35;
-  probabilities.bttsNo = 1 - probabilities.bttsYes;
+  const winPick = pickWin(blended);
 
-  const winPick = pickWinPrediction(probabilities);
-  const goalsPick = probabilities.over25 >= probabilities.under25
-    ? { type: 'over25', prediction: 'Over 2.5', probability: probabilities.over25 }
-    : { type: 'over25', prediction: 'Under 2.5', probability: probabilities.under25 };
-  const over15Pick = probabilities.over15 >= 0.62
-    ? { type: 'over15', prediction: 'Over 1.5', probability: probabilities.over15 }
-    : { type: 'over15', prediction: 'Under 1.5', probability: probabilities.under15 };
-  const over35Pick = probabilities.over35 >= 0.44
-    ? { type: 'over35', prediction: 'Over 3.5', probability: probabilities.over35 }
-    : { type: 'over35', prediction: 'Under 3.5', probability: probabilities.under35 };
-  const bttsPick = probabilities.bttsYes >= probabilities.bttsNo
-    ? { type: 'ggng', prediction: 'GG', probability: probabilities.bttsYes }
-    : { type: 'ggng', prediction: 'NG', probability: probabilities.bttsNo };
-
-  const candidateMarkets = [
-    { type: 'win', ...winPick },
-    over15Pick,
-    goalsPick,
-    over35Pick,
-    bttsPick
+  const markets = [
+    { type: 'win', prediction: winPick.prediction, probability: blended[winPick.prediction] },
+    { type: 'over15', prediction: dc.over15 >= 0.62 ? 'Over 1.5' : 'Under 1.5', probability: dc.over15 >= 0.62 ? dc.over15 : dc.under15 },
+    { type: 'over25', prediction: dc.over25 >= dc.under25 ? 'Over 2.5' : 'Under 2.5', probability: dc.over25 >= dc.under25 ? dc.over25 : dc.under25 },
+    { type: 'over35', prediction: dc.over35 >= 0.44 ? 'Over 3.5' : 'Under 3.5', probability: dc.over35 >= 0.44 ? dc.over35 : dc.under35 },
+    { type: 'ggng', prediction: dc.bttsYes >= dc.bttsNo ? 'GG' : 'NG', probability: dc.bttsYes >= dc.bttsNo ? dc.bttsYes : dc.bttsNo }
   ].sort((a, b) => b.probability - a.probability);
 
   const generatedAt = new Date();
-  const strongestMarket = candidateMarkets[0];
-  const explanation = generateExplanation({ homeTeam, awayTeam, homeExpectedGoals, awayExpectedGoals, strongestMarket, source });
+  const strongestMarket = markets[0];
+  const explanation = generateExplanation({ homeTeam, awayTeam, homeExpectedGoals: homeXg, awayExpectedGoals: awayXg, strongestMarket, source });
 
-  const predictions = candidateMarkets
-    .filter(market => percentage(market.probability) >= MIN_CONFIDENCE)
+  const predictions = markets
+    .filter((market) => percentage(market.probability) >= MIN_CONFIDENCE)
     .map((market, index) => {
       const bookmakerOdds = resolveBookmakerOdds(market, fixture.odds);
       return {
@@ -157,19 +182,41 @@ const generatePredictionsForFixture = (fixture, stats = null) => {
         odds: {},
         visibility: index >= 3 ? 'vip' : 'all',
         modelVersion: MODEL_VERSION,
-        generatedBy: 'ai-v2',
+        generatedBy: 'ai-v3',
         generatedAt,
         explanation
       };
     });
 
+  const topScorelines = [...matrix]
+    .sort((a, b) => b.probability - a.probability)
+    .slice(0, 3)
+    .map((cell) => ({ home: cell.homeGoals, away: cell.awayGoals, probability: Number(cell.probability.toFixed(4)) }));
+
   return {
     modelVersion: MODEL_VERSION,
     generatedAt,
     source,
-    homeExpectedGoals: Number(homeExpectedGoals.toFixed(2)),
-    awayExpectedGoals: Number(awayExpectedGoals.toFixed(2)),
-    probabilities: Object.fromEntries(Object.entries(probabilities).map(([key, value]) => [key, Number(value.toFixed(4))])),
+    homeExpectedGoals: Number(homeXg.toFixed(2)),
+    awayExpectedGoals: Number(awayXg.toFixed(2)),
+    homeRating,
+    awayRating,
+    probabilities: {
+      homeWin: Number(blended.home.toFixed(4)),
+      draw: Number(blended.draw.toFixed(4)),
+      awayWin: Number(blended.away.toFixed(4)),
+      over15: Number(dc.over15.toFixed(4)),
+      under15: Number(dc.under15.toFixed(4)),
+      over25: Number(dc.over25.toFixed(4)),
+      under25: Number(dc.under25.toFixed(4)),
+      over35: Number(dc.over35.toFixed(4)),
+      under35: Number(dc.under35.toFixed(4)),
+      bttsYes: Number(dc.bttsYes.toFixed(4)),
+      bttsNo: Number(dc.bttsNo.toFixed(4))
+    },
+    modelAgreement,
+    confidenceGrade: confidenceGrade(Math.max(blended.home, blended.draw, blended.away)),
+    topScorelines,
     predictions,
     explanation
   };

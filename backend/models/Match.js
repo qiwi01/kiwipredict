@@ -44,6 +44,21 @@ const MatchSchema = new mongoose.Schema({
   },
   homeCrest: String,
   awayCrest: String,
+  expectedGoals: {
+    home: Number,
+    away: Number
+  },
+  probabilities: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
+  modelAgreement: Number,
+  confidenceGrade: String,
+  topScorelines: [{
+    home: Number,
+    away: Number,
+    probability: Number
+  }],
   externalFixtureId: {
     type: Number,
     index: true
