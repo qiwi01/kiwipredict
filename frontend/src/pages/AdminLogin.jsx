@@ -37,7 +37,7 @@ const AdminLogin = () => {
         return;
       }
 
-      login(res.data.user);
+      login(res.data.user, res.data.token);
       toast.success('Admin login successful!');
       navigate('/admin/dashboard');
     } catch (err) {
