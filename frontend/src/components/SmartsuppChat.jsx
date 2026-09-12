@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { MessageSquareMore, X } from 'lucide-react';
+import { useEffect } from 'react';
 
 const SMARTSUPP_KEY = 'f91dfd08f8b4027c5bbebed0818316eb217413de';
 
@@ -16,10 +15,6 @@ const loadSmartsupp = () => {
   };
   window.smartsupp._ = [];
 
-  // Hide Smartsupp's own default chat bubble — the custom floating
-  // button below is the only chat launcher on the page.
-  window.smartsupp('chat:hide');
-
   const firstScript = document.getElementsByTagName('script')[0];
   const script = document.createElement('script');
   script.id = 'smartsupp-live-chat-script';
@@ -30,70 +25,13 @@ const loadSmartsupp = () => {
   firstScript.parentNode.insertBefore(script, firstScript);
 };
 
-const openSmartsuppChat = () => {
-  if (window.smartsupp) {
-    window.smartsupp('chat:show');
-    window.smartsupp('chat:open');
-  }
-};
-
+// Render nothing — Smartsupp injects and shows its own native chat bubble.
 const SmartsuppChat = () => {
-  const [open, setOpen] = useState(false);
-
   useEffect(() => {
     loadSmartsupp();
+  }, []);
 
-    // Re-hide the Smartsupp default widget shortly after the script
-    // loads (and on an interval as a safety net) so ONLY our custom
-    // floating button is ever visible. CSS hiding is the primary net;
-    // this handles anything Smartsupp injects after load.
-    const hideTimer = setTimeout(() => {
-      if (window.smartsupp) {
-        window.smartsupp('chat:hide');
-      }
-    }, 2500);
-
-    const interval = setInterval(() => {
-      if (window.smartsupp && !open) {
-        window.smartsupp('chat:hide');
-      }
-    }, 8000);
-
-    return () => {
-      clearTimeout(hideTimer);
-      clearInterval(interval);
-    };
-  }, [open]);
-
-  const toggleChat = () => {
-    if (window.smartsupp) {
-      setOpen((prev) => {
-        const next = !prev;
-        if (next) {
-          window.smartsupp('chat:show');
-          window.smartsupp('chat:open');
-        } else {
-          window.smartsupp('chat:hide');
-        }
-        return next;
-      });
-    } else {
-      setOpen(false);
-    }
-  };
-
-  return (
-    <button
-      type="button"
-      className={open ? 'smartsupp-fab open' : 'smartsupp-fab'}
-      onClick={toggleChat}
-      aria-label={open ? 'Close support chat' : 'Open support chat'}
-      title="Chat with our support team"
-    >
-      {open ? <X size={22} /> : <MessageSquareMore size={22} />}
-      {!open && <span className="smartsupp-fab-ping" />}
-    </button>
-  );
+  return null;
 };
 
 export default SmartsuppChat;
